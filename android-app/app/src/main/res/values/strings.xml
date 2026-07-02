@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- App Name and common -->
+    <string name="app_name">Skin History Scanner</string>
+    <string name="cancel">Annulla</string>
+    <string name="save">Salva</string>
+    <string name="delete">Elimina</string>
+    <string name="add">Aggiungi</string>
+    <string name="close">Chiudi</string>
+    <string name="action_back">Indietro</string>
+    <string name="processing_data">Elaborazione dati...</string>
+    <string name="error_camera">Errore fotocamera: %s</string>
+
+    <!-- BodyMapScreen -->
+    <string name="reposition_hint">Tocca la mappa per riposizionare il neo</string>
+    <string name="add_hint">Tocca la mappa per aggiungere un neo</string>
+    <string name="categories">Categorie</string>
+    <string name="settings">Impostazioni</string>
+    <string name="select_color">Seleziona colore</string>
+    <string name="add_new">Aggiungi nuovo</string>
+    <string name="time_machine">Macchina del tempo</string>
+    <string name="front">Fronte</string>
+    <string name="back">Retro</string>
+    <string name="unknown_date">Data Sconosciuta</string>
+    <string name="legend_title">Legenda</string>
+    <string name="flip_view">Gira corpo</string>
+    <string name="marker_size">Dimensione segnalini</string>
+
+    <!-- MoleDetailsScreen -->
+    <string name="mole_details">Dettagli Neo</string>
+    <string name="side">Lato</string>
+    <string name="photo_menu_add">Scatta Foto</string>
+    <string name="photo_menu_gallery">Scegli da Galleria</string>
+    <string name="no_photos">Nessuna foto presente</string>
+    <string name="history_notes">Note storiche</string>
+    <string name="tap_photo_fullscreen">Tocca la foto per vederla a schermo intero</string>
+    <string name="update_position">Aggiorna Posizione</string>
+    <string name="delete_mole_confirm">Sei sicuro di voler eliminare questo neo e tutto il suo storico?</string>
+    <string name="delete_entry_confirm">Vuoi davvero eliminare questa nota?</string>
+    <string name="edit">Modifica</string>
+    <string name="new_photo">Nuova Foto</string>
+    <string name="history">Cronologia</string>
+    <string name="add_note">Aggiungi Nota</string>
+    <string name="take_photo">Scatta Foto</string>
+    <string name="choose_gallery">Scegli dalla Galleria</string>
+    <string name="note_title_new">Nuova Nota</string>
+    <string name="note_title_edit">Modifica Voce</string>
+    <string name="note_title_photo">Dettagli Foto</string>
+    <string name="note_placeholder">Aggiungi una descrizione o nota...</string>
+    <string name="date_label">Data: %s</string>
+    <string name="delete_forever">Elimina definitivamente</string>
+    <string name="latest_photo">Ultima foto</string>
+    <string name="latest_record">Ultimo rilievo</string>
+    <string name="position_label">Posizione: %s</string>
+    <string name="photo_and_note">Foto &amp; Nota</string>
+    <string name="photo">Foto</string>
+    <string name="note">Nota</string>
+    <string name="mole_photo">Foto del neo</string>
+    <string name="date_of_addition">Data di aggiunta</string>
+    <!-- SplitViewScreen -->
+    <string name="split_view_title">Confronto Foto</string>
+    <string name="split_view_empty">Sono necessarie almeno 2 foto per il confronto.</string>
+    <string name="today">Oggi</string>
+    <string name="yesterday">Ieri</string>
+    <string name="days_ago">%d giorni fa</string>
+    <string name="weeks_ago">%d settimane fa</string>
+    <string name="months_ago">%d mesi fa</string>
+    <string name="years_ago">%d anni fa</string>
+
+    <!-- SettingsScreen -->
+    <string name="settings_title">Impostazioni</string>
+    <string name="settings_title_main">Impostazioni</string>
+    <string name="settings_title_body">Profilo Corpo</string>
+    <string name="settings_title_database">Gestione Dati</string>
+    <string name="settings_title_profiles">Gestione Profili</string>
+    <string name="settings_title_about">A riguardo</string>
+    <string name="settings_title_reminders">Promemoria</string>
+    <string name="profile">Profilo</string>
+    <string name="select_profile">Seleziona Profilo</string>
+    <string name="add_profile">Aggiungi Profilo</string>
+    <string name="rename_profile">Rinomina Profilo</string>
+    <string name="new_profile_name">Nuovo nome profilo</string>
+    <string name="current_profile_name">Nome attuale</string>
+    <string name="body_type">Tipo di corpo</string>
+    <string name="male">Uomo</string>
+    <string name="female">Donna</string>
+    <string name="average_build">Normopeso</string>
+    <string name="overweight">Sovrappeso</string>
+    <string name="reminders">Promemoria</string>
+    <string name="enable_reminders">Attiva Promemoria</string>
+    <string name="remind_me_every">Ricordami ogni</string>
+    <string name="days">Giorni</string>
+    <string name="weeks">Settimane</string>
+    <string name="months">Mesi</string>
+    <string name="database">Database</string>
+    <string name="export_db">Esporta</string>
+    <string name="import_db">Importa</string>
+    <string name="overwrite_db">Sovrascrivi Profilo Corrente</string>
+    <string name="new_profile_db">Crea Nuovo Profilo</string>
+    <string name="auto_close_panels">Chiudi Pannelli Automaticamente</string>
+    <string name="auto_close_panels_desc">Chiudi legenda e timeline cliccando fuori</string>
+    <string name="app_language">Lingua App</string>
+    <string name="lang_system">Sistema</string>
+    <string name="lang_it">Italiano</string>
+    <string name="lang_en">English</string>
+    <string name="total_moles">Nei Totali in Database</string>
+    <string name="mapped_moles">%d nei mappati</string>
+    <string name="body_profile_subtitle">Genere e corporatura</string>
+    <string name="database_subtitle">Importa, esporta e backup</string>
+    <string name="profiles_subtitle">Cambia o elimina profili</string>
+    <string name="about_subtitle">Informazioni sullo sviluppatore</string>
+    <string name="body_profile_desc">Personalizza la silhouette del corpo per una mappatura più precisa.</string>
+    <string name="reminders_desc">Pianifica controlli regolari per monitorare l\'evoluzione dei tuoi nei.</string>
+    <string name="reminder_interval">Intervallo di controllo</string>
+    <string name="reminder_value_label">Valore</string>
+    <string name="add_to_calendar">Aggiungi al Calendario</string>
+    <string name="database_desc">Gestisci i tuoi dati. Tutti i nei e la cronologia sono salvati localmente sul dispositivo.</string>
+    <string name="active_profile">Profilo Attivo: %s</string>
+    <string name="profiles_mgmt_desc">Seleziona un profilo per cambiare database o eliminane uno esistente.</string>
+    <string name="create_new_profile">Crea Nuovo Profilo</string>
+    <string name="profiles_empty_deletion_warning">I profili vuoti (senza nei) verranno cancellati automaticamente all\'uscita o al cambio profilo.</string>
+    <string name="delete_profile_title">Elimina profilo</string>
+    <string name="delete_profile_confirm">Sei sicuro di voler eliminare il profilo \'%s\'? Tutti i nei e le foto associate andranno persi definitivamente.</string>
+    <string name="version_label">Versione %s</string>
+    <string name="developed_by">Sviluppato da</string>
+    <string name="app_description">Strumento professionale per il monitoraggio della salute della pelle.</string>
+    <string name="settings_profile_photo_desc">Foto profilo</string>
+    <string name="profile_name_label">Nome Profilo</string>
+    <string name="profile_name_hint">Nome</string>
+    <string name="notification_permission_title">Permesso Notifiche</string>
+    <string name="notification_permission_desc">Ricevi una notifica per aggiornare le foto</string>
+    <string name="notification_channel_name">Promemoria Controlli</string>
+    <string name="notification_channel_desc">Canale per i promemoria periodici dei nei</string>
+    <string name="notification_title">È ora di un controllo!</string>
+    <string name="notification_body">Aggiorna le foto dei tuoi nei per monitorare la loro evoluzione.</string>
+    <string name="calendar_event_title">Skin History Scanner: Check-up Nei</string>
+    <string name="calendar_event_desc">È ora di aggiornare le foto dei tuoi nei per monitorarne l\'evoluzione.</string>
+    <string name="test_notification">Test Notifica Push</string>
+
+    <!-- Rapid Modes Settings -->
+    <string name="settings_title_rapid_modes">Interfaccia e Comandi Rapidi</string>
+    <string name="rapid_modes_subtitle">Personalizza il flusso dell\'interfaccia</string>
+    <string name="rapid_modes_desc">Configura come la mappa e l\'editor reagiscono al tuo tocco.</string>
+    <string name="keep_legend_visible">Mantieni pannelli visibili</string>
+    <string name="rapid_insertion_mode">Inserimento Rapido</string>
+    <string name="rapid_insertion_mode_desc">Apre la fotocamera appena si crea un nuovo neo</string>
+    <string name="rapid_update_mode">Aggiornamento Rapido</string>
+    <string name="rapid_update_mode_desc">Apre la fotocamera quando si tocca un neo esistente</string>
+    <string name="show_zoom_button">Tasto Zoom su Mappa</string>
+    <string name="show_zoom_button_desc">Mostra un pulsante visibile sulla mappa per ciclare i livelli di zoom (1x, 3x, Max). Il Doppio Tocco è sempre attivo.</string>
+
+    <!-- Camera and Image Editor -->
+    <string name="camera_permission_required">Il permesso della fotocamera è necessario per scattare foto ai nei.</string>
+    <string name="camera_stability">Stabilità</string>
+    <string name="camera_focus">Fuoco</string>
+    <string name="camera_shoot_desc">Scatta foto</string>
+    <string name="editor_title">MODIFICA</string>
+    <string name="editor_rotate">Ruota</string>
+    <string name="editor_reset">Reset</string>
+    <string name="editor_confirm">Conferma</string>
+    <string name="editor_error">Errore nel ritaglio dell\'immagine</string>
+    <string name="editor_exit_title">Uscire dall\'editor?</string>
+    <string name="editor_exit_desc">Le modifiche non salvate andranno perse.</string>
+    <string name="editor_exit_confirm">Esci</string>
+    <string name="editor_exit_cancel">Continua a modificare</string>
+
+    <!-- Import/Export Dialogs -->
+    <string name="import_database_title">Importa Database</string>
+    <string name="import_database_desc">Scegli come importare i dati dal file selezionato.</string>
+    <string name="import_update_current">Aggiorna Profilo Corrente</string>
+    <string name="import_create_new">Crea Nuovo Profilo</string>
+    <string name="import_new_profile_name">Nome Nuovo Profilo</string>
+    <string name="import_confirm_name">Importa</string>
+    <string name="action_cancel">Annulla</string>
+
+    <!-- Color Labels Keys -->
+    <string name="color_alarm">Allarme / Controllo urgente</string>
+    <string name="color_suspicious">Sospetto / In evoluzione</string>
+    <string name="color_monitor">Da monitorare</string>
+    <string name="color_safe">Regolare / Sicuro</string>
+    <string name="color_new">Nuovo neo</string>
+    <string name="color_other">Altra anomalia</string>
+    <string name="body_profile_note">Nota: i punti registrati rimarranno nella loro posizione originale anche cambiando le impostazioni del corpo.</string>`n</resources>
