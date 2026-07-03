@@ -850,7 +850,7 @@ fun ProfilesManagement(
             modifier = Modifier.fillMaxWidth().padding(20.dp),
             shape = RoundedCornerShape(12.dp)
         ) {
-            Icon(Icons.Default.Add, null)
+            Icon(Icons.Default.Add, contentDescription = stringResource(R.string.create_new_profile))
             Spacer(Modifier.width(8.dp))
             Text(stringResource(R.string.create_new_profile))
         }
