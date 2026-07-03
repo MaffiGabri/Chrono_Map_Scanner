@@ -196,7 +196,7 @@ fun ImageNavigator(
             modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
         ) {
             IconButton(onClick = onPrev, enabled = hasPrev) {
-                Icon(Icons.AutoMirrored.Filled.KeyboardArrowLeft, null, tint = if (hasPrev) Color.White else Color.Gray)
+                Icon(Icons.AutoMirrored.Filled.KeyboardArrowLeft, contentDescription = androidx.compose.ui.res.stringResource(com.example.skinhistoryscanner.R.string.previous_photo), tint = if (hasPrev) Color.White else Color.Gray)
             }
             Text(
                 text = "${localDate.format(java.time.format.DateTimeFormatter.ofLocalizedDate(java.time.format.FormatStyle.MEDIUM).withLocale(java.util.Locale.getDefault()))} ($relativeText)",
@@ -205,7 +205,7 @@ fun ImageNavigator(
                 modifier = Modifier.padding(horizontal = 8.dp)
             )
             IconButton(onClick = onNext, enabled = hasNext) {
-                Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, null, tint = if (hasNext) Color.White else Color.Gray)
+                Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = androidx.compose.ui.res.stringResource(com.example.skinhistoryscanner.R.string.next_photo), tint = if (hasNext) Color.White else Color.Gray)
             }
         }
     }

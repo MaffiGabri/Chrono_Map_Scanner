@@ -180,4 +180,9 @@
     <string name="color_safe">Regolare / Sicuro</string>
     <string name="color_new">Nuovo neo</string>
     <string name="color_other">Altra anomalia</string>
-    <string name="body_profile_note">Nota: i punti registrati rimarranno nella loro posizione originale anche cambiando le impostazioni del corpo.</string>`n</resources>
+    <!-- Accessibility -->
+    <string name="previous_photo">Foto precedente</string>
+    <string name="next_photo">Foto successiva</string>
+
+    <string name="body_profile_note">Nota: i punti registrati rimarranno nella loro posizione originale anche cambiando le impostazioni del corpo.</string>
+</resources>
