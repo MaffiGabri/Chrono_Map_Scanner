@@ -1,4 +1,4 @@
-﻿package com.example.skinhistoryscanner.ui.viewmodels
+package com.example.skinhistoryscanner.ui.viewmodels
 
 import android.content.Context
 import app.cash.turbine.test
@@ -8,6 +8,8 @@ import com.example.skinhistoryscanner.data.local.datastore.SettingsRepository
 import com.example.skinhistoryscanner.data.repository.BackupRepository
 import com.example.skinhistoryscanner.data.repository.FileRepository
 import com.example.skinhistoryscanner.data.repository.MoleRepository
+import com.example.skinhistoryscanner.data.repository.BackgroundRepository
+import com.example.skinhistoryscanner.data.local.room.AppDatabaseRoom
 import io.mockk.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -27,6 +29,8 @@ class SettingsViewModelTest {
     private val moleRepository: MoleRepository = mockk(relaxed = true)
     private val backupRepository: BackupRepository = mockk(relaxed = true)
     private val fileRepository: FileRepository = mockk(relaxed = true)
+    private val backgroundRepository: BackgroundRepository = mockk(relaxed = true)
+    private val database: AppDatabaseRoom = mockk(relaxed = true)
     private val context: Context = mockk(relaxed = true)
     
     private val testDispatcher = StandardTestDispatcher()
@@ -36,7 +40,6 @@ class SettingsViewModelTest {
     fun setup() {
         Dispatchers.setMain(testDispatcher)
 
-        // Mock StateFlows for SettingsRepository
         val currentProfileFlow = MutableStateFlow("Default")
         every { settingsRepository.currentProfile } returns currentProfileFlow
         every { settingsRepository.profileImage } returns flowOf(null)
@@ -50,8 +53,12 @@ class SettingsViewModelTest {
         every { settingsRepository.keepLegendVisible } returns flowOf(false)
         every { settingsRepository.rapidInsertionMode } returns flowOf(false)
         every { settingsRepository.rapidUpdateMode } returns flowOf(false)
+        every { settingsRepository.snapToRecentOnAddMole } returns flowOf(false)
+        every { settingsRepository.showZoomButton } returns flowOf(false)
+        every { settingsRepository.scannerDelayMs } returns flowOf(500L)
+        every { settingsRepository.scannerIntervalMin } returns flowOf(30L)
+        every { settingsRepository.warnOnEmptyMoleDeletion } returns flowOf(false)
 
-        // Mock MoleRepository
         every { moleRepository.getAllProfileNames() } returns flowOf(listOf("Default", "Lavoro"))
         every { moleRepository.getMolesCountForProfile(any()) } returns flowOf(5)
 
@@ -60,6 +67,8 @@ class SettingsViewModelTest {
             moleRepository,
             backupRepository,
             fileRepository,
+            backgroundRepository,
+            database,
             testScope,
             context
         )
@@ -72,12 +81,8 @@ class SettingsViewModelTest {
 
     @Test
     fun `allProfiles combines distinct sorted profiles from repository and datastore`() = runTest {
-        // We expect the ViewModel to combine ["Default", "Lavoro"] (from moleRepository)
-        // with "Default" (from settingsRepository currentProfile)
-        // Output should be sorted: ["Default", "Lavoro"]
         viewModel.allProfiles.test {
             val initial = awaitItem()
-            // initial value before combine executes
             assertEquals(listOf("Default"), initial)
             
             val combined = awaitItem()
@@ -85,14 +90,12 @@ class SettingsViewModelTest {
             
             cancelAndIgnoreRemainingEvents()
         }
-        advanceTimeBy(5001)
     }
 
     @Test
     fun `switchProfile calls repository setCurrentProfile`() = runTest {
         viewModel.switchProfile("Mamma")
-        advanceUntilIdle() // Wait for coroutines to complete
+        advanceUntilIdle()
         coVerify { settingsRepository.setCurrentProfile("Mamma") }
-        advanceTimeBy(5001)
     }
 }

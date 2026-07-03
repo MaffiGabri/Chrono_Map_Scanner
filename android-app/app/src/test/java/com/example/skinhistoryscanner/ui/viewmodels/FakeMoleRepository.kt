@@ -1,39 +1,53 @@
-﻿package com.example.skinhistoryscanner.ui.viewmodels
+package com.example.skinhistoryscanner.ui.viewmodels
 
 import com.example.skinhistoryscanner.data.domain.HistoryEntry
 import com.example.skinhistoryscanner.data.domain.Mole
+import com.example.skinhistoryscanner.data.domain.MoleMapItem
 import com.example.skinhistoryscanner.data.repository.MoleRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
+import java.time.LocalDate
 
 class FakeMoleRepository : MoleRepository {
     private val moles = MutableStateFlow<List<Mole>>(emptyList())
     private val history = MutableStateFlow<List<HistoryEntry>>(emptyList())
 
-    override fun getMolesWithHistory(profileName: String): Flow<List<Mole>> {
+    override suspend fun getMolesWithHistory(profileName: String): List<Mole> {
+        return moles.value.filter { it.profileName == profileName }.map { mole ->
+            val moleHistory = history.value.filter { it.moleId == mole.id }
+            mole.copy(history = moleHistory)
+        }
+    }
+
+    override fun getMolesAtDate(profileName: String, targetDate: LocalDate): Flow<List<MoleMapItem>> {
         return moles.map { allMoles ->
             allMoles.filter { it.profileName == profileName }.map { mole ->
-                val moleHistory = history.value.filter { it.moleId == mole.id }
-                mole.copy(history = moleHistory)
+                val lastEntry = history.value.filter { it.moleId == mole.id && it.date <= targetDate }.maxByOrNull { it.date }
+                MoleMapItem(
+                    id = mole.id,
+                    x = mole.x,
+                    y = mole.y,
+                    color = mole.color,
+                    side = mole.side,
+                    historyDate = lastEntry?.date,
+                    imagePath = lastEntry?.imagePath
+                )
             }
         }
     }
 
-    override fun getMolesForMap(profileName: String, side: com.example.skinhistoryscanner.data.domain.BodySide, maxDate: String, colors: List<String>): Flow<List<com.example.skinhistoryscanner.data.domain.MoleMapSummary>> {
-        return moles.map { allMoles ->
-            allMoles.filter { it.profileName == profileName && it.side == side && it.color in colors }
-                .map { mole ->
-                    com.example.skinhistoryscanner.data.domain.MoleMapSummary(
-                        id = mole.id,
-                        profileName = mole.profileName,
-                        x = mole.x,
-                        y = mole.y,
-                        side = mole.side,
-                        color = mole.color,
-                        latestPhotoPath = history.value.filter { it.moleId == mole.id && it.date <= maxDate }.maxByOrNull { it.date }?.imagePath
-                    )
-                }
+    override fun getAvailableDates(profileName: String): Flow<List<LocalDate>> {
+        return history.map { allHistory ->
+            val profileMoleIds = moles.value.filter { it.profileName == profileName }.map { it.id }.toSet()
+            allHistory.filter { it.moleId in profileMoleIds }.map { it.date }.distinct().sortedDescending()
+        }
+    }
+
+    override fun getAvailableDatesForVariant(profileName: String, variantId: String): Flow<List<LocalDate>> {
+        return history.map { allHistory ->
+            val profileMoleIds = moles.value.filter { it.profileName == profileName && it.side == variantId }.map { it.id }.toSet()
+            allHistory.filter { it.moleId in profileMoleIds }.map { it.date }.distinct().sortedDescending()
         }
     }
 
@@ -52,12 +66,12 @@ class FakeMoleRepository : MoleRepository {
         return moles.map { allMoles -> allMoles.map { it.profileName }.distinct() }
     }
 
-    override fun getMolesCountForProfile(profileName: String): Flow<Int> {
-        return moles.map { allMoles -> allMoles.count { it.profileName == profileName } }
-    }
-
     override fun getTotalMolesCount(): Flow<Int> {
         return moles.map { it.size }
+    }
+
+    override fun getMolesCountForProfile(profileName: String): Flow<Int> {
+        return moles.map { allMoles -> allMoles.count { it.profileName == profileName } }
     }
 
     override suspend fun upsertMole(mole: Mole) {
@@ -67,7 +81,7 @@ class FakeMoleRepository : MoleRepository {
         moles.value = current
     }
 
-    override suspend fun updateMolePosition(id: String, x: Float, y: Float, side: com.example.skinhistoryscanner.data.domain.BodySide) {
+    override suspend fun updateMolePosition(id: String, x: Float, y: Float, side: String) {
         val current = moles.value.toMutableList()
         val index = current.indexOfFirst { it.id == id }
         if (index != -1) {
@@ -101,6 +115,12 @@ class FakeMoleRepository : MoleRepository {
         history.value = history.value.filter { it.moleId !in idsToDelete }
     }
 
+    override suspend fun deleteMolesByVariant(variantId: String) {
+        val idsToDelete = moles.value.filter { it.side == variantId }.map { it.id }
+        moles.value = moles.value.filter { it.side != variantId }
+        history.value = history.value.filter { it.moleId !in idsToDelete }
+    }
+
     override suspend fun renameProfile(oldName: String, newName: String) {
         moles.value = moles.value.map { 
             if (it.profileName == oldName) it.copy(profileName = newName) else it 
@@ -116,5 +136,11 @@ class FakeMoleRepository : MoleRepository {
 
     override suspend fun deleteHistoryEntry(entryId: String) {
         history.value = history.value.filter { it.id != entryId }
+    }
+
+    override suspend fun migrateMoles(oldVariantIds: List<String>, newVariantId: String) {
+        moles.value = moles.value.map {
+            if (it.side in oldVariantIds) it.copy(side = newVariantId) else it
+        }
     }
 }

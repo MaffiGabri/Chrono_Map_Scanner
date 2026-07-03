@@ -1,51 +1,50 @@
-﻿package com.example.skinhistoryscanner.utils
+package com.example.skinhistoryscanner.utils
 
+import kotlinx.coroutines.runBlocking
+import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
-import org.junit.Rule
+import org.junit.Before
 import org.junit.Test
-import org.junit.rules.TemporaryFolder
 import java.io.File
+import java.nio.file.Files
 
 class ZipUtilsTest {
 
-    @get:Rule
-    val tempFolder = TemporaryFolder()
+    private lateinit var tempDir: File
+
+    @Before
+    fun setup() {
+        tempDir = Files.createTempDirectory("ziputils_test").toFile()
+    }
+
+    @After
+    fun teardown() {
+        tempDir.deleteRecursively()
+    }
 
     @Test
-    fun testZipAndUnzip_maintainsContent() {
-        // Arrange
-        val sourceDir = tempFolder.newFolder("source")
-        val extractDir = tempFolder.newFolder("extract")
-        val zipFile = tempFolder.newFile("test_backup.zip")
+    fun `zip and unzip files correctly preserves structure and content`() = runBlocking {
+        val file1 = File(tempDir, "file1.txt").apply { writeText("Hello File 1") }
+        val file2 = File(tempDir, "file2.txt").apply { writeText("Hello File 2") }
+        val zipFile = File(tempDir, "archive.zip")
 
-        // Create mock files
-        val file1 = File(sourceDir, "test1.txt")
-        file1.writeText("Skin Check Data 1")
-        
-        val file2 = File(sourceDir, "test2.json")
-        file2.writeText("""{"profile": "Test"}""")
+        ZipUtils.zip(listOf(file1, file2), zipFile)
+        assertTrue("Zip file should be created", zipFile.exists())
+        assertTrue("Zip file should not be empty", zipFile.length() > 0)
 
-        val filesToZip = listOf(file1, file2)
+        val outputDir = File(tempDir, "output")
+        outputDir.mkdirs()
 
-        // Act - ZIP
-        ZipUtils.zip(filesToZip, zipFile)
-        assertTrue(zipFile.exists() && zipFile.length() > 0)
+        ZipUtils.unzip(zipFile, outputDir)
 
-        // Act - UNZIP
-        ZipUtils.unzip(zipFile, extractDir)
+        val unzippedFile1 = File(outputDir, "file1.txt")
+        val unzippedFile2 = File(outputDir, "file2.txt")
 
-        // Assert
-        val extractedFiles = extractDir.listFiles()?.toList() ?: emptyList()
-        assertEquals("Should extract exactly 2 files", 2, extractedFiles.size)
-        
-        val extractedFile1 = extractedFiles.find { it.name == "test1.txt" }
-        val extractedFile2 = extractedFiles.find { it.name == "test2.json" }
+        assertTrue("file1.txt should be unzipped", unzippedFile1.exists())
+        assertTrue("file2.txt should be unzipped", unzippedFile2.exists())
 
-        assertTrue(extractedFile1 != null)
-        assertEquals("Skin Check Data 1", extractedFile1?.readText())
-
-        assertTrue(extractedFile2 != null)
-        assertEquals("""{"profile": "Test"}""", extractedFile2?.readText())
+        assertEquals("Hello File 1", unzippedFile1.readText())
+        assertEquals("Hello File 2", unzippedFile2.readText())
     }
 }

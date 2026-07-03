@@ -366,6 +366,9 @@ fun BodyMapScreen(
                             PreviewSize.COLORED_DOT -> 8.dp.toPx()
                         }
                         
+                        // Performance optimization: Reuse Path object instead of allocating per mole
+                        val clipPathObj = androidx.compose.ui.graphics.Path()
+
                         for (mole in state.moles) {
                             if (mole.id != movingMoleId) {
                                 val relX = mole.x / 100f
@@ -381,7 +384,8 @@ fun BodyMapScreen(
                                         val dstSize = androidx.compose.ui.unit.IntSize((baseRadius * 2).toInt(), (baseRadius * 2).toInt())
                                         val dstOffset = androidx.compose.ui.unit.IntOffset((posX - baseRadius).toInt(), (posY - baseRadius).toInt())
                                         clipPath(
-                                            androidx.compose.ui.graphics.Path().apply {
+                                            clipPathObj.apply {
+                                                reset()
                                                 addOval(androidx.compose.ui.geometry.Rect(
                                                     left = posX - baseRadius,
                                                     top = posY - baseRadius,
