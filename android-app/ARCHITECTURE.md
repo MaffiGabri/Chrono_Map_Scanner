@@ -1,5 +1,8 @@
 # Architettura e Linee Guida di Sviluppo (Per AI Gemini)
 
+> **NOTA IMPORTANTE (Living Documentation):** Questo documento è in continua evoluzione e riflette l'effettiva implementazione (state of the art as-is) del codice, non una specifica rigida calata dall'alto. L'implementazione reale nel codice è l'UNICA "Single Source of Truth" (SSOT). Eventuali funzionalità future o sperimentali sono chiaramente etichettate come tali.
+
+
 Questo documento serve a te, AI Gemini, per mantenere il contesto architetturale di `Skin History Scanner` in sessioni future. Descrive le convenzioni, l'architettura dei dati e il design pattern adottato, in particolare riguardo alle performance richieste per gestire 1000 nei tra fronte e retro.
 
 ## 1. Pattern Architetturale e UI
@@ -46,9 +49,10 @@ L'architettura prevede la possibilità di estrarre interamente i dati dell'utent
 *   **Spatial Hashing su Griglia:** Il `BodyMapViewModel` smista proattivamente i nei in background all'interno di una griglia spaziale (es. 10x10 buckets). Quando avviene il tocco, la logica matematica localizza il secchio (bucket) intercettato ed analizza **esclusivamente i suoi vicini 3x3** (gestendo i bordi in modo perfetto).
 *   Questo abbatte la complessità di calcolo dei tap a massimo ~9 elementi valutati con pura Euclidea su Dispatchers.Default, garantendo frame lock a 60FPS.
 
-## 5. Rilevamento Automatico con Fotocamera (Piano Futuro)
-*   Questa feature non è ancora attiva, ma è predisposta l'esistenza di `AutoCameraScreen`.
-*   **Design previsto:** Sfrutterà CameraX con l'Analyzer (ImageAnalysis). Un modello ML Kit (es. object detection on-device) esaminerà i frame in tempo reale, individuando la bounding box del neo.
+## 5. Rilevamento Automatico con Fotocamera (Sperimentale)
+*   È predisposta l'esistenza di `AutoCameraScreen` che sfrutta CameraX con l'Analyzer (ImageAnalysis).
+*   **Design attuale:** Utilizza un approccio algoritmico basato sull'istogramma in scala di grigi e sul thresholding di Otsu (`AlgorithmicMoleDetector`) per analizzare un ritaglio centrale dell'immagine e scattare in presenza di forte contrasto.
+*   *Nota per il futuro:* L'implementazione di un modello ML Kit (es. object detection on-device) è considerata un obiettivo futuro non ancora integrato.
 
 ## 6. Organizzazione del Workspace
 All'esterno della cartella principale dell'app Android (`android-app/`) è presente la directory **`project_tools_and_scripts/`**.
