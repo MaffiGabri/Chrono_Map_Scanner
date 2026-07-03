@@ -11,6 +11,8 @@ import android.hardware.SensorManager
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.camera.core.*
+import androidx.annotation.OptIn
+import androidx.camera.core.ExperimentalGetImage
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.compose.foundation.Canvas
@@ -54,6 +56,7 @@ data class MoleAnalysisResult(
     val isTooClose: Boolean
 )
 
+@OptIn(ExperimentalGetImage::class)
 @Composable
 fun AutoCameraScreen(
     onPhotoTaken: (String) -> Unit,

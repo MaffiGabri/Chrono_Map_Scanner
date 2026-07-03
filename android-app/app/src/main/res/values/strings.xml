@@ -185,4 +185,16 @@
     <string name="next_photo">Foto successiva</string>
 
     <string name="body_profile_note">Nota: i punti registrati rimarranno nella loro posizione originale anche cambiando le impostazioni del corpo.</string>
+
+    <string name="share">Condividi</string>
+    <string name="share_as_pdf">Condividi come PDF</string>
+    <string name="share_as_jpeg">Condividi come JPEG</string>
+    <string name="export_all_pdf">Esporta tutti i difetti (PDF)</string>
+    <string name="generating_report">Generazione report in corso...</string>
+    <string name="error_generating_report">Errore durante la generazione del report</string>
+    <string name="report_title_mole">Report Difetto</string>
+    <string name="report_title_global">Report Globale Difetti</string>
+    <string name="report_category">Categoria:</string>
+    <string name="report_date">Data ultima modifica:</string>
+
 </resources>
