@@ -12,12 +12,12 @@ L'obiettivo di Skin History Scanner è fornire un'interfaccia intuitiva e robust
 ## 🚀 Funzionalità Principali
 
 *   **Gestione Multi-Profilo Isolato:** Crea profili differenti per mantenere le mappe dei nei separate. I sistemi di backup gestiscono cloni e profili in "sandbox" fisiche (UUID univoci), rendendo impossibile corrompere le foto originali se si modifica un backup duplicato.
-*   **Body Map Interattiva (Ultra Performante):** Posiziona i marker su un modello 3D (zoomabile e trascinabile). La mappa è ottimizzata tramite un motore di *Spatial Hashing* personalizzato, in grado di gestire senza alcun rallentamento (zero lag) oltre 1000 nei su schermo simultaneamente.
+*   **Body Map Interattiva (Ultra Performante):** Posiziona i marker su un modello 2D scalabile e interattivo (zoomabile e trascinabile). La mappa è ottimizzata tramite un motore di *Spatial Hashing* personalizzato, in grado di gestire senza alcun rallentamento (zero lag) oltre 1000 nei su schermo simultaneamente.
 *   **Architettura Sicura (Memory Leak Prevention):** Un gestore background si occupa di fare "pulizia profonda" sul dispositivo: eliminare un neo o un profilo svuota automaticamente non solo il database, ma disintegra asincronamente ogni foto associata dallo storage interno per impedire l'accumulo di file spazzatura.
 *   **Gestione Temporale Estesa:** Naviga indietro nel tempo per vedere come era la mappatura in date specifiche; le date a cui la timeline fa snap includono il primo record di un neo e ogni foto successiva.
 *   **Split View (Confronto):** Confronta visivamente la foto passata di un neo con una più recente per notare cambiamenti di forma, dimensione o colore.
 *   **Import/Export Database Avanzato:** Sistema robusto di estrazione completa che garantisce l'assenza di dati orfani in modalità sovrascrittura. I dati personali (foto e database JSON) vengono compressi in ZIP condivisibili.
-*   **Rilevamento Automatico (In Lavorazione):** Un futuro modulo intelligente per la fotocamera che rileverà in automatico la presenza di un neo e scatterà quando le condizioni ideali vengono rispettate.
+*   **Rilevamento Automatico:** Modulo sperimentale per la fotocamera che rileva in automatico la presenza di un neo utilizzando un'analisi algoritmica dei contrasti (Otsu's thresholding) e scatta quando le condizioni ideali vengono rispettate.
 
 ## 🛠️ Stack Tecnologico (Per Sviluppatori)
 *   **Linguaggio:** Kotlin (Target SDK 36)
