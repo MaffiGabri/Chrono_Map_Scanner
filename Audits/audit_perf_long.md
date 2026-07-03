@@ -165,7 +165,7 @@ Il blocco di configurazione principale definisce correttamente lo stack tecnolog
 ## 2. Red Flags & Violazioni
 
 *   **Avvio Asincrono Illegale nell'Application Class (CRITICO):**
-    *   Nel file `SkinHistoryScannerApplication.kt`, il metodo `onCreate()` invoca `dataIntegrityScanner.startScanning()`. Poiché il design attuale dello scanner (vedi Blocco 2) è un loop infinito, l'avvio globale di questa coroutine lega permanentemente cicli CPU pesanti al processo vitale dell'applicazione, causando battery drain e probabili ANR se lo scope dell'app viene terminato malamente.
+    *   Nel file `ChronoMapScannerApplication.kt`, il metodo `onCreate()` invoca `dataIntegrityScanner.startScanning()`. Poiché il design attuale dello scanner (vedi Blocco 2) è un loop infinito, l'avvio globale di questa coroutine lega permanentemente cicli CPU pesanti al processo vitale dell'applicazione, causando battery drain e probabili ANR se lo scope dell'app viene terminato malamente.
 *   **Finto Sincronismo WorkManager in `MainActivity`:**
     *   L'importazione del database blocca la UI tramite uno stato `processing` che, anziché reagire allo stato reale del `WorkManager` (`WorkInfo.State`), si affida a un `delay(1000)` fittizio nel ViewModel prima di chiudere il dialogo. Questo comporta UX ingannevole per moli di dati grandi (es. database con 1000 record storici e foto in ZIP) che richiederanno svariati secondi.
 
@@ -177,7 +177,7 @@ Il blocco di configurazione principale definisce correttamente lo stack tecnolog
 *   Aggiornare l'Activity o il layer di navigazione per osservare reattivamente i `WorkInfo` del WorkManager tramite `Flow` o `LiveData`, rimuovendo i timer fittizi.
 
 ## 5. Piano di Refactoring Step-by-Step
-1. **File: `SkinHistoryScannerApplication.kt` (Pulizia Avvio)**
+1. **File: `ChronoMapScannerApplication.kt` (Pulizia Avvio)**
     *   Rimuovere l'iniezione (`@Inject`) di `DataIntegrityScanner` e la chiamata `startScanning()`.
     *   (Opzionale) Introdurre `StrictMode.setThreadPolicy` e `VmPolicy` sotto check `BuildConfig.DEBUG` per rintracciare i memory leak e gli IO bloccanti.
 2. **File: `MainActivity.kt` & `SettingsViewModel.kt` (Osservazione Reale)**

@@ -9,11 +9,11 @@ Il blocco principale del progetto risulta solido per quanto riguarda il setup di
 
 ## 2. Red Flags
 * **Mancanza di Edge-to-Edge nativo (Violazione Regola 3):** L'app punta al `targetSdk = 36` ma la `MainActivity` non invoca `enableEdgeToEdge()` prima di `setContent`. Sulle versioni moderne di Android, la gestione dei WindowInsets e del layout full-screen è obbligatoria e il suo mancato rispetto causa rendering errato (bande nere) sui nuovi device.
-* **Avvio Diretto di Coroutine nell'Application:** Chiamare `dataIntegrityScanner.startScanning()` direttamente in `SkinHistoryScannerApplication.onCreate()` è al limite dell'accoppiamento. Fortunatamente lo scanner usa un proprio `appScope` (verificato nei blocchi successivi), ma sporca il ciclo di vita dell'Application class. È passabile, ma non elegantissimo.
+* **Avvio Diretto di Coroutine nell'Application:** Chiamare `dataIntegrityScanner.startScanning()` direttamente in `ChronoMapScannerApplication.onCreate()` è al limite dell'accoppiamento. Fortunatamente lo scanner usa un proprio `appScope` (verificato nei blocchi successivi), ma sporca il ciclo di vita dell'Application class. È passabile, ma non elegantissimo.
 
 ## 3. File Orfani e Codice Morto
-* **`MainActivity.kt`**: È letteralmente invaso da importazioni orfane e non utilizzate che degradano i tempi di KSP e la pulizia del file (es. `android.Manifest`, `android.os.Build`, `java.io.File`, `androidx.lifecycle.lifecycleScope`, `kotlinx.coroutines.launch`, `kotlinx.serialization.json.Json`, `android.net.Uri`, `com.example.skinhistoryscanner.utils.Seeder`). È presente anche un inutile commento `// Invalidate KSP cache`.
-* **`SkinHistoryScannerApplication.kt`**: Contiene un enorme e inutile blocco di testo commentato (righe 25-28) che descrive speculazioni sul funzionamento del `WorkManagerInitializer`. Codice totalmente morto.
+* **`MainActivity.kt`**: È letteralmente invaso da importazioni orfane e non utilizzate che degradano i tempi di KSP e la pulizia del file (es. `android.Manifest`, `android.os.Build`, `java.io.File`, `androidx.lifecycle.lifecycleScope`, `kotlinx.coroutines.launch`, `kotlinx.serialization.json.Json`, `android.net.Uri`, `com.example.chronomapscanner.utils.Seeder`). È presente anche un inutile commento `// Invalidate KSP cache`.
+* **`ChronoMapScannerApplication.kt`**: Contiene un enorme e inutile blocco di testo commentato (righe 25-28) che descrive speculazioni sul funzionamento del `WorkManagerInitializer`. Codice totalmente morto.
 
 ## 4. Modernizzazione
 * **Edge-to-Edge**: Adozione imperativa di `enableEdgeToEdge()` in `MainActivity` per adeguare la UI agli standard SDK 35+.
@@ -25,7 +25,7 @@ Il blocco principale del progetto risulta solido per quanto riguarda il setup di
    * Invocare `enableEdgeToEdge()` come prima istruzione in `onCreate()` prima di `setContent`.
    * Eliminare tutte le importazioni orfane non utilizzate.
    * Rimuovere il commento dead-code `// Invalidate KSP cache`.
-2. **Modifica `SkinHistoryScannerApplication.kt`**:
+2. **Modifica `ChronoMapScannerApplication.kt`**:
    * Cancellare il lungo e inutile commento multi-riga sul `WorkManagerInitializer` nel metodo `onCreate()`.
 3. **Modifica `architecture.md`**:
    * Aggiornare la **Sezione 5** eliminando il tag "(Piano Futuro)" e la frase "Questa feature non è ancora attiva", allineando il documento alla reale esistenza e funzionamento dell'algoritmo visivo implementato.

@@ -1,4 +1,4 @@
-# Audit Master Collection: Nei Map
+# Audit Master Collection: Chrono Map Scanner
 
 Questo documento raccoglie tutti i report, le specifiche di refactoring dei singoli blocchi e l'analisi Clean Code in un'unica visione d'insieme.
 
@@ -35,7 +35,7 @@ Il Data Layer tenta di astrarre correttamente il filesystem dal database delegan
     *   Cancellare interamente il file `DataIntegrityScanner.kt`.
     *   Spostare e ottimizzare la logica di cancellazione orfani e generazione di Thumbnail (che ora previene il caricamento ad alto livello di tutta la cache in memoria usando query DAO selettive di stringhe) in un nuovo Worker Hilt `DataIntegrityWorker.kt`.
 5.  **Aggiornamento Application / DI:**
-    *   Rimuovere le instanze di inject in `SkinHistoryScannerApplication` che avviavano il `startScanning()`. Programmare il Job tramite `WorkManager` al boot o all'apertura dell'app.
+    *   Rimuovere le instanze di inject in `ChronoMapScannerApplication` che avviavano il `startScanning()`. Programmare il Job tramite `WorkManager` al boot o all'apertura dell'app.
 
 ---
 
@@ -48,7 +48,7 @@ Il blocco responsabile dei processi asincroni (Workers) e dell'inizializzazione 
 *   **State Leak & UI Lock (ImportDatabaseWorker):** Il worker modifica manualmente `settingsRepository.isImporting.value = true` all'inizio e `false` alla fine. Se Android killa il worker per scarsità di risorse, la variabile resterà `true` per sempre, e `MainActivity` mostrerà un overlay di caricamento bloccando l'app definitivamente per l'utente. I worker non devono mai mutare lo stato reattivo UI, ma l'app deve osservare nativamente il `WorkInfo.State` dal WorkManager.
 *   **Transazione di Database Estrema (ANR Risk):** In `ImportDatabaseWorker`, il blocco `database.withTransaction { ... }` avvolge non solo gli inserimenti SQL, ma anche pesanti operazioni di lettura, rinominazione e scrittura dei file immagine (`backupRepository.importImageToInternalStorage`) per migliaia di elementi iterati. Un lock di database prolungato su I/O di rete o disco è una garanzia di "Database is Locked" e crash (ANR).
 *   **Violazione Dependency Injection (Hardcoded WorkManager):** In `ReminderManager.kt` si istanzia `WorkManager.getInstance(context)` staticamente in un `object`, bypassando totalmente Hilt. Anche `ReminderWorker` manca dell'annotazione `@HiltWorker`. Questo degrada la testabilità e l'omogeneità architetturale.
-*   **Violazione Architetturale Boot (Application Class):** La `SkinHistoryScannerApplication` esegue nel metodo `onCreate()` la funzione `startScanning()`, lanciando l'esoso e problematico loop infinito di coroutine analizzato nel Blocco 1, paralizzando il MainThread startup finché non finisce il Dispatch.
+*   **Violazione Architetturale Boot (Application Class):** La `ChronoMapScannerApplication` esegue nel metodo `onCreate()` la funzione `startScanning()`, lanciando l'esoso e problematico loop infinito di coroutine analizzato nel Blocco 1, paralizzando il MainThread startup finché non finisce il Dispatch.
 
 ## 3. File Orfani e Codice Morto
 *   `utils/Seeder.kt`: Script hardcoded per iniettare finti nei. Non deve esistere nel target di build Release di produzione.
@@ -60,7 +60,7 @@ Il blocco responsabile dei processi asincroni (Workers) e dell'inizializzazione 
 *   `ReminderManager.kt` -> **Hilt Injectable Singleton:** Trasformare l'`object` in una `class ReminderManager @Inject constructor(private val workManager: WorkManager)` e usare Hilt per risolverla.
 
 ## 5. Piano di Refactoring Step-by-Step
-1.  **Application Class (`SkinHistoryScannerApplication.kt`):**
+1.  **Application Class (`ChronoMapScannerApplication.kt`):**
     *   Rimuovere la chiamata a `dataIntegrityScanner.startScanning()`. Sostituirla con la schedulazione persistente (`enqueueUniquePeriodicWork`) del nuovo `DataIntegrityWorker` che creeremo nel Blocco 1.
 2.  **Worker Architecture (`ImportDatabaseWorker.kt`):**
     *   Estrarre il loop di copia immagini `importImageToInternalStorage` *fuori* dal blocco `withTransaction`.
@@ -126,7 +126,7 @@ Il livello dell'interfaccia utente costruita con Jetpack Compose soffre di gravi
 * Nessun file è orfano, ma l'implementazione in `MainActivity.kt` è scheletrica e carente.
 
 ## 4. Modernizzazione
-*   **Edge-to-Edge in MainActivity:** Aggiungere `enableEdgeToEdge()` prima di `setContent` in `MainActivity.kt`. Assicurarsi che lo `Scaffold` o il genitore `Surface` in `SkinHistoryScannerApp` distribuiscano correttamente i pad tramite Modifier e Insets.
+*   **Edge-to-Edge in MainActivity:** Aggiungere `enableEdgeToEdge()` prima di `setContent` in `MainActivity.kt`. Assicurarsi che lo `Scaffold` o il genitore `Surface` in `ChronoMapScannerApp` distribuiscano correttamente i pad tramite Modifier e Insets.
 *   **Culling Architetturale (BodyMapScreen):** Implementare un sistema di rendering "Level of Detail" (LOD). Se la scala del Canvas non supera una certa soglia e l'app deve mostrare 1000 nei, questi verranno disegnati *esclusivamente* dal `Canvas` con primitive (`drawCircle`, `drawImage`). I `MoleMarker` (che sono nodi Compose a pieno titolo) esisteranno solo per i pochi nei visibili o selezionati localmente, aggirando il limite del compose layout traversal.
 *   **Deferring State Reads (Canvas Animations):** Correggere `AutoCameraScreen` leggendo i float d'animazione direttamente dentro la lambda del `Canvas` (o usando classi deleganti/Lambda), affinché l'invalidation loop coinvolga solo il blocco di *Draw* e non l'intero albero di composizione.
 
@@ -216,10 +216,10 @@ Il `BodyMapScreen` e altri composable sono farciti di controlli `if (variant.isB
 
 ---
 
-# Master Audit Clean: Analisi Architetturale Globale "Nei Map"
+# Master Audit Clean: Analisi Architetturale Globale "Chrono Map Scanner"
 
 ## Executive Summary
-L'applicazione "Nei Map" maschera profonde fragilità strutturali dietro l'adozione di un moderno tech stack (Compose, Coroutines, Room). La severa ispezione su tutto l'albero del codice ha evidenziato che l'attuale architettura **non scalerebbe in alcun modo al requisito critico di 1000+ elementi con storico multi-foto**. 
+L'applicazione "Chrono Map Scanner" maschera profonde fragilità strutturali dietro l'adozione di un moderno tech stack (Compose, Coroutines, Room). La severa ispezione su tutto l'albero del codice ha evidenziato che l'attuale architettura **non scalerebbe in alcun modo al requisito critico di 1000+ elementi con storico multi-foto**.
 Esiste un diffuso problema di "Over-computation & Over-rendering": le pipeline del database restituiscono prodotti cartesiani enormi (`@Relation`), i ViewModel manipolano i flussi clonando oggetti in RAM in mappe temporali gigantesche (`cachedTimelineFlow`) e il motore grafico prova a istanziare contemporaneamente migliaia di nodi interattivi Compose per i marker, strozzando la GPU durante lo zoom.
 **Verdetto:** Il refactoring deve sradicare l'accoppiamento tra strati e invertire la logica di calcolo: elaborazioni asincrone su richiesta e pre-filtrate a monte (O(1)), e rendering passivo basato sul Level of Detail (LOD).
 

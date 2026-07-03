@@ -1,7 +1,7 @@
-# Master Audit Clean: Analisi Architetturale Globale "Nei Map"
+# Master Audit Clean: Analisi Architetturale Globale "Chrono Map Scanner"
 
 ## Executive Summary
-L'applicazione "Nei Map" maschera profonde fragilità strutturali dietro l'adozione di un moderno tech stack (Compose, Coroutines, Room). La severa ispezione su tutto l'albero del codice ha evidenziato che l'attuale architettura **non scalerebbe in alcun modo al requisito critico di 1000+ elementi con storico multi-foto**. 
+L'applicazione "Chrono Map Scanner" maschera profonde fragilità strutturali dietro l'adozione di un moderno tech stack (Compose, Coroutines, Room). La severa ispezione su tutto l'albero del codice ha evidenziato che l'attuale architettura **non scalerebbe in alcun modo al requisito critico di 1000+ elementi con storico multi-foto**.
 Esiste un diffuso problema di "Over-computation & Over-rendering": le pipeline del database restituiscono prodotti cartesiani enormi (`@Relation`), i ViewModel manipolano i flussi clonando oggetti in RAM in mappe temporali gigantesche (`cachedTimelineFlow`) e il motore grafico prova a istanziare contemporaneamente migliaia di nodi interattivi Compose per i marker, strozzando la GPU durante lo zoom.
 **Verdetto:** Il refactoring deve sradicare l'accoppiamento tra strati e invertire la logica di calcolo: elaborazioni asincrone su richiesta e pre-filtrate a monte (O(1)), e rendering passivo basato sul Level of Detail (LOD).
 

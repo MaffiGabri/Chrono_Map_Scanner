@@ -1,0 +1,42 @@
+﻿package com.example.chronomapscanner.ui.viewmodels
+
+import com.example.chronomapscanner.data.domain.BodyType
+import com.example.chronomapscanner.data.domain.ColorSetting
+import com.example.chronomapscanner.data.domain.Gender
+import com.example.chronomapscanner.data.domain.ReminderUnit
+import com.example.chronomapscanner.data.local.datastore.SettingsRepository
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.map
+
+class FakeSettingsRepository {
+    val currentProfile = MutableStateFlow("Default")
+    val profileImage = MutableStateFlow<String?>(null)
+    val gender = MutableStateFlow(Gender.MALE)
+    val bodyType = MutableStateFlow(BodyType.SLIM)
+    val remindersEnabled = MutableStateFlow(false)
+    val remindersValue = MutableStateFlow(1)
+    val remindersUnit = MutableStateFlow(ReminderUnit.MONTHS)
+    val lastReminderDate = MutableStateFlow<String?>(null)
+    
+    private val _colorSettings = MutableStateFlow(
+        listOf(
+            ColorSetting("#ef4444", "Allarme / Controllo urgente", true),
+            ColorSetting("#f97316", "Sospetto / In evoluzione", true)
+        )
+    )
+    val colorSettings: Flow<List<ColorSetting>> = _colorSettings
+
+    suspend fun setCurrentProfile(profile: String) { currentProfile.value = profile }
+    suspend fun setProfileImage(path: String?) { profileImage.value = path }
+    suspend fun updateBodySettings(g: Gender, b: BodyType) { gender.value = g; bodyType.value = b }
+    suspend fun updateReminderSettings(e: Boolean, v: Int, u: ReminderUnit, l: String? = null) {
+        remindersEnabled.value = e; remindersValue.value = v; remindersUnit.value = u
+        if (l != null) lastReminderDate.value = l
+    }
+    suspend fun toggleColorVisibility(hex: String) {
+        _colorSettings.value = _colorSettings.value.map { 
+            if (it.hex == hex) it.copy(visible = !it.visible) else it 
+        }
+    }
+}

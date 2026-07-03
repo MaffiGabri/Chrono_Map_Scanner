@@ -1,10 +1,10 @@
-# Master Audit Base: Skin History Scanner
+# Master Audit Base: Chrono Map Scanner
 
 Questo documento rappresenta la sintesi globale e consolidata dell'Audit Architetturale Totale (Blocchi 1-6). Fornisce una panoramica esecutiva dello stato di salute dell'applicazione e definisce la Roadmap Definitiva con tutti i dettagli tecnici step-by-step per raggiungere la stabilità estrema con carichi di 1000+ elementi a 60fps.
 
 ## 1. Executive Summary
 
-L'attuale architettura del progetto "Skin History Scanner" è funzionalmente valida per dataset piccoli (50-100 elementi), ma **architetturalmente insostenibile per il target di 1000+ elementi storicizzati**. Se rilasciata in questo stato, l'app subirebbe inevitabilmente **OutOfMemoryError (OOM) immediati**, vistosi cali di framerate sotto i 15fps durante lo scrolling/dragging e un severo battery drain in background. La causa principale risiede in un eccesso di affidamento a strati di astrazione (come Room `@Relation` reattive e Coil `AsyncImage` dinamici) senza pre-calcolo e ingegnerizzazione adatta alle moli massive.
+L'attuale architettura del progetto "Chrono Map Scanner" è funzionalmente valida per dataset piccoli (50-100 elementi), ma **architetturalmente insostenibile per il target di 1000+ elementi storicizzati**. Se rilasciata in questo stato, l'app subirebbe inevitabilmente **OutOfMemoryError (OOM) immediati**, vistosi cali di framerate sotto i 15fps durante lo scrolling/dragging e un severo battery drain in background. La causa principale risiede in un eccesso di affidamento a strati di astrazione (come Room `@Relation` reattive e Coil `AsyncImage` dinamici) senza pre-calcolo e ingegnerizzazione adatta alle moli massive.
 
 ## 2. Top 5 Red Flags Globali (Criticità Estreme)
 
@@ -42,7 +42,7 @@ Di seguito il consolidamento dettagliato, passo dopo passo, di tutte le azioni t
 ### Fase 2: Background, Lifecycle & Setup (Risparmio Energetico)
 - **`DataIntegrityScanner.kt`:** Demolire totalmente il file e il suo loop `while(isActive)`.
 - **`DataIntegrityWorker.kt` (Nuovo):** Creare un `@HiltWorker` asincrono (`PeriodicWorkRequest`) per il cleanup e la verifica integrità delegato al WorkManager.
-- **`SkinHistoryScannerApplication.kt`:** Rimuovere il `startScanning()`. Aggiungere inizializzazione di `StrictMode.setThreadPolicy` e `VmPolicy` (sotto `BuildConfig.DEBUG`) per smascherare leak su Main Thread.
+- **`ChronoMapScannerApplication.kt`:** Rimuovere il `startScanning()`. Aggiungere inizializzazione di `StrictMode.setThreadPolicy` e `VmPolicy` (sotto `BuildConfig.DEBUG`) per smascherare leak su Main Thread.
 - **`MainActivity.kt` & `SettingsViewModel.kt`:** Sostituire il finto `delay(1000)` di importazione db. Connettere la modale alla reale emissione dei `WorkInfo` via WorkManager.
 - **`FileRepository.kt` (Bitmap Utils):** Estrarre e centralizzare la complessa manipolazione Bitmap (inSampleSize, matrix rotation EXIF) in un metodo unificato a disposizione sia per il caricamento che per la manutenzione periodica.
 

@@ -100,7 +100,7 @@ class MoleTunerApp(ctk.CTk):
         self.gallery_frame.grid(row=1, column=0, columnspan=3, sticky="nsew", padx=10, pady=10)
         
         import os, glob
-        folder = r"C:\Users\Maffione Gabriele\Progetti e lavori\Programmazione\Nei Map\Nei esempio"
+        folder = r"C:\Users\Maffione Gabriele\Progetti e lavori\Programmazione\Chrono Map Scanner\Nei esempio"
         images = glob.glob(os.path.join(folder, "*.*"))
         
         col, row = 0, 0

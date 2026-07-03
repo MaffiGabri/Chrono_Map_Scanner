@@ -1,4 +1,4 @@
-# Ultimate Refactoring Blueprint: "Nei Map" (Target SDK 35, 1000+ Scalability)
+# Ultimate Refactoring Blueprint: "Chrono Map Scanner" (Target SDK 35, 1000+ Scalability)
 
 Questo documento rappresenta la sintesi definitiva e il piano di attacco architetturale derivato dall'analisi incrociata dei tre report di audit (Base, Clean, Perf). L'obiettivo primario è garantire il mantenimento dei 60fps e la stabilità della memoria (no OOM) con carichi estremi (>1000 elementi).
 
@@ -42,7 +42,7 @@ Per proteggere il budget di performance (16ms/frame) e concentrarci sulla scalab
 Questo è l'ordine esatto e inalterabile in cui le modifiche dovranno essere implementate. Le emergenze architetturali (crash e battery drain) vengono prima della pulizia del codice.
 
 ### FASE 1: Estirpazione dei Memory Leak e Battery Drain (Core Data)
-1.  **Disintegrare `DataIntegrityScanner`:** Rimuovere il Singleton globale e la sua invocazione in `SkinHistoryScannerApplication.kt`. Trasformarlo in un `@HiltWorker class DataIntegrityWorker` da schedulare periodicamente.
+1.  **Disintegrare `DataIntegrityScanner`:** Rimuovere il Singleton globale e la sua invocazione in `ChronoMapScannerApplication.kt`. Trasformarlo in un `@HiltWorker class DataIntegrityWorker` da schedulare periodicamente.
 2.  **Risolvere Prodotto Cartesiano Room:** In `MoleDao.kt`, riscrivere la `@Query` `getFlatMolesWithHistory` usando una subquery di raggruppamento per prendere solo l'ultima data, restituendo esattamente 1 record per neo.
 3.  **Ottimizzare DAO Whitelist:** Creare in `MoleDao.kt` la query `@Query("SELECT imagePath FROM history_entries WHERE imagePath IS NOT NULL")` per alimentare il Worker di pulizia senza allocare entità complesse.
 4.  **Codifica Binaria Date:** Modificare `Converters.kt` per trasformare il DB da `String` ISO8601 a interi nativi `Long` (Epoch Days). *Richiede Migration Room.*

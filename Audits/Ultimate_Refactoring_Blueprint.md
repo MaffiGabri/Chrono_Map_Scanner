@@ -1,4 +1,4 @@
-# Ultimate Refactoring Blueprint: Nei Map
+# Ultimate Refactoring Blueprint: Chrono Map Scanner
 
 Questo documento contiene il piano di refactoring definitivo e unificato per garantire estrema scalabilità (1000+ punti), mantenimento dei 60fps e stabilità della memoria.
 

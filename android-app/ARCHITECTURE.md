@@ -1,6 +1,6 @@
 # Architettura e Linee Guida di Sviluppo (Per AI Gemini)
 
-Questo documento serve a te, AI Gemini, per mantenere il contesto architetturale di `Skin History Scanner` in sessioni future. Descrive le convenzioni, l'architettura dei dati e il design pattern adottato, in particolare riguardo alle performance richieste per gestire 1000 nei tra fronte e retro.
+Questo documento serve a te, AI Gemini, per mantenere il contesto architetturale di `Chrono Map Scanner` in sessioni future. Descrive le convenzioni, l'architettura dei dati e il design pattern adottato, in particolare riguardo alle performance richieste per gestire 1000 nei tra fronte e retro.
 
 ## 1. Pattern Architetturale e UI
 L'app utilizza un pattern **MVI (Model-View-Intent) ibrido con MVVM**:

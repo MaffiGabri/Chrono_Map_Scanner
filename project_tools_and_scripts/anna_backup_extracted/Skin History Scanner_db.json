@@ -1,6 +1,6 @@
 {
     "profileName": "anna",
-    "profileImage": "/data/user/0/com.example.skinhistoryscanner/files/edited_d8c898e2-5f60-4ca2-8adb-cd873f68726e.jpg",
+    "profileImage": "/data/user/0/com.example.chronomapscanner/files/edited_d8c898e2-5f60-4ca2-8adb-cd873f68726e.jpg",
     "settings": {
         "gender": "FEMALE",
         "bodyType": "OVERWEIGHT"
@@ -45,14 +45,14 @@
                     "id": "db928513-908b-4df2-bafe-503251bcdd47",
                     "moleId": "e57d7ead-3e24-4776-81a9-f8f36fe7f4f5",
                     "date": "2026-06-18",
-                    "imagePath": "/data/user/0/com.example.skinhistoryscanner/files/edited_e9e14ec3-f5eb-42cd-930d-8f788dbbabec.jpg",
+                    "imagePath": "/data/user/0/com.example.chronomapscanner/files/edited_e9e14ec3-f5eb-42cd-930d-8f788dbbabec.jpg",
                     "notes": ""
                 },
                 {
                     "id": "18adb677-6a36-451b-8dbf-b2fa2896cefa",
                     "moleId": "e57d7ead-3e24-4776-81a9-f8f36fe7f4f5",
                     "date": "2026-06-04",
-                    "imagePath": "/data/user/0/com.example.skinhistoryscanner/files/edited_1e891f85-2597-457a-847a-d4bcbe44a058.jpg",
+                    "imagePath": "/data/user/0/com.example.chronomapscanner/files/edited_1e891f85-2597-457a-847a-d4bcbe44a058.jpg",
                     "notes": ""
                 }
             ]
@@ -69,7 +69,7 @@
                     "id": "d564d7a0-4bf4-46de-bc7f-5e84ba480c4c",
                     "moleId": "38e25829-17b8-4a2c-8178-362f7f0b6b02",
                     "date": "2026-06-18",
-                    "imagePath": "/data/user/0/com.example.skinhistoryscanner/files/edited_67954003-8cba-400f-a832-68f6ad5d4b67.jpg",
+                    "imagePath": "/data/user/0/com.example.chronomapscanner/files/edited_67954003-8cba-400f-a832-68f6ad5d4b67.jpg",
                     "notes": ""
                 },
                 {

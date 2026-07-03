@@ -1,4 +1,4 @@
-package com.example.neimap
+package com.example.chronomapscanner
 
 import android.graphics.Rect
 import android.util.Log

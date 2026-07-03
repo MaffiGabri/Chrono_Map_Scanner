@@ -1,4 +1,4 @@
-# Master Audit Base: Skin History Scanner
+# Master Audit Base: Chrono Map Scanner
 
 ## 1. Executive Summary
 L'app possiede una solida architettura di base (MVI Ibrido, Coroutines, Room, KSP, Hilt), concepita per gestire flussi reattivi complessi e mantenere un rigido decoupling. L'implementazione dello *Spatial Hashing* dinamico in `BodyMapViewModel` dimostra che le fondamenta sono pronte per calcoli complessi.
@@ -40,7 +40,7 @@ Questa è la sequenza esatta temporale, file per file, con la combinazione di tu
 1. **`MainActivity.kt`**: 
    * Aggiungere `androidx.activity.enableEdgeToEdge`. Invocare `enableEdgeToEdge()` prima di `setContent` per supportare il windowing SDK 35+.
    * Rimuovere import orfani e commenti dead-code (`// Invalidate KSP cache`).
-2. **`SkinHistoryScannerApplication.kt`**: 
+2. **`ChronoMapScannerApplication.kt`**:
    * Rimuovere i commenti inutilizzati su `WorkManagerInitializer`.
 3. **`MoleDao.kt`**: 
    * Aggiungere una query sincrona per la cancellazione: `@Transaction @Query("SELECT * FROM moles WHERE id = :moleId") suspend fun getMoleByIdWithHistorySync(moleId: String): MoleWithHistory?`

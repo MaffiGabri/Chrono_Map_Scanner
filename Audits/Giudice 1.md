@@ -1,4 +1,4 @@
-# Ultimate Refactoring Blueprint: Nei Map (SDK 36)
+# Ultimate Refactoring Blueprint: Chrono Map Scanner (SDK 36)
 
 > **Redatto da:** Chief Android Architect & Staff Engineer
 > **Obiettivo:** Scaling estremo (1000+ punti immagine), 60fps solidi, zero OOM, e aderenza rigorosa a `ARCHITECTURE.md`.

@@ -126,7 +126,7 @@
     <string name="notification_channel_desc">Channel for periodic mole check reminders</string>
     <string name="notification_title">It\'s time for a check-up!</string>
     <string name="notification_body">Update your moles\' photos to monitor their evolution.</string>
-    <string name="calendar_event_title">Skin History Scanner: Mole Check-up</string>
+    <string name="calendar_event_title">Chrono Map Scanner: Mole Check-up</string>
     <string name="calendar_event_desc">It\'s time to update your moles\' photos to monitor their evolution.</string>
     <string name="test_notification">Test Push Notification</string>
 

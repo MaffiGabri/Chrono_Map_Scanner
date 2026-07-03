@@ -1,5 +1,5 @@
 # 🏗️ Blueprint di Refactoring Unificato
-## Nei Map — Piano d'Azione Completo
+## Chrono Map Scanner — Piano d'Azione Completo
 
 **Audit completato:** 2026-06-28  
 **File analizzati:** ~50 (esclusi autogenerati e binari)  

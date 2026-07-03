@@ -14,11 +14,11 @@
 }
 
 # Keep all @Serializable data classes in our data package
--keep class com.example.skinhistoryscanner.data.** { *; }
--keepclassmembers class com.example.skinhistoryscanner.data.** {
+-keep class com.example.chronomapscanner.data.** { *; }
+-keepclassmembers class com.example.chronomapscanner.data.** {
     *** Companion;
 }
--keepclasseswithmembers class com.example.skinhistoryscanner.data.** {
+-keepclasseswithmembers class com.example.chronomapscanner.data.** {
     kotlinx.serialization.KSerializer serializer(...);
 }
 
