@@ -111,6 +111,7 @@
     <string name="database_desc">Manage your data. All moles and history are saved locally on the device.</string>
     <string name="active_profile">Active Profile: %s</string>
     <string name="profiles_mgmt_desc">Select a profile to switch database or delete an existing one.</string>
+    <string name="profiles_empty_deletion_warning">Empty profiles (without moles) will be automatically deleted on exit or profile switch.</string>
     <string name="create_new_profile">Create New Profile</string>
     <string name="delete_profile_title">Delete profile</string>
     <string name="delete_profile_confirm">Are you sure you want to delete the profile \'%s\'? All associated moles and photos will be permanently lost.</string>
@@ -173,4 +174,27 @@
     <string name="next_photo">Next photo</string>
 
     <string name="body_profile_note">Note: registered points will remain in their original positions even when changing body settings.</string>
+
+    <string name="share">Share</string>
+    <string name="share_as_pdf">Share as PDF</string>
+    <string name="share_as_jpeg">Share as JPEG</string>
+    <string name="export_all_pdf">Export all moles (PDF)</string>
+    <string name="generating_report">Generating report...</string>
+    <string name="error_generating_report">Error generating report</string>
+    <string name="report_title_mole">Mole Report</string>
+    <string name="report_title_global">Global Moles Report</string>
+    <string name="report_category">Category:</string>
+    <string name="report_date">Last modified date:</string>
+
+
+    <string name="settings_title_rapid_modes">Interface &amp; Quick Actions</string>
+    <string name="rapid_modes_subtitle">Customize UI and shortcuts</string>
+    <string name="rapid_modes_desc">Adjust how the interface reacts to your actions to speed up your workflow.</string>
+    <string name="keep_legend_visible">Keep legend always visible</string>
+    <string name="rapid_insertion_mode">Rapid Insertion Mode</string>
+    <string name="rapid_insertion_mode_desc">Automatically open the camera after adding a new mole</string>
+    <string name="rapid_update_mode">Rapid Update Mode</string>
+    <string name="rapid_update_mode_desc">Directly open the camera when tapping an existing mole</string>
+    <string name="show_zoom_button">Show Zoom Button</string>
+    <string name="show_zoom_button_desc">Display a button to manually toggle body map zoom</string>
 </resources>
