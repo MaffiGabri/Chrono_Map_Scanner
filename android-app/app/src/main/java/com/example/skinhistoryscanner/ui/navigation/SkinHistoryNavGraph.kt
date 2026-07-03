@@ -31,6 +31,11 @@ fun SkinHistoryNavGraph(
 
     Box(modifier = modifier.fillMaxSize()) {
         NavHost(navController = navController, startDestination = BodyMapRoute) {
+            composable<BodyMap3DRoute> {
+                com.example.skinhistoryscanner.ui.BodyMap3DScreen(
+                    onBack = { navController.popBackStack() }
+                )
+            }
             
             composable<BodyMapRoute> { backStackEntry ->
                 val bodyMapViewModel: BodyMapViewModel = hiltViewModel()

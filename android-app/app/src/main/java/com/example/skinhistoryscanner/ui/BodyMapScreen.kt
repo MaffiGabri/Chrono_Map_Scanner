@@ -72,7 +72,8 @@ fun BodyMapScreen(
     onFindMoleAt: suspend (Float, Float, Float, Float, Float) -> String?,
     onSnapMoleAt: suspend (Float, Float, Float, Float, Float) -> Pair<Float, Float>,
     onOpenSettings: () -> Unit,
-    getThumbnail: (String) -> androidx.compose.ui.graphics.ImageBitmap? = { null }
+    getThumbnail: (String) -> androidx.compose.ui.graphics.ImageBitmap? = { null },
+    onNavigateTo3D: () -> Unit = {}
 ) {
     val haptic = LocalHapticFeedback.current
     val density = LocalDensity.current
@@ -202,6 +203,14 @@ fun BodyMapScreen(
                     ) {
                         Icon(Icons.Default.Search, contentDescription = stringResource(R.string.show_zoom_button))
                     }
+                }
+
+                FloatingActionButton(
+                    onClick = onNavigateTo3D,
+                    containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+                    modifier = Modifier.padding(bottom = 16.dp).size(48.dp)
+                ) {
+                    Icon(Icons.Default.ViewInAr, contentDescription = "3D View")
                 }
 
                 FloatingActionButton(

@@ -5,6 +5,9 @@ import kotlinx.serialization.Serializable
 @Serializable
 object BodyMapRoute
 
+@kotlinx.serialization.Serializable
+object BodyMap3DRoute
+
 @Serializable
 object SettingsRoute
 

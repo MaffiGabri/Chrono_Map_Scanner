@@ -1,4 +1,6 @@
 [versions]
+sceneview = "2.3.0"
+filament = "1.54.0"
 androidGradlePlugin = "8.7.2"
 androidxCore = "1.15.0"
 androidxLifecycle = "2.8.7"
@@ -23,6 +25,8 @@ datastore = "1.1.1"
 hiltNavigationCompose = "1.2.0"
 
 [libraries]
+sceneview = { module = "io.github.sceneview:sceneview", version.ref = "sceneview" }
+sceneview-compose = { module = "io.github.sceneview:arsceneview", version.ref = "sceneview" }
 androidx-core-ktx = { module = "androidx.core:core-ktx", version.ref = "androidxCore" }
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidxActivity" }
 androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "androidxComposeBom" }

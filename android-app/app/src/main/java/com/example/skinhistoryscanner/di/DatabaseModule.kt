@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import com.example.skinhistoryscanner.data.local.room.AppDatabaseRoom
 import com.example.skinhistoryscanner.data.local.room.MoleDao
+import com.example.skinhistoryscanner.data.local.room.Mole3DDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -99,6 +100,38 @@ object DatabaseModule {
         }
     }
 
+    private val MIGRATION_5_6 = object : Migration(5, 6) {
+        override fun migrate(db: SupportSQLiteDatabase) {
+            db.execSQL("""
+                CREATE TABLE IF NOT EXISTS `moles_3d` (
+                    `id` TEXT NOT NULL,
+                    `profileName` TEXT NOT NULL,
+                    `x` REAL NOT NULL,
+                    `y` REAL NOT NULL,
+                    `z` REAL NOT NULL,
+                    `modelId` TEXT NOT NULL,
+                    `color` TEXT NOT NULL,
+                    PRIMARY KEY(`id`)
+                )
+            """)
+            db.execSQL("CREATE INDEX IF NOT EXISTS `idx_moles_3d_profile_model` ON `moles_3d` (`profileName`, `modelId`)")
+            db.execSQL("CREATE INDEX IF NOT EXISTS `idx_moles_3d_color` ON `moles_3d` (`color`)")
+            db.execSQL("""
+                CREATE TABLE IF NOT EXISTS `history_entries_3d` (
+                    `id` TEXT NOT NULL,
+                    `mole_3d_id` TEXT NOT NULL,
+                    `date` INTEGER NOT NULL,
+                    `imagePath` TEXT,
+                    `notes` TEXT,
+                    PRIMARY KEY(`id`),
+                    FOREIGN KEY(`mole_3d_id`) REFERENCES `moles_3d`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE
+                )
+            """)
+            db.execSQL("CREATE INDEX IF NOT EXISTS `index_history_entries_3d_mole_id` ON `history_entries_3d` (`mole_3d_id`)")
+            db.execSQL("CREATE INDEX IF NOT EXISTS `idx_history_3d_date` ON `history_entries_3d` (`date`)")
+        }
+    }
+
     private val MIGRATION_4_5 = object : Migration(4, 5) {
         override fun migrate(db: SupportSQLiteDatabase) {
             // Migrate history_entries date from TEXT (ISO8601) to INTEGER (Epoch Days)
@@ -154,7 +187,7 @@ object DatabaseModule {
             AppDatabaseRoom::class.java,
             "Skin History Scanner_db"
         )
-        .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5)
+        .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6)
         .build()
     }
 
@@ -166,5 +199,10 @@ object DatabaseModule {
     @Provides
     fun provideBackgroundDao(database: AppDatabaseRoom): com.example.skinhistoryscanner.data.local.room.BackgroundDao {
         return database.backgroundDao()
+    }
+
+    @Provides
+    fun provideMole3DDao(database: AppDatabaseRoom): Mole3DDao {
+        return database.mole3DDao()
     }
 }

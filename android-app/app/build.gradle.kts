@@ -144,4 +144,8 @@ dependencies {
 
   // Reorderable list
   implementation("sh.calvin.reorderable:reorderable:2.3.2")
+
+  // Sceneview
+  implementation(libs.sceneview)
+  implementation(libs.sceneview.compose)
 }
