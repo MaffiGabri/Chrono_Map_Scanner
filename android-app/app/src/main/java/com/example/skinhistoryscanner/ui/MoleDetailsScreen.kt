@@ -161,7 +161,7 @@ fun MoleDetailsScreen(
                     editingEntry = null
                     showPhotoMenu = true 
                 },
-                icon = { Icon(Icons.Default.AddAPhoto, null) },
+                icon = { Icon(Icons.Default.AddAPhoto, contentDescription = stringResource(R.string.new_photo)) },
                 text = { Text(stringResource(R.string.new_photo)) },
                 containerColor = MaterialTheme.colorScheme.primary,
                 contentColor = MaterialTheme.colorScheme.onPrimary
@@ -313,7 +313,7 @@ fun MoleDetailsScreen(
                     Spacer(Modifier.height(16.dp))
                     ListItem(
                         headlineContent = { Text(stringResource(R.string.take_photo)) },
-                        leadingContent = { Icon(Icons.Default.CameraAlt, null) },
+                        leadingContent = { Icon(Icons.Default.CameraAlt, contentDescription = stringResource(R.string.take_photo)) },
                         modifier = Modifier.clickable { 
                             showPhotoMenu = false
                             onAddPhoto(editingEntry?.id) 
@@ -321,7 +321,7 @@ fun MoleDetailsScreen(
                     )
                     ListItem(
                         headlineContent = { Text(stringResource(R.string.choose_gallery)) },
-                        leadingContent = { Icon(Icons.Default.PhotoLibrary, null) },
+                        leadingContent = { Icon(Icons.Default.PhotoLibrary, contentDescription = stringResource(R.string.choose_gallery)) },
                         modifier = Modifier.clickable { 
                             showPhotoMenu = false
                             galleryLauncher.launch("image/*")
@@ -535,7 +535,7 @@ fun NoteDialog(
                             onClick = onChangePhoto,
                             modifier = Modifier.align(Alignment.BottomEnd).padding(8.dp).background(Color.Black.copy(alpha = 0.5f), CircleShape)
                         ) {
-                            Icon(Icons.Default.Edit, null, tint = Color.White)
+                            Icon(Icons.Default.Edit, contentDescription = stringResource(R.string.edit), tint = Color.White)
                         }
                     }
                     Spacer(Modifier.height(16.dp))
@@ -546,7 +546,7 @@ fun NoteDialog(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(12.dp)
                 ) {
-                    Icon(Icons.Default.CalendarToday, null, modifier = Modifier.size(18.dp))
+                    Icon(Icons.Default.CalendarToday, contentDescription = stringResource(R.string.history), modifier = Modifier.size(18.dp))
                     Spacer(Modifier.width(8.dp))
                     Text(stringResource(R.string.date_label, noteDate.format(DateTimeFormatter.ofLocalizedDate(java.time.format.FormatStyle.MEDIUM).withLocale(java.util.Locale.getDefault()))))
                 }

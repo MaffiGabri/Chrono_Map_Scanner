@@ -133,7 +133,7 @@ fun ImageEditorScreen(
                         shape = CircleShape,
                         modifier = Modifier.size(72.dp)
                     ) {
-                        Icon(Icons.Default.Check, null, modifier = Modifier.size(36.dp))
+                        Icon(Icons.Default.Check, contentDescription = androidx.compose.ui.res.stringResource(com.example.skinhistoryscanner.R.string.editor_confirm), modifier = Modifier.size(36.dp))
                     }
                 }
             }

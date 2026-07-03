@@ -293,7 +293,7 @@ fun HistoryItem(
                     )
                 }
                 IconButton(onClick = onDelete, modifier = Modifier.size(24.dp)) {
-                    Icon(Icons.Default.Close, null, tint = Color.Gray.copy(alpha = 0.5f), modifier = Modifier.size(14.dp))
+                    Icon(Icons.Default.Close, contentDescription = androidx.compose.ui.res.stringResource(com.example.skinhistoryscanner.R.string.delete), tint = Color.Gray.copy(alpha = 0.5f), modifier = Modifier.size(14.dp))
                 }
             }
             

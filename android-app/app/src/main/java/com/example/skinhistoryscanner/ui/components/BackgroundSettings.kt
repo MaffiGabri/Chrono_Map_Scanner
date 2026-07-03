@@ -453,7 +453,7 @@ fun AddVariantButton(onAddSingle: (String, Uri) -> Unit, onAddMultiple: (List<Ur
                 Spacer(Modifier.height(16.dp))
                 ListItem(
                     headlineContent = { Text(stringResource(R.string.take_photo)) },
-                    leadingContent = { Icon(Icons.Default.CameraAlt, null) },
+                    leadingContent = { Icon(Icons.Default.CameraAlt, contentDescription = stringResource(R.string.take_photo)) },
                     modifier = Modifier.clickable { 
                         showPhotoMenu = false
                         if (androidx.core.content.ContextCompat.checkSelfPermission(context, android.Manifest.permission.CAMERA) == android.content.pm.PackageManager.PERMISSION_GRANTED) {
