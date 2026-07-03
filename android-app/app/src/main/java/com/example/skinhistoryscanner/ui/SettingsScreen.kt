@@ -269,7 +269,7 @@ fun MainSettings(
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Text(state.profileName, style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
                         IconButton(onClick = onEditName, modifier = Modifier.size(24.dp)) {
-                            Icon(Icons.Default.Edit, null, modifier = Modifier.size(16.dp), tint = MaterialTheme.colorScheme.primary)
+                            Icon(Icons.Default.Edit, contentDescription = androidx.compose.ui.res.stringResource(com.example.skinhistoryscanner.R.string.edit), modifier = Modifier.size(16.dp), tint = MaterialTheme.colorScheme.primary)
                         }
                     }
                     Text(
@@ -837,7 +837,7 @@ fun ProfilesManagement(
                         Text(profile, fontWeight = if (isActive) FontWeight.Bold else FontWeight.Normal, style = MaterialTheme.typography.bodyLarge)
                         if (!isActive) {
                             IconButton(onClick = { profileToDelete = profile }, modifier = Modifier.size(28.dp)) {
-                                Icon(Icons.Default.Delete, null, tint = MaterialTheme.colorScheme.error, modifier = Modifier.size(20.dp))
+                                Icon(Icons.Default.Delete, contentDescription = androidx.compose.ui.res.stringResource(com.example.skinhistoryscanner.R.string.delete), tint = MaterialTheme.colorScheme.error, modifier = Modifier.size(20.dp))
                             }
                         }
                     }

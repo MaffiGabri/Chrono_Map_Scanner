@@ -168,4 +168,9 @@
     <string name="photo">Photo</string>
     <string name="note">Note</string>
     <string name="mole_photo">Mole Photo</string>
-    <string name="body_profile_note">Note: registered points will remain in their original positions even when changing body settings.</string>`n</resources>
+    <!-- Accessibility -->
+    <string name="previous_photo">Previous photo</string>
+    <string name="next_photo">Next photo</string>
+
+    <string name="body_profile_note">Note: registered points will remain in their original positions even when changing body settings.</string>
+</resources>
