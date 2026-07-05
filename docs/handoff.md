@@ -1,4 +1,4 @@
-# Handoff: Skin History Scanner
+# Handoff: Chrono Map Scanner
 
 ## Stato Attuale
 - Abbiamo integrato la libreria `com.vanniktech:android-image-cropper` per permettere il ritaglio delle immagini profilo.

@@ -3,7 +3,7 @@
 > **NOTA IMPORTANTE (Living Documentation):** Questo documento è in continua evoluzione e riflette l'effettiva implementazione (state of the art as-is) del codice, non una specifica rigida calata dall'alto. L'implementazione reale nel codice è l'UNICA "Single Source of Truth" (SSOT). Eventuali funzionalità future o sperimentali sono chiaramente etichettate come tali.
 
 
-Questo documento serve a te, AI Gemini, per mantenere il contesto architetturale di `Skin History Scanner` in sessioni future. Descrive le convenzioni, l'architettura dei dati e il design pattern adottato, in particolare riguardo alle performance richieste per gestire 1000 nei tra fronte e retro.
+Questo documento serve a te, AI Gemini, per mantenere il contesto architetturale di `Chrono Map Scanner` in sessioni future. Descrive le convenzioni, l'architettura dei dati e il design pattern adottato, in particolare riguardo alle performance richieste per gestire 1000 nei tra fronte e retro.
 
 ## 1. Pattern Architetturale e UI
 L'app utilizza un pattern **MVI (Model-View-Intent) ibrido con MVVM**:
