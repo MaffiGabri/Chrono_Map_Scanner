@@ -1,4 +1,4 @@
-# Master Audit Base: Skin History Scanner
+# Master Audit Base: Chrono Map Scanner
 
 ## 1. Executive Summary
 L'app possiede una solida architettura di base (MVI Ibrido, Coroutines, Room, KSP, Hilt), concepita per gestire flussi reattivi complessi e mantenere un rigido decoupling. L'implementazione dello *Spatial Hashing* dinamico in `BodyMapViewModel` dimostra che le fondamenta sono pronte per calcoli complessi.

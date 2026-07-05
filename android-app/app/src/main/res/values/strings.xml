@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- App Name and common -->
-    <string name="app_name">Skin History Scanner</string>
+    <string name="app_name">Chrono Map Scanner</string>
     <string name="app_logo">Logo dell\'app</string>
     <string name="body_map_image">Immagine della mappa del corpo</string>
     <string name="cancel">Annulla</string>
@@ -135,7 +135,7 @@
     <string name="notification_channel_desc">Canale per i promemoria periodici dei nei</string>
     <string name="notification_title">È ora di un controllo!</string>
     <string name="notification_body">Aggiorna le foto dei tuoi nei per monitorare la loro evoluzione.</string>
-    <string name="calendar_event_title">Skin History Scanner: Check-up Nei</string>
+    <string name="calendar_event_title">Chrono Map Scanner: Check-up Nei</string>
     <string name="calendar_event_desc">È ora di aggiornare le foto dei tuoi nei per monitorarne l\'evoluzione.</string>
     <string name="test_notification">Test Notifica Push</string>
 
