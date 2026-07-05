@@ -175,4 +175,12 @@
     <string name="next_photo">Next photo</string>
 
     <string name="body_profile_note">Note: registered points will remain in their original positions even when changing body settings.</string>
+    <!-- Accessibility -->
+    <string name="desc_mole_thumbnail">Mole thumbnail</string>
+    <string name="desc_crop_image">Crop image</string>
+    <string name="desc_delete_image">Delete image</string>
+    <string name="desc_background_image">Background image</string>
+    <string name="desc_add_mole">Add mole</string>
+    <string name="desc_cancel_add">Cancel add mole</string>
+
 </resources>

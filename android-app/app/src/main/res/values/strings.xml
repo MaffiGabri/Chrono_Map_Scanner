@@ -187,4 +187,12 @@
     <string name="next_photo">Foto successiva</string>
 
     <string name="body_profile_note">Nota: i punti registrati rimarranno nella loro posizione originale anche cambiando le impostazioni del corpo.</string>
+    <!-- Accessibility -->
+    <string name="desc_mole_thumbnail">Miniatura del neo</string>
+    <string name="desc_crop_image">Ritaglia immagine</string>
+    <string name="desc_delete_image">Elimina immagine</string>
+    <string name="desc_background_image">Immagine di sfondo</string>
+    <string name="desc_add_mole">Aggiungi neo</string>
+    <string name="desc_cancel_add">Annulla aggiunta neo</string>
+
 </resources>

@@ -526,7 +526,7 @@ fun NoteDialog(
                                 .data(File(pendingPhotoPath))
                                 .crossfade(true)
                                 .build(),
-                            contentDescription = null,
+                            contentDescription = stringResource(R.string.desc_mole_thumbnail),
                             modifier = Modifier
                                 .fillMaxSize()
                                 .clip(RoundedCornerShape(12.dp)),
