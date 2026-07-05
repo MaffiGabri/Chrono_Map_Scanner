@@ -364,7 +364,7 @@ fun VariantEditDialog(
                         modifier = Modifier.fillMaxWidth(),
                         colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary)
                     ) {
-                        Icon(Icons.Default.Crop, contentDescription = null)
+                        Icon(Icons.Default.Crop, contentDescription = stringResource(R.string.desc_crop_image))
                         Spacer(Modifier.width(8.dp))
                         Text("Ritaglia Immagine")
                     }
@@ -376,7 +376,7 @@ fun VariantEditDialog(
                         modifier = Modifier.fillMaxWidth(),
                         colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
                     ) {
-                        Icon(Icons.Default.Delete, contentDescription = null)
+                        Icon(Icons.Default.Delete, contentDescription = stringResource(R.string.desc_delete_image))
                         Spacer(Modifier.width(8.dp))
                         Text("Elimina Variante")
                     }

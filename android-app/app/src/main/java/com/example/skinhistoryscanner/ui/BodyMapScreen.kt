@@ -179,7 +179,7 @@ fun BodyMapScreen(
                 ExtendedFloatingActionButton(
                     onClick = { isAddingMole = !isAddingMole },
                     expanded = isAddingMole,
-                    icon = { Icon(if (isAddingMole) Icons.Default.Close else Icons.Default.Add, contentDescription = stringResource(if (isAddingMole) R.string.cancel else R.string.add)) },
+                    icon = { Icon(if (isAddingMole) Icons.Default.Close else Icons.Default.Add, contentDescription = stringResource(if (isAddingMole) R.string.desc_cancel_add else R.string.desc_add_mole)) },
                     text = { Text(stringResource(if (isAddingMole) R.string.cancel else R.string.add)) },
                     containerColor = if (isAddingMole) MaterialTheme.colorScheme.errorContainer else MaterialTheme.colorScheme.primary,
                     modifier = Modifier.padding(bottom = 16.dp)
@@ -340,14 +340,14 @@ fun BodyMapScreen(
                             
                             Image(
                                 painter = bodyPainter,
-                                contentDescription = null,
+                                contentDescription = stringResource(R.string.body_map_image),
                                 modifier = Modifier.fillMaxSize(),
                                 contentScale = ContentScale.Fit
                             )
                         } else {
                             AsyncImage(
                                 model = targetVariant.imagePath,
-                                contentDescription = null,
+                                contentDescription = stringResource(R.string.body_map_image),
                                 modifier = Modifier.fillMaxSize(),
                                 contentScale = ContentScale.Fit
                             )

@@ -233,7 +233,8 @@ fun MoleDetailsScreen(
                 item {
                     DateHeader(date)
                 }
-                items(entries) { entry ->
+                // ⚡ Bolt Optimization: Use `key` to prevent unnecessary recompositions when entries are reordered or deleted
+                items(entries, key = { it.id }) { entry ->
                     HistoryItem(
                         entry = entry,
                         onClick = {
@@ -525,7 +526,7 @@ fun NoteDialog(
                                 .data(File(pendingPhotoPath))
                                 .crossfade(true)
                                 .build(),
-                            contentDescription = null,
+                            contentDescription = stringResource(R.string.desc_mole_thumbnail),
                             modifier = Modifier
                                 .fillMaxSize()
                                 .clip(RoundedCornerShape(12.dp)),
