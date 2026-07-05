@@ -340,14 +340,14 @@ fun BodyMapScreen(
                             
                             Image(
                                 painter = bodyPainter,
-                                contentDescription = null,
+                                contentDescription = stringResource(R.string.body_map_image),
                                 modifier = Modifier.fillMaxSize(),
                                 contentScale = ContentScale.Fit
                             )
                         } else {
                             AsyncImage(
                                 model = targetVariant.imagePath,
-                                contentDescription = null,
+                                contentDescription = stringResource(R.string.body_map_image),
                                 modifier = Modifier.fillMaxSize(),
                                 contentScale = ContentScale.Fit
                             )

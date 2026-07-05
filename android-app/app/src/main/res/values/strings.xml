@@ -2,6 +2,8 @@
 <resources>
     <!-- App Name and common -->
     <string name="app_name">Skin History Scanner</string>
+    <string name="app_logo">Logo dell\'app</string>
+    <string name="body_map_image">Immagine della mappa del corpo</string>
     <string name="cancel">Annulla</string>
     <string name="save">Salva</string>
     <string name="delete">Elimina</string>
