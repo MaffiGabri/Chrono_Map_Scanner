@@ -819,7 +819,8 @@ fun ProfilesManagement(
                 Text(stringResource(R.string.profiles_mgmt_desc), style = MaterialTheme.typography.bodyMedium)
                 Spacer(Modifier.height(12.dp))
             }
-            items(profiles) { profile ->
+            // ⚡ Bolt Optimization: Use `key` to prevent unnecessary recompositions when profiles are added or deleted
+            items(profiles, key = { it }) { profile ->
                 val isActive = profile == currentProfile
                 Surface(
                     modifier = Modifier
@@ -920,7 +921,7 @@ fun AboutScreen() {
             Box(contentAlignment = Alignment.Center) {
                 Icon(
                     Icons.Default.Favorite, 
-                    contentDescription = null, 
+                    contentDescription = stringResource(R.string.app_logo),
                     modifier = Modifier.size(60.dp), 
                     tint = MaterialTheme.colorScheme.primary
                 )
