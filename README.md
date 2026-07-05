@@ -1,6 +1,6 @@
-# Skin History Scanner
+# Chrono Map Scanner
 
-Skin History Scanner is an Android application designed to map, track, and monitor the evolution of moles and skin imperfections over time.
+Chrono Map Scanner is an Android application designed to map, track, and monitor the evolution of everything you want, placed on a custom background. Like moles on skin or cracks on a wall.
 
 ## Documentation
 
