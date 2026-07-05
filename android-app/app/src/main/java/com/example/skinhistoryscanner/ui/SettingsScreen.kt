@@ -920,7 +920,7 @@ fun AboutScreen() {
             Box(contentAlignment = Alignment.Center) {
                 Icon(
                     Icons.Default.Favorite, 
-                    contentDescription = null, 
+                    contentDescription = stringResource(R.string.app_logo),
                     modifier = Modifier.size(60.dp), 
                     tint = MaterialTheme.colorScheme.primary
                 )
