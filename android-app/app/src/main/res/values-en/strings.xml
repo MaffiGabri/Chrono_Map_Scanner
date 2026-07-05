@@ -2,6 +2,8 @@
 <resources>
     <!-- App Name and common -->
     <string name="app_name">MoleTracker</string>
+    <string name="app_logo">App logo</string>
+    <string name="body_map_image">Body map image</string>
     <string name="cancel">Cancel</string>
     <string name="save">Save</string>
     <string name="delete">Delete</string>

@@ -167,7 +167,7 @@ fun MoleSummaryHeader(
                     if (imagePath == null && variant != null) {
                         androidx.compose.foundation.Image(
                             painter = androidx.compose.ui.res.painterResource(id = getBodyImageRes(userSettings, variant.id)),
-                            contentDescription = stringResource(R.string.desc_background_image),
+                            contentDescription = androidx.compose.ui.res.stringResource(com.example.skinhistoryscanner.R.string.body_map_image),
                             modifier = Modifier
                                 .fillMaxSize()
                                 .graphicsLayer {
@@ -184,7 +184,7 @@ fun MoleSummaryHeader(
                                 .data(if (imagePath.startsWith("android.resource") || imagePath.startsWith("content://") || imagePath.startsWith("file://")) android.net.Uri.parse(imagePath) else File(imagePath))
                                 .crossfade(true)
                                 .build(),
-                            contentDescription = stringResource(R.string.desc_background_image),
+                            contentDescription = androidx.compose.ui.res.stringResource(com.example.skinhistoryscanner.R.string.body_map_image),
                             modifier = Modifier
                                 .fillMaxSize()
                                 .graphicsLayer {

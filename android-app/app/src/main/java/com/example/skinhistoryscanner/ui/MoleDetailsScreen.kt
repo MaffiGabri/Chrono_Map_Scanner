@@ -233,7 +233,8 @@ fun MoleDetailsScreen(
                 item {
                     DateHeader(date)
                 }
-                items(entries) { entry ->
+                // ⚡ Bolt Optimization: Use `key` to prevent unnecessary recompositions when entries are reordered or deleted
+                items(entries, key = { it.id }) { entry ->
                     HistoryItem(
                         entry = entry,
                         onClick = {
