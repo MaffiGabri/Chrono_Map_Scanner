@@ -1,6 +1,6 @@
-# Progetto Skin History Scanner - Wiki Home
+# Progetto Chrono Map Scanner - Wiki Home
 
-Benvenuto nella wiki del progetto Skin History Scanner.
+Benvenuto nella wiki del progetto Chrono Map Scanner.
 
 Questa wiki raccoglie tutta la documentazione relativa allo sviluppo, all'architettura e al funzionamento dell'applicazione.
 
