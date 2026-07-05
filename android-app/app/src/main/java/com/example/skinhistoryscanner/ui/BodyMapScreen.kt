@@ -486,7 +486,7 @@ fun BodyMapScreen(
                         containerColor = MaterialTheme.colorScheme.surface
                     ) {
                         val icon = if (state.variants.size > 2) Icons.Default.ViewCarousel else Icons.Default.Flip
-                        Icon(icon, contentDescription = "Cambia vista")
+                        Icon(icon, contentDescription = stringResource(R.string.flip_view))
                     }
                 }
 
