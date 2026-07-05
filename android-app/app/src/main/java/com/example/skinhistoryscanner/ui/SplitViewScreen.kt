@@ -1,5 +1,8 @@
 ﻿package com.example.skinhistoryscanner.ui
 
+import androidx.compose.ui.res.stringResource
+import com.example.skinhistoryscanner.R
+
 import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -153,7 +156,7 @@ fun ZoomableImage(imagePath: String?) {
                 .data(File(imagePath))
                 .crossfade(true)
                 .build(),
-            contentDescription = null,
+            contentDescription = stringResource(R.string.desc_background_image),
             modifier = Modifier
                 .fillMaxSize()
                 .graphicsLayer(

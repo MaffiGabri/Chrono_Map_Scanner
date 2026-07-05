@@ -1,0 +1,7 @@
+    <!-- Accessibility -->
+    <string name="desc_mole_thumbnail">Miniatura del neo</string>
+    <string name="desc_crop_image">Ritaglia immagine</string>
+    <string name="desc_delete_image">Elimina immagine</string>
+    <string name="desc_background_image">Immagine di sfondo</string>
+    <string name="desc_add_mole">Aggiungi neo</string>
+    <string name="desc_cancel_add">Annulla aggiunta neo</string>

@@ -179,7 +179,7 @@ fun BodyMapScreen(
                 ExtendedFloatingActionButton(
                     onClick = { isAddingMole = !isAddingMole },
                     expanded = isAddingMole,
-                    icon = { Icon(if (isAddingMole) Icons.Default.Close else Icons.Default.Add, contentDescription = null) },
+                    icon = { Icon(if (isAddingMole) Icons.Default.Close else Icons.Default.Add, contentDescription = stringResource(if (isAddingMole) R.string.desc_cancel_add else R.string.desc_add_mole)) },
                     text = { Text(stringResource(if (isAddingMole) R.string.cancel else R.string.add)) },
                     containerColor = if (isAddingMole) MaterialTheme.colorScheme.errorContainer else MaterialTheme.colorScheme.primary,
                     modifier = Modifier.padding(bottom = 16.dp)
