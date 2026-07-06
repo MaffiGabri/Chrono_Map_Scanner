@@ -266,7 +266,7 @@ fun VariantListItem(
             // Drag handle top-left
             Icon(
                 Icons.Default.DragHandle,
-                contentDescription = "Riordina",
+                contentDescription = stringResource(R.string.desc_reorder),
                 modifier = onDragModifier
                     .align(Alignment.TopStart)
                     .padding(8.dp),
@@ -278,7 +278,7 @@ fun VariantListItem(
                 onClick = { showEditMenu = true },
                 modifier = Modifier.align(Alignment.TopEnd)
             ) {
-                Icon(Icons.Default.Edit, contentDescription = "Modifica Variante", tint = androidx.compose.ui.graphics.Color.White)
+                Icon(Icons.Default.Edit, contentDescription = stringResource(R.string.desc_edit_variant), tint = androidx.compose.ui.graphics.Color.White)
             }
             
             // Name bottom-left
@@ -440,9 +440,9 @@ fun AddVariantButton(onAddSingle: (String, Uri) -> Unit, onAddMultiple: (List<Ur
         contentAlignment = Alignment.Center
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Icon(Icons.Default.Add, contentDescription = "Aggiungi Variante", tint = MaterialTheme.colorScheme.onPrimaryContainer)
+            Icon(Icons.Default.Add, contentDescription = stringResource(R.string.add_variant), tint = MaterialTheme.colorScheme.onPrimaryContainer)
             Spacer(Modifier.width(8.dp))
-            Text("Aggiungi Variante", style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.onPrimaryContainer)
+            Text(stringResource(R.string.add_variant), style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.onPrimaryContainer)
         }
     }
 

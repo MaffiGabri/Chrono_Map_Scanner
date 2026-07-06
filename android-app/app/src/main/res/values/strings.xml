@@ -70,6 +70,11 @@
     <string name="years_ago">%d anni fa</string>
 
     <!-- SettingsScreen -->
+    <string name="desc_reorder">Riordina</string>
+    <string name="desc_edit_variant">Modifica Variante</string>
+    <string name="add_variant">Aggiungi Variante</string>
+    <string name="app_info_title">Info Scanner</string>
+    <string name="about_developer_name">Gabriele Maffione</string>
     <string name="settings_title">Impostazioni</string>
     <string name="settings_title_main">Impostazioni</string>
     <string name="settings_title_body">Profilo Corpo</string>

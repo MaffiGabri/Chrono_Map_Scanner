@@ -64,6 +64,11 @@
     <string name="years_ago">%d years ago</string>
 
     <!-- SettingsScreen -->
+    <string name="desc_reorder">Reorder</string>
+    <string name="desc_edit_variant">Edit Variant</string>
+    <string name="add_variant">Add Variant</string>
+    <string name="app_info_title">Scanner Info</string>
+    <string name="about_developer_name">Gabriele Maffione</string>
     <string name="settings_title">Settings</string>
     <string name="settings_title_main">Settings</string>
     <string name="settings_title_body">Body Profile</string>
