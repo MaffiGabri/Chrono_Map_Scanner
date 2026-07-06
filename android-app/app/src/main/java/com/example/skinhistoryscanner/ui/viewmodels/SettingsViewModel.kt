@@ -115,6 +115,8 @@ class SettingsViewModel @Inject constructor(
         }
     }
 
+    private val _isGeneratingGlobalReport = MutableStateFlow(false)
+
     // Aggregate settings state
     val settingsUiState: StateFlow<SettingsUiState> = combine(
         combine(
@@ -127,8 +129,9 @@ class SettingsViewModel @Inject constructor(
         ),
         _userSettingsFlow,
         _reminderSettingsFlow,
-        _interfaceSettingsFlow
-    ) { part1, userSettings, reminderSettings, interfaceSettings ->
+        _interfaceSettingsFlow,
+        _isGeneratingGlobalReport
+    ) { part1, userSettings, reminderSettings, interfaceSettings, isGeneratingGlobalReport ->
         SettingsUiState(
             profileName = part1.profileName,
             profileImage = part1.profileImage,
@@ -143,7 +146,8 @@ class SettingsViewModel @Inject constructor(
             scannerDelayMs = interfaceSettings.scannerDelayMs,
             scannerIntervalMin = interfaceSettings.scannerIntervalMin,
             warnOnEmptyMoleDeletion = interfaceSettings.warnOnEmptyMoleDeletion,
-            snapToRecentOnAddMole = interfaceSettings.snapToRecent
+            snapToRecentOnAddMole = interfaceSettings.snapToRecent,
+            isGeneratingGlobalReport = isGeneratingGlobalReport
         )
     }.flowOn(kotlinx.coroutines.Dispatchers.Default).stateIn(
         scope = viewModelScope,
@@ -329,6 +333,31 @@ class SettingsViewModel @Inject constructor(
     fun updateWarnOnEmptyMoleDeletion(warn: Boolean) {
         viewModelScope.launch {
             settingsRepository.setWarnOnEmptyMoleDeletion(warn)
+        }
+    }
+
+
+    fun generateGlobalReport(getColorLabel: (String) -> String, onComplete: (File) -> Unit) {
+        viewModelScope.launch {
+            _isGeneratingGlobalReport.value = true
+            try {
+                val profile = currentProfile.value
+                val userSettings = _userSettingsFlow.first()
+                val moles = moleRepository.getMolesWithHistory(profile)
+
+                val file = com.example.skinhistoryscanner.utils.GlobalReportGenerator.generateGlobalPdf(
+                    context = context,
+                    moles = moles,
+                    userSettings = userSettings,
+                    profileName = profile,
+                    getColorLabel = getColorLabel
+                )
+                onComplete(file)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            } finally {
+                _isGeneratingGlobalReport.value = false
+            }
         }
     }
 }

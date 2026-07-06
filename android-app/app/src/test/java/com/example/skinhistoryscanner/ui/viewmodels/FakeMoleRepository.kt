@@ -1,4 +1,4 @@
-﻿package com.example.skinhistoryscanner.ui.viewmodels
+package com.example.skinhistoryscanner.ui.viewmodels
 
 import com.example.skinhistoryscanner.data.domain.HistoryEntry
 import com.example.skinhistoryscanner.data.domain.Mole
@@ -8,43 +8,13 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
 
 class FakeMoleRepository : MoleRepository {
-    private val moles = MutableStateFlow<List<Mole>>(emptyList())
-    private val history = MutableStateFlow<List<HistoryEntry>>(emptyList())
+    val moles = MutableStateFlow<List<Mole>>(emptyList())
+    val history = MutableStateFlow<List<HistoryEntry>>(emptyList())
 
-    override fun getMolesWithHistory(profileName: String): Flow<List<Mole>> {
-        return moles.map { allMoles ->
-            allMoles.filter { it.profileName == profileName }.map { mole ->
-                val moleHistory = history.value.filter { it.moleId == mole.id }
-                mole.copy(history = moleHistory)
-            }
-        }
-    }
-
-    override fun getMolesForMap(profileName: String, side: com.example.skinhistoryscanner.data.domain.BodySide, maxDate: String, colors: List<String>): Flow<List<com.example.skinhistoryscanner.data.domain.MoleMapSummary>> {
-        return moles.map { allMoles ->
-            allMoles.filter { it.profileName == profileName && it.side == side && it.color in colors }
-                .map { mole ->
-                    com.example.skinhistoryscanner.data.domain.MoleMapSummary(
-                        id = mole.id,
-                        profileName = mole.profileName,
-                        x = mole.x,
-                        y = mole.y,
-                        side = mole.side,
-                        color = mole.color,
-                        latestPhotoPath = history.value.filter { it.moleId == mole.id && it.date <= maxDate }.maxByOrNull { it.date }?.imagePath
-                    )
-                }
-        }
-    }
-
-    override fun getMoleByIdWithHistory(moleId: String): Flow<Mole?> {
-        return moles.map { allMoles ->
-            val mole = allMoles.find { it.id == moleId }
-            if (mole != null) {
-                mole.copy(history = history.value.filter { it.moleId == mole.id })
-            } else {
-                null
-            }
+    override suspend fun getMolesWithHistory(profileName: String): List<Mole> {
+        return moles.value.filter { it.profileName == profileName }.map { mole ->
+            val moleHistory = history.value.filter { it.moleId == mole.id }
+            mole.copy(history = moleHistory)
         }
     }
 
@@ -56,8 +26,24 @@ class FakeMoleRepository : MoleRepository {
         return moles.map { allMoles -> allMoles.count { it.profileName == profileName } }
     }
 
+    override fun getMolesAtDate(profileName: String, targetDate: java.time.LocalDate): Flow<List<com.example.skinhistoryscanner.data.domain.MoleMapItem>> {
+        return MutableStateFlow(emptyList())
+    }
+
+    override fun getAvailableDates(profileName: String): Flow<List<java.time.LocalDate>> {
+        return MutableStateFlow(emptyList())
+    }
+
+    override fun getAvailableDatesForVariant(profileName: String, variantId: String): Flow<List<java.time.LocalDate>> {
+        return MutableStateFlow(emptyList())
+    }
+
+    override fun getMoleByIdWithHistory(moleId: String): Flow<Mole?> {
+        return MutableStateFlow(null)
+    }
+
     override fun getTotalMolesCount(): Flow<Int> {
-        return moles.map { it.size }
+        return MutableStateFlow(0)
     }
 
     override suspend fun upsertMole(mole: Mole) {
@@ -67,22 +53,16 @@ class FakeMoleRepository : MoleRepository {
         moles.value = current
     }
 
-    override suspend fun updateMolePosition(id: String, x: Float, y: Float, side: com.example.skinhistoryscanner.data.domain.BodySide) {
-        val current = moles.value.toMutableList()
-        val index = current.indexOfFirst { it.id == id }
-        if (index != -1) {
-            current[index] = current[index].copy(x = x, y = y, side = side)
+    override suspend fun updateMoleColor(id: String, color: String) {
+        moles.value = moles.value.map {
+            if (it.id == id) it.copy(color = color) else it
         }
-        moles.value = current
     }
 
-    override suspend fun updateMoleColor(id: String, color: String) {
-        val current = moles.value.toMutableList()
-        val index = current.indexOfFirst { it.id == id }
-        if (index != -1) {
-            current[index] = current[index].copy(color = color)
+    override suspend fun updateMolePosition(id: String, x: Float, y: Float, side: String) {
+        moles.value = moles.value.map {
+            if (it.id == id) it.copy(x = x, y = y, side = side) else it
         }
-        moles.value = current
     }
 
     override suspend fun insertMoleWithHistory(mole: Mole, historyEntry: HistoryEntry) {
@@ -102,8 +82,8 @@ class FakeMoleRepository : MoleRepository {
     }
 
     override suspend fun renameProfile(oldName: String, newName: String) {
-        moles.value = moles.value.map { 
-            if (it.profileName == oldName) it.copy(profileName = newName) else it 
+        moles.value = moles.value.map {
+            if (it.profileName == oldName) it.copy(profileName = newName) else it
         }
     }
 
@@ -117,4 +97,8 @@ class FakeMoleRepository : MoleRepository {
     override suspend fun deleteHistoryEntry(entryId: String) {
         history.value = history.value.filter { it.id != entryId }
     }
+
+    override suspend fun deleteMolesByVariant(variantId: String) {}
+
+    override suspend fun migrateMoles(oldVariantIds: List<String>, newVariantId: String) {}
 }

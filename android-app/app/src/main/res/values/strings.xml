@@ -209,4 +209,15 @@
     <string name="about_role">Ingegneria Edile-Architettura</string>
     <string name="about_description">Progettare gli spazi di domani, partendo dalle persone.</string>
 
+    <!-- Export PDF -->
+    <string name="share">Condividi</string>
+    <string name="share_as_pdf">Condividi come PDF</string>
+    <string name="share_as_jpeg">Condividi come JPEG</string>
+    <string name="export_all_pdf">Esporta tutti i difetti (PDF)</string>
+    <string name="generating_report">Generazione report in corso...</string>
+    <string name="error_generating_report">Errore durante la generazione del report</string>
+    <string name="report_title_mole">Report Difetto</string>
+    <string name="report_title_global">Report Globale Difetti</string>
+    <string name="report_category">Categoria:</string>
+    <string name="report_date">Data ultima modifica:</string>
 </resources>

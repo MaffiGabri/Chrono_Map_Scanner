@@ -145,3 +145,20 @@ dependencies {
   // Reorderable list
   implementation("sh.calvin.reorderable:reorderable:2.3.2")
 }
+tasks.withType<Test> {
+    failFast = false
+}
+
+tasks.withType<Test> {
+    setFailFast(false)
+    testLogging.showExceptions = true
+    systemProperty("robolectric.logging", "stdout")
+    systemProperty("junit.jupiter.execution.parallel.enabled", "true")
+}
+android {
+    testOptions {
+        unitTests.all {
+            it.systemProperty("failOnNoDiscoveredTests", "false")
+        }
+    }
+}
