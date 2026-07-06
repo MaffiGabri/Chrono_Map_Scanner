@@ -64,10 +64,7 @@ class SettingsViewModel @Inject constructor(
 
 
 
-    private val _userSettingsFlow = combine(
-        settingsRepository.gender,
-        settingsRepository.bodyType
-    ) { gender, bodyType -> UserSettings(gender, bodyType) }
+    private val _userSettingsFlow = settingsRepository.userSettings
 
     private val _reminderSettingsFlow = combine(
         settingsRepository.remindersEnabled,
@@ -219,9 +216,27 @@ class SettingsViewModel @Inject constructor(
         }
     }
 
-    fun updateBodySettings(gender: Gender, bodyType: BodyType) {
+    fun updateBodySettings(gender: com.example.skinhistoryscanner.data.domain.Gender, bodyType: com.example.skinhistoryscanner.data.domain.BodyType) {
         viewModelScope.launch {
             settingsRepository.updateBodySettings(gender, bodyType)
+        }
+    }
+
+    fun updatePdfQuality(quality: com.example.skinhistoryscanner.data.domain.PdfQuality) {
+        viewModelScope.launch {
+            settingsRepository.setPdfQuality(quality)
+        }
+    }
+
+    fun updateOpenPdfAutomatically(open: Boolean) {
+        viewModelScope.launch {
+            settingsRepository.setOpenPdfAutomatically(open)
+        }
+    }
+
+    fun updateShowExportDialog(show: Boolean) {
+        viewModelScope.launch {
+            settingsRepository.setShowExportDialog(show)
         }
     }
 
@@ -337,20 +352,25 @@ class SettingsViewModel @Inject constructor(
     }
 
 
-    fun generateGlobalReport(getColorLabel: (String) -> String, onComplete: (File) -> Unit) {
+    fun generateGlobalReport(onComplete: (File) -> Unit) {
         viewModelScope.launch {
             _isGeneratingGlobalReport.value = true
             try {
                 val profile = currentProfile.value
                 val userSettings = _userSettingsFlow.first()
-                val moles = moleRepository.getMolesWithHistory(profile)
+                val allMoles = moleRepository.getMolesWithHistory(profile)
+
+                val colorSettings = settingsRepository.colorSettings.first()
 
                 val file = com.example.skinhistoryscanner.utils.GlobalReportGenerator.generateGlobalPdf(
                     context = context,
-                    moles = moles,
+                    moles = allMoles,
                     userSettings = userSettings,
                     profileName = profile,
-                    getColorLabel = getColorLabel
+                    getColorLabel = { color ->
+                        val entry = colorSettings.find { it.hex.equals(color.removePrefix("#"), ignoreCase = true) }
+                        entry?.label ?: context.getString(com.example.skinhistoryscanner.R.string.color_other)
+                    }
                 )
                 onComplete(file)
             } catch (e: Exception) {

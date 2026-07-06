@@ -6,6 +6,8 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -97,6 +99,138 @@ fun SkinHistoryNavGraph(
                 val selectedCategoryId by backgroundSettingsViewModel.selectedCategoryId.collectAsStateWithLifecycle()
                 val variantsForSelectedCategory by backgroundSettingsViewModel.variantsForSelectedCategory.collectAsStateWithLifecycle()
                 val userSettings by backgroundSettingsViewModel.userSettings.collectAsStateWithLifecycle()
+                
+                val currentCategoryName = categories.find { it.id == activeCategoryId }?.name ?: "Profilo"
+                val currentCategoryId = activeCategoryId ?: ""
+
+                val context = androidx.compose.ui.platform.LocalContext.current
+                val savePdfLauncher = androidx.activity.compose.rememberLauncherForActivityResult(
+                    androidx.activity.result.contract.ActivityResultContracts.CreateDocument("application/pdf")
+                ) { uri ->
+                    if (uri != null) {
+                        settingsViewModel.generateGlobalReport { file ->
+                            kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.IO).launch {
+                                try {
+                                    context.contentResolver.openOutputStream(uri)?.use { out ->
+                                        file.inputStream().use { input ->
+                                            input.copyTo(out)
+                                        }
+                                    }
+                                    kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.Main) {
+                                        android.widget.Toast.makeText(context, "PDF salvato con successo", android.widget.Toast.LENGTH_SHORT).show()
+                                        if (userSettings.openPdfAutomatically) {
+                                            val viewIntent = android.content.Intent(android.content.Intent.ACTION_VIEW).apply {
+                                                setDataAndType(uri, "application/pdf")
+                                                addFlags(android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                                                addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
+                                            }
+                                            try {
+                                                context.startActivity(viewIntent)
+                                            } catch (e: android.content.ActivityNotFoundException) {
+                                                android.widget.Toast.makeText(context, "Nessuna app trovata per aprire il PDF", android.widget.Toast.LENGTH_SHORT).show()
+                                            }
+                                        }
+                                    }
+                                } catch (e: Exception) {
+                                    e.printStackTrace()
+                                    kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.Main) {
+                                        android.widget.Toast.makeText(context, "Errore durante il salvataggio", android.widget.Toast.LENGTH_SHORT).show()
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                var pendingExportFilename by remember { mutableStateOf<String?>(null) }
+                var pendingShareGlobal by remember { mutableStateOf(false) }
+                
+                val currentProfileName = settingsViewModel.currentProfile.collectAsStateWithLifecycle().value
+                
+                val exportFile = pendingExportFilename
+                if (exportFile != null) {
+                    if (userSettings.showExportDialog) {
+                        com.example.skinhistoryscanner.ui.components.ExportDialog(
+                            initialQuality = userSettings.pdfQuality,
+                            initialOpenPdf = userSettings.openPdfAutomatically,
+                            onDismiss = { pendingExportFilename = null },
+                            onConfirm = { quality, openPdf, showDialog ->
+                                settingsViewModel.updatePdfQuality(quality)
+                                settingsViewModel.updateOpenPdfAutomatically(openPdf)
+                                settingsViewModel.updateShowExportDialog(showDialog)
+                                savePdfLauncher.launch(exportFile)
+                                pendingExportFilename = null
+                            }
+                        )
+                    } else {
+                        pendingExportFilename = null
+                        settingsViewModel.generateGlobalReport { file ->
+                            kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.IO).launch {
+                                try {
+                                    context.contentResolver.openOutputStream(android.net.Uri.parse(exportFile))?.use { output ->
+                                        file.inputStream().use { input -> input.copyTo(output) }
+                                    }
+                                    file.delete()
+                                    if (userSettings.openPdfAutomatically) {
+                                        kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.Main) {
+                                            val viewIntent = android.content.Intent(android.content.Intent.ACTION_VIEW).apply {
+                                                setDataAndType(android.net.Uri.parse(exportFile), "application/pdf")
+                                                addFlags(android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                                            }
+                                            context.startActivity(android.content.Intent.createChooser(viewIntent, "Apri PDF"))
+                                        }
+                                    }
+                                } catch (e: Exception) {
+                                    e.printStackTrace()
+                                }
+                            }
+                        }
+                    }
+                }
+                
+                if (pendingShareGlobal) {
+                    if (userSettings.showExportDialog) {
+                        com.example.skinhistoryscanner.ui.components.ExportDialog(
+                            initialQuality = userSettings.pdfQuality,
+                            initialOpenPdf = userSettings.openPdfAutomatically,
+                            onDismiss = { pendingShareGlobal = false },
+                            onConfirm = { quality, openPdf, showDialog ->
+                                settingsViewModel.updatePdfQuality(quality)
+                                settingsViewModel.updateOpenPdfAutomatically(openPdf)
+                                settingsViewModel.updateShowExportDialog(showDialog)
+                                pendingShareGlobal = false
+                                settingsViewModel.generateGlobalReport { file ->
+                                    val uri = androidx.core.content.FileProvider.getUriForFile(
+                                        context,
+                                        "${context.packageName}.fileprovider",
+                                        file
+                                    )
+                                    val intent = android.content.Intent(android.content.Intent.ACTION_SEND).apply {
+                                        type = "application/pdf"
+                                        putExtra(android.content.Intent.EXTRA_STREAM, uri)
+                                        addFlags(android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                                    }
+                                    context.startActivity(android.content.Intent.createChooser(intent, context.getString(R.string.export_all_pdf)))
+                                }
+                            }
+                        )
+                    } else {
+                        pendingShareGlobal = false
+                        settingsViewModel.generateGlobalReport { file ->
+                            val uri = androidx.core.content.FileProvider.getUriForFile(
+                                context,
+                                "${context.packageName}.fileprovider",
+                                file
+                            )
+                            val intent = android.content.Intent(android.content.Intent.ACTION_SEND).apply {
+                                type = "application/pdf"
+                                putExtra(android.content.Intent.EXTRA_STREAM, uri)
+                                addFlags(android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                            }
+                            context.startActivity(android.content.Intent.createChooser(intent, context.getString(R.string.export_all_pdf)))
+                        }
+                    }
+                }
 
                 SettingsScreen(
                     state = settingsState,
@@ -120,6 +254,16 @@ fun SkinHistoryNavGraph(
                     onUpdateWarnOnEmptyMoleDeletion = settingsViewModel::updateWarnOnEmptyMoleDeletion,
                     onDebugSeed = settingsViewModel::debugResetAndSeed,
                     onTestNotification = settingsViewModel::testNotification,
+                    onExportPdf = {
+                        pendingShareGlobal = true
+                    },
+                    onSavePdf = {
+                        val timestamp = java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy").format(java.time.LocalDate.now())
+                        pendingExportFilename = "Report_${settingsViewModel.currentProfile.value}_Globale_$timestamp.pdf"
+                    },
+                    onUpdatePdfQuality = settingsViewModel::updatePdfQuality,
+                    onUpdateOpenPdfAutomatically = settingsViewModel::updateOpenPdfAutomatically,
+                    onUpdateShowExportDialog = settingsViewModel::updateShowExportDialog,
                     backgroundSettingsContent = {
                         com.example.skinhistoryscanner.ui.components.BackgroundSettings(
                             categories = categories,
@@ -177,6 +321,71 @@ fun SkinHistoryNavGraph(
                 val pendingPhotoPath by backStackEntry.savedStateHandle.getStateFlow<String?>("pendingPhotoPath", null).collectAsStateWithLifecycle()
                 val editingEntryId by backStackEntry.savedStateHandle.getStateFlow<String?>("editingEntryId", null).collectAsStateWithLifecycle()
 
+                val settingsViewModel = androidx.hilt.navigation.compose.hiltViewModel<com.example.skinhistoryscanner.ui.viewmodels.SettingsViewModel>()
+                val context = androidx.compose.ui.platform.LocalContext.current
+                val savePdfLauncher = androidx.activity.compose.rememberLauncherForActivityResult(
+                    androidx.activity.result.contract.ActivityResultContracts.CreateDocument("application/pdf")
+                ) { uri ->
+                    if (uri != null) {
+                        moleDetailsViewModel.generateMoleReport(context, getColorLabel = { color ->
+                            val entry = moleDetailsState.colorSettings.find { it.hex.equals(color.removePrefix("#"), ignoreCase = true) }
+                            entry?.label ?: context.getString(R.string.color_other)
+                        }) { file ->
+                            kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.IO).launch {
+                                try {
+                                    context.contentResolver.openOutputStream(uri)?.use { out ->
+                                        file.inputStream().use { input ->
+                                            input.copyTo(out)
+                                        }
+                                    }
+                                    kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.Main) {
+                                        android.widget.Toast.makeText(context, "PDF salvato con successo", android.widget.Toast.LENGTH_SHORT).show()
+                                        if (moleDetailsState.userSettings.openPdfAutomatically) {
+                                            val viewIntent = android.content.Intent(android.content.Intent.ACTION_VIEW).apply {
+                                                setDataAndType(uri, "application/pdf")
+                                                addFlags(android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                                                addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
+                                            }
+                                            try {
+                                                context.startActivity(viewIntent)
+                                            } catch (e: android.content.ActivityNotFoundException) {
+                                                android.widget.Toast.makeText(context, "Nessuna app trovata per aprire il PDF", android.widget.Toast.LENGTH_SHORT).show()
+                                            }
+                                        }
+                                    }
+                                } catch (e: Exception) {
+                                    e.printStackTrace()
+                                    kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.Main) {
+                                        android.widget.Toast.makeText(context, "Errore durante il salvataggio", android.widget.Toast.LENGTH_SHORT).show()
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                var pendingExportFilename by remember { mutableStateOf<String?>(null) }
+                val exportFile = pendingExportFilename
+                if (exportFile != null) {
+                    if (moleDetailsState.userSettings.showExportDialog) {
+                        com.example.skinhistoryscanner.ui.components.ExportDialog(
+                            initialQuality = moleDetailsState.userSettings.pdfQuality,
+                            initialOpenPdf = moleDetailsState.userSettings.openPdfAutomatically,
+                            onDismiss = { pendingExportFilename = null },
+                            onConfirm = { quality, openPdf, showDialog ->
+                                settingsViewModel.updatePdfQuality(quality)
+                                settingsViewModel.updateOpenPdfAutomatically(openPdf)
+                                settingsViewModel.updateShowExportDialog(showDialog)
+                                savePdfLauncher.launch(exportFile)
+                                pendingExportFilename = null
+                            }
+                        )
+                    } else {
+                        savePdfLauncher.launch(exportFile)
+                        pendingExportFilename = null
+                    }
+                }
+
                 MoleDetailsScreen(
                     state = moleDetailsState,
                     warnOnEmptyMoleDeletion = warnOnEmptyMoleDeletion,
@@ -226,6 +435,36 @@ fun SkinHistoryNavGraph(
                     },
                     onDeleteHistoryEntry = { entryId ->
                         moleDetailsViewModel.deleteHistoryEntry(entryId)
+                    },
+                    onSharePdf = {
+                        moleDetailsViewModel.generateMoleReport(context, getColorLabel = { color ->
+                            val entry = moleDetailsState.colorSettings.find { it.hex.equals(color.removePrefix("#"), ignoreCase = true) }
+                            entry?.label ?: context.getString(R.string.color_other)
+                        }) { file ->
+                            val uri = androidx.core.content.FileProvider.getUriForFile(
+                                context,
+                                "${context.packageName}.fileprovider",
+                                file
+                            )
+                            val intent = android.content.Intent(android.content.Intent.ACTION_SEND).apply {
+                                type = "application/pdf"
+                                putExtra(android.content.Intent.EXTRA_STREAM, uri)
+                                addFlags(android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                            }
+                            context.startActivity(android.content.Intent.createChooser(intent, context.getString(R.string.share_as_pdf)))
+                        }
+                    },
+                    onSavePdf = {
+                        val mole = moleDetailsState.mole
+                        if (mole != null) {
+                            val sideLower = mole.side.lowercase()
+                            val viewName = if (sideLower.contains("front")) context.getString(R.string.front) else if (sideLower.contains("back")) context.getString(R.string.back) else mole.side
+                            val dateStr = java.time.LocalDate.now().format(java.time.format.DateTimeFormatter.ofPattern("dd-MM-yyyy"))
+                            val fileName = "Report_${viewName}_${mole.profileName}_${dateStr}.pdf"
+                            pendingExportFilename = fileName
+                        } else {
+                            pendingExportFilename = "mole_report.pdf"
+                        }
                     }
                 )
             }

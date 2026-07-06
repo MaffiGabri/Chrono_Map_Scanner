@@ -29,10 +29,7 @@ class BackgroundSettingsViewModel @Inject constructor(
 
     private val currentProfile = settingsRepository.currentProfile
 
-    val userSettings = combine(
-        settingsRepository.gender,
-        settingsRepository.bodyType
-    ) { gender, bodyType -> UserSettings(gender, bodyType) }
+    val userSettings: StateFlow<UserSettings> = settingsRepository.userSettings
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), UserSettings(Gender.MALE, BodyType.SLIM))
 
     @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)

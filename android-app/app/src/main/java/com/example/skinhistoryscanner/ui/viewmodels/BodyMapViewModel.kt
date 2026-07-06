@@ -171,10 +171,7 @@ class BodyMapViewModel @Inject constructor(
         filteredMoles to counts
     }.distinctUntilChanged()
 
-    private val _userSettingsFlow = combine(
-        settingsRepository.gender,
-        settingsRepository.bodyType
-    ) { gender, bodyType -> UserSettings(gender, bodyType) }
+    private val _userSettingsFlow = settingsRepository.userSettings
 
     private data class InterfaceSettingsData(val keepLegend: Boolean, val rapidInsert: Boolean, val rapidUpdate: Boolean, val showZoomButton: Boolean)
     private val _interfaceSettingsFlow = combine(

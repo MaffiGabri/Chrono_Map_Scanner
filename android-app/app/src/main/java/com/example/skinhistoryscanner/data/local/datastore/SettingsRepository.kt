@@ -53,6 +53,9 @@ class SettingsRepository @Inject constructor(
         val SCANNER_INTERVAL_MIN = longPreferencesKey("scanner_interval_min")
         
         val WARN_ON_EMPTY_MOLE_DELETION = booleanPreferencesKey("warn_on_empty_mole_deletion")
+        val PDF_QUALITY = stringPreferencesKey("pdf_quality")
+        val OPEN_PDF_AUTOMATICALLY = booleanPreferencesKey("open_pdf_automatically")
+        val SHOW_EXPORT_DIALOG = booleanPreferencesKey("show_export_dialog")
     }
 
     /**
@@ -106,6 +109,47 @@ class SettingsRepository @Inject constructor(
     val bodyType: Flow<BodyType> = currentProfile.flatMapLatest { profile ->
         dataStore.data.map { prefs ->
             BodyType.valueOf(prefs[PreferencesKeys.bodyTypeKey(profile)] ?: BodyType.SLIM.name)
+        }
+    }
+
+    val pdfQuality: Flow<com.example.skinhistoryscanner.data.domain.PdfQuality> = dataStore.data.map { prefs ->
+        val qualityStr = prefs[PreferencesKeys.PDF_QUALITY] ?: com.example.skinhistoryscanner.data.domain.PdfQuality.MEDIUM.name
+        try {
+            com.example.skinhistoryscanner.data.domain.PdfQuality.valueOf(qualityStr)
+        } catch (e: IllegalArgumentException) {
+            com.example.skinhistoryscanner.data.domain.PdfQuality.MEDIUM
+        }
+    }
+
+    val openPdfAutomatically: Flow<Boolean> = dataStore.data.map { prefs ->
+        prefs[PreferencesKeys.OPEN_PDF_AUTOMATICALLY] ?: false
+    }
+
+    val showExportDialog: Flow<Boolean> = dataStore.data.map { prefs ->
+        prefs[PreferencesKeys.SHOW_EXPORT_DIALOG] ?: true
+    }
+
+    val userSettings: Flow<com.example.skinhistoryscanner.data.domain.UserSettings> = kotlinx.coroutines.flow.combine(
+        gender, bodyType, pdfQuality, openPdfAutomatically, showExportDialog
+    ) { g, b, p, o, s ->
+        com.example.skinhistoryscanner.data.domain.UserSettings(g, b, p, o, s)
+    }
+
+    suspend fun setPdfQuality(quality: com.example.skinhistoryscanner.data.domain.PdfQuality) {
+        dataStore.edit { prefs ->
+            prefs[PreferencesKeys.PDF_QUALITY] = quality.name
+        }
+    }
+
+    suspend fun setOpenPdfAutomatically(open: Boolean) {
+        dataStore.edit { prefs ->
+            prefs[PreferencesKeys.OPEN_PDF_AUTOMATICALLY] = open
+        }
+    }
+
+    suspend fun setShowExportDialog(show: Boolean) {
+        dataStore.edit { prefs ->
+            prefs[PreferencesKeys.SHOW_EXPORT_DIALOG] = show
         }
     }
 

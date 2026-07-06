@@ -39,6 +39,8 @@ class MoleDetailsViewModel @AssistedInject constructor(
         fun create(moleId: String): MoleDetailsViewModel
     }
 
+    private val _isGeneratingReport = kotlinx.coroutines.flow.MutableStateFlow(false)
+
     @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
     val moleDetailsUiState: StateFlow<MoleDetailsUiState> = combine(
         moleRepository.getMoleByIdWithHistory(moleId).flatMapLatest { mole ->
@@ -51,14 +53,15 @@ class MoleDetailsViewModel @AssistedInject constructor(
             }
         },
         settingsRepository.colorSettings,
-        settingsRepository.gender,
-        settingsRepository.bodyType
-    ) { moleAndVariant, colors, gender, bodyType ->
+        settingsRepository.userSettings,
+        _isGeneratingReport
+    ) { moleAndVariant, colors, settings, isGen ->
         MoleDetailsUiState(
-            mole = moleAndVariant.first,
-            variant = moleAndVariant.second,
+            mole = moleAndVariant.first as? com.example.skinhistoryscanner.data.domain.Mole,
+            variant = moleAndVariant.second as? com.example.skinhistoryscanner.data.local.room.BackgroundVariantEntity,
             colorSettings = colors,
-            userSettings = UserSettings(gender, bodyType)
+            userSettings = settings,
+            isGeneratingReport = isGen
         )
     }.flowOn(kotlinx.coroutines.Dispatchers.Default).stateIn(
         scope = viewModelScope,
@@ -150,6 +153,34 @@ class MoleDetailsViewModel @AssistedInject constructor(
         viewModelScope.launch {
             val path = fileRepository.saveImageFromUri(uri, prefix)
             onSaved(path)
+        }
+    }
+
+    fun generateMoleReport(context: android.content.Context, getColorLabel: (String) -> String, onComplete: (java.io.File) -> Unit) {
+        if (_isGeneratingReport.value) return
+        _isGeneratingReport.value = true
+        val currentMole = moleDetailsUiState.value.mole
+        if (currentMole == null) {
+            _isGeneratingReport.value = false
+            return
+        }
+        val userSettings = moleDetailsUiState.value.userSettings
+        val colorLabel = getColorLabel(currentMole.color)
+
+        viewModelScope.launch {
+            try {
+                val file = com.example.skinhistoryscanner.utils.GlobalReportGenerator.generateMolePdf(
+                    context = context,
+                    mole = currentMole,
+                    userSettings = userSettings,
+                    colorLabel = colorLabel
+                )
+                onComplete(file)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            } finally {
+                _isGeneratingReport.value = false
+            }
         }
     }
 

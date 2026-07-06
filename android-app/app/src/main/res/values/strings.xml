@@ -195,7 +195,7 @@
     <string name="generating_report">Generazione report in corso...</string>
     <string name="error_generating_report">Errore durante la generazione del report</string>
     <string name="report_title_mole">Report Difetto</string>
-    <string name="report_title_global">Report Globale Difetti</string>
+    <string name="report_title_global">Report Globale</string>
     <string name="report_category">Categoria:</string>
     <string name="report_date">Data ultima modifica:</string>
 

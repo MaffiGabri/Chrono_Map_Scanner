@@ -71,6 +71,11 @@ fun SettingsScreen(
     onUpdateWarnOnEmptyMoleDeletion: (Boolean) -> Unit,
     onDebugSeed: () -> Unit,
     onTestNotification: () -> Unit,
+    onExportPdf: () -> Unit,
+    onSavePdf: () -> Unit,
+    onUpdatePdfQuality: (com.example.skinhistoryscanner.data.domain.PdfQuality) -> Unit,
+    onUpdateOpenPdfAutomatically: (Boolean) -> Unit,
+    onUpdateShowExportDialog: (Boolean) -> Unit,
     backgroundSettingsContent: @Composable () -> Unit
 ) {
     var currentView by remember { mutableStateOf(SettingsView.MAIN) }
@@ -171,6 +176,15 @@ fun SettingsScreen(
                         onUpdateScannerSettings = onUpdateScannerSettings,
                         warnOnEmptyMoleDeletion = state.warnOnEmptyMoleDeletion,
                         onUpdateWarnOnEmptyMoleDeletion = onUpdateWarnOnEmptyMoleDeletion,
+                        isGeneratingGlobalReport = state.isGeneratingGlobalReport,
+                        pdfQuality = state.userSettings.pdfQuality,
+                        openPdfAutomatically = state.userSettings.openPdfAutomatically,
+                        showExportDialog = state.userSettings.showExportDialog,
+                        onUpdatePdfQuality = onUpdatePdfQuality,
+                        onUpdateOpenPdfAutomatically = onUpdateOpenPdfAutomatically,
+                        onUpdateShowExportDialog = onUpdateShowExportDialog,
+                        onExportPdf = onExportPdf,
+                        onSavePdf = onSavePdf,
                         onDebugSeed = onDebugSeed
                     )
                     SettingsView.PROFILES_MGMT -> ProfilesManagement(
@@ -678,6 +692,15 @@ fun DatabaseSettings(
     onUpdateScannerSettings: (Long, Long) -> Unit,
     warnOnEmptyMoleDeletion: Boolean,
     onUpdateWarnOnEmptyMoleDeletion: (Boolean) -> Unit,
+    isGeneratingGlobalReport: Boolean,
+    pdfQuality: com.example.skinhistoryscanner.data.domain.PdfQuality,
+    openPdfAutomatically: Boolean,
+    showExportDialog: Boolean,
+    onUpdatePdfQuality: (com.example.skinhistoryscanner.data.domain.PdfQuality) -> Unit,
+    onUpdateOpenPdfAutomatically: (Boolean) -> Unit,
+    onUpdateShowExportDialog: (Boolean) -> Unit,
+    onExportPdf: () -> Unit,
+    onSavePdf: () -> Unit,
     onDebugSeed: () -> Unit
 ) {
     Column(modifier = Modifier.padding(20.dp).verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(16.dp)) {
@@ -709,6 +732,100 @@ fun DatabaseSettings(
                         Icon(Icons.Default.FileDownload, null)
                         Spacer(Modifier.width(8.dp))
                         Text(stringResource(R.string.import_db))
+                    }
+                }
+                Spacer(Modifier.height(16.dp))
+                
+                var showQualityDropdown by remember { mutableStateOf(false) }
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    Text("Qualità Immagini PDF", style = MaterialTheme.typography.labelMedium)
+                    Spacer(Modifier.height(8.dp))
+                    androidx.compose.material3.OutlinedButton(
+                        onClick = { showQualityDropdown = true },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(when(pdfQuality) {
+                            com.example.skinhistoryscanner.data.domain.PdfQuality.LOW -> "Bassa (Veloce, Leggera)"
+                            com.example.skinhistoryscanner.data.domain.PdfQuality.MEDIUM -> "Media (Bilanciata)"
+                            com.example.skinhistoryscanner.data.domain.PdfQuality.HIGH -> "Alta (FullHD, Pesante)"
+                        })
+                    }
+                    androidx.compose.material3.DropdownMenu(
+                        expanded = showQualityDropdown,
+                        onDismissRequest = { showQualityDropdown = false }
+                    ) {
+                        com.example.skinhistoryscanner.data.domain.PdfQuality.entries.forEach { q ->
+                            androidx.compose.material3.DropdownMenuItem(
+                                text = { Text(when(q) {
+                                    com.example.skinhistoryscanner.data.domain.PdfQuality.LOW -> "Bassa (Veloce, Leggera)"
+                                    com.example.skinhistoryscanner.data.domain.PdfQuality.MEDIUM -> "Media (Bilanciata)"
+                                    com.example.skinhistoryscanner.data.domain.PdfQuality.HIGH -> "Alta (FullHD, Pesante)"
+                                }) },
+                                onClick = {
+                                    onUpdatePdfQuality(q)
+                                    showQualityDropdown = false
+                                }
+                            )
+                        }
+                    }
+                }
+
+                Spacer(Modifier.height(16.dp))
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth().clickable { onUpdateOpenPdfAutomatically(!openPdfAutomatically) }
+                ) {
+                    androidx.compose.material3.Checkbox(
+                        checked = openPdfAutomatically,
+                        onCheckedChange = { onUpdateOpenPdfAutomatically(it) }
+                    )
+                    Spacer(Modifier.width(8.dp))
+                    Text("Apri PDF automaticamente al termine", style = MaterialTheme.typography.bodyMedium)
+                }
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth().clickable { onUpdateShowExportDialog(!showExportDialog) }
+                ) {
+                    androidx.compose.material3.Checkbox(
+                        checked = showExportDialog,
+                        onCheckedChange = { onUpdateShowExportDialog(it) }
+                    )
+                    Spacer(Modifier.width(8.dp))
+                    Text("Mostra sempre la finestra di esportazione", style = MaterialTheme.typography.bodyMedium)
+                }
+                
+                Spacer(Modifier.height(16.dp))
+                Button(
+                    onClick = onExportPdf,
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(12.dp),
+                    enabled = !isGeneratingGlobalReport
+                ) {
+                    if (isGeneratingGlobalReport) {
+                        androidx.compose.material3.CircularProgressIndicator(modifier = Modifier.size(24.dp), color = MaterialTheme.colorScheme.onPrimary, strokeWidth = 2.dp)
+                        Spacer(Modifier.width(8.dp))
+                        Text(stringResource(R.string.export_all_pdf) + "...")
+                    } else {
+                        Icon(androidx.compose.material.icons.Icons.Default.Share, null)
+                        Spacer(Modifier.width(8.dp))
+                        Text(stringResource(R.string.export_all_pdf))
+                    }
+                }
+                Spacer(Modifier.height(16.dp))
+                Button(
+                    onClick = onSavePdf,
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(12.dp),
+                    enabled = !isGeneratingGlobalReport
+                ) {
+                    if (isGeneratingGlobalReport) {
+                        androidx.compose.material3.CircularProgressIndicator(modifier = Modifier.size(24.dp), color = MaterialTheme.colorScheme.onPrimary, strokeWidth = 2.dp)
+                        Spacer(Modifier.width(8.dp))
+                        Text("Salva in locale (PDF)...")
+                    } else {
+                        Icon(androidx.compose.material.icons.Icons.Default.Download, null)
+                        Spacer(Modifier.width(8.dp))
+                        Text("Salva in locale (PDF)")
                     }
                 }
                 Spacer(Modifier.height(16.dp))

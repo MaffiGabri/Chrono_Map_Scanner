@@ -68,7 +68,9 @@ fun MoleDetailsScreen(
     onUpdateColor: (String) -> Unit,
     onAddHistoryEntry: (LocalDate, String?, String?) -> Unit,
     onUpdateHistoryEntry: (String, LocalDate, String?, String?) -> Unit,
-    onDeleteHistoryEntry: (String) -> Unit
+    onDeleteHistoryEntry: (String) -> Unit,
+    onSharePdf: () -> Unit,
+    onSavePdf: () -> Unit
 ) {
     var showEmptyWarningDialog by remember { mutableStateOf(false) }
 
@@ -143,6 +145,20 @@ fun MoleDetailsScreen(
                     }
                 },
                 actions = {
+                    IconButton(onClick = onSharePdf, enabled = !state.isGeneratingReport) {
+                        if (state.isGeneratingReport) {
+                            androidx.compose.material3.CircularProgressIndicator(modifier = Modifier.size(24.dp), strokeWidth = 2.dp, color = MaterialTheme.colorScheme.onSurface)
+                        } else {
+                            Icon(Icons.Default.Share, contentDescription = stringResource(R.string.share_as_pdf))
+                        }
+                    }
+                    IconButton(onClick = onSavePdf, enabled = !state.isGeneratingReport) {
+                        if (state.isGeneratingReport) {
+                            androidx.compose.material3.CircularProgressIndicator(modifier = Modifier.size(24.dp), strokeWidth = 2.dp, color = MaterialTheme.colorScheme.onSurface)
+                        } else {
+                            Icon(androidx.compose.material.icons.Icons.Default.Download, contentDescription = "Salva PDF in locale")
+                        }
+                    }
                     IconButton(onClick = onReposition) {
                         Icon(Icons.Default.LocationOn, contentDescription = stringResource(R.string.update_position))
                     }
