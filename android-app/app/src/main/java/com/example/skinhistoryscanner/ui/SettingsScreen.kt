@@ -25,6 +25,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.filled.Build
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -34,8 +35,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.foundation.Image
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import androidx.compose.ui.res.stringResource
@@ -71,11 +76,6 @@ fun SettingsScreen(
     onUpdateWarnOnEmptyMoleDeletion: (Boolean) -> Unit,
     onDebugSeed: () -> Unit,
     onTestNotification: () -> Unit,
-    onExportPdf: () -> Unit,
-    onSavePdf: () -> Unit,
-    onUpdatePdfQuality: (com.example.skinhistoryscanner.data.domain.PdfQuality) -> Unit,
-    onUpdateOpenPdfAutomatically: (Boolean) -> Unit,
-    onUpdateShowExportDialog: (Boolean) -> Unit,
     backgroundSettingsContent: @Composable () -> Unit
 ) {
     var currentView by remember { mutableStateOf(SettingsView.MAIN) }
@@ -176,15 +176,6 @@ fun SettingsScreen(
                         onUpdateScannerSettings = onUpdateScannerSettings,
                         warnOnEmptyMoleDeletion = state.warnOnEmptyMoleDeletion,
                         onUpdateWarnOnEmptyMoleDeletion = onUpdateWarnOnEmptyMoleDeletion,
-                        isGeneratingGlobalReport = state.isGeneratingGlobalReport,
-                        pdfQuality = state.userSettings.pdfQuality,
-                        openPdfAutomatically = state.userSettings.openPdfAutomatically,
-                        showExportDialog = state.userSettings.showExportDialog,
-                        onUpdatePdfQuality = onUpdatePdfQuality,
-                        onUpdateOpenPdfAutomatically = onUpdateOpenPdfAutomatically,
-                        onUpdateShowExportDialog = onUpdateShowExportDialog,
-                        onExportPdf = onExportPdf,
-                        onSavePdf = onSavePdf,
                         onDebugSeed = onDebugSeed
                     )
                     SettingsView.PROFILES_MGMT -> ProfilesManagement(
@@ -692,15 +683,6 @@ fun DatabaseSettings(
     onUpdateScannerSettings: (Long, Long) -> Unit,
     warnOnEmptyMoleDeletion: Boolean,
     onUpdateWarnOnEmptyMoleDeletion: (Boolean) -> Unit,
-    isGeneratingGlobalReport: Boolean,
-    pdfQuality: com.example.skinhistoryscanner.data.domain.PdfQuality,
-    openPdfAutomatically: Boolean,
-    showExportDialog: Boolean,
-    onUpdatePdfQuality: (com.example.skinhistoryscanner.data.domain.PdfQuality) -> Unit,
-    onUpdateOpenPdfAutomatically: (Boolean) -> Unit,
-    onUpdateShowExportDialog: (Boolean) -> Unit,
-    onExportPdf: () -> Unit,
-    onSavePdf: () -> Unit,
     onDebugSeed: () -> Unit
 ) {
     Column(modifier = Modifier.padding(20.dp).verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(16.dp)) {
@@ -735,100 +717,6 @@ fun DatabaseSettings(
                     }
                 }
                 Spacer(Modifier.height(16.dp))
-                
-                var showQualityDropdown by remember { mutableStateOf(false) }
-                Column(modifier = Modifier.fillMaxWidth()) {
-                    Text("Qualità Immagini PDF", style = MaterialTheme.typography.labelMedium)
-                    Spacer(Modifier.height(8.dp))
-                    androidx.compose.material3.OutlinedButton(
-                        onClick = { showQualityDropdown = true },
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Text(when(pdfQuality) {
-                            com.example.skinhistoryscanner.data.domain.PdfQuality.LOW -> "Bassa (Veloce, Leggera)"
-                            com.example.skinhistoryscanner.data.domain.PdfQuality.MEDIUM -> "Media (Bilanciata)"
-                            com.example.skinhistoryscanner.data.domain.PdfQuality.HIGH -> "Alta (FullHD, Pesante)"
-                        })
-                    }
-                    androidx.compose.material3.DropdownMenu(
-                        expanded = showQualityDropdown,
-                        onDismissRequest = { showQualityDropdown = false }
-                    ) {
-                        com.example.skinhistoryscanner.data.domain.PdfQuality.entries.forEach { q ->
-                            androidx.compose.material3.DropdownMenuItem(
-                                text = { Text(when(q) {
-                                    com.example.skinhistoryscanner.data.domain.PdfQuality.LOW -> "Bassa (Veloce, Leggera)"
-                                    com.example.skinhistoryscanner.data.domain.PdfQuality.MEDIUM -> "Media (Bilanciata)"
-                                    com.example.skinhistoryscanner.data.domain.PdfQuality.HIGH -> "Alta (FullHD, Pesante)"
-                                }) },
-                                onClick = {
-                                    onUpdatePdfQuality(q)
-                                    showQualityDropdown = false
-                                }
-                            )
-                        }
-                    }
-                }
-
-                Spacer(Modifier.height(16.dp))
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.fillMaxWidth().clickable { onUpdateOpenPdfAutomatically(!openPdfAutomatically) }
-                ) {
-                    androidx.compose.material3.Checkbox(
-                        checked = openPdfAutomatically,
-                        onCheckedChange = { onUpdateOpenPdfAutomatically(it) }
-                    )
-                    Spacer(Modifier.width(8.dp))
-                    Text("Apri PDF automaticamente al termine", style = MaterialTheme.typography.bodyMedium)
-                }
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.fillMaxWidth().clickable { onUpdateShowExportDialog(!showExportDialog) }
-                ) {
-                    androidx.compose.material3.Checkbox(
-                        checked = showExportDialog,
-                        onCheckedChange = { onUpdateShowExportDialog(it) }
-                    )
-                    Spacer(Modifier.width(8.dp))
-                    Text("Mostra sempre la finestra di esportazione", style = MaterialTheme.typography.bodyMedium)
-                }
-                
-                Spacer(Modifier.height(16.dp))
-                Button(
-                    onClick = onExportPdf,
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(12.dp),
-                    enabled = !isGeneratingGlobalReport
-                ) {
-                    if (isGeneratingGlobalReport) {
-                        androidx.compose.material3.CircularProgressIndicator(modifier = Modifier.size(24.dp), color = MaterialTheme.colorScheme.onPrimary, strokeWidth = 2.dp)
-                        Spacer(Modifier.width(8.dp))
-                        Text(stringResource(R.string.export_all_pdf) + "...")
-                    } else {
-                        Icon(androidx.compose.material.icons.Icons.Default.Share, null)
-                        Spacer(Modifier.width(8.dp))
-                        Text(stringResource(R.string.export_all_pdf))
-                    }
-                }
-                Spacer(Modifier.height(16.dp))
-                Button(
-                    onClick = onSavePdf,
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(12.dp),
-                    enabled = !isGeneratingGlobalReport
-                ) {
-                    if (isGeneratingGlobalReport) {
-                        androidx.compose.material3.CircularProgressIndicator(modifier = Modifier.size(24.dp), color = MaterialTheme.colorScheme.onPrimary, strokeWidth = 2.dp)
-                        Spacer(Modifier.width(8.dp))
-                        Text("Salva in locale (PDF)...")
-                    } else {
-                        Icon(androidx.compose.material.icons.Icons.Default.Download, null)
-                        Spacer(Modifier.width(8.dp))
-                        Text("Salva in locale (PDF)")
-                    }
-                }
-                Spacer(Modifier.height(16.dp))
                 Button(
                     onClick = onDebugSeed,
                     modifier = Modifier.fillMaxWidth(),
@@ -857,7 +745,7 @@ fun DatabaseSettings(
                 ) {
                     Text("Scanner Integrità Dati", fontWeight = FontWeight.Bold)
                     IconButton(onClick = { showScannerInfoDialog = true }, modifier = Modifier.size(24.dp)) {
-                        Icon(Icons.Default.Info, contentDescription = "Info Scanner", modifier = Modifier.size(20.dp))
+                        Icon(Icons.Default.Info, contentDescription = stringResource(R.string.app_info_title), modifier = Modifier.size(20.dp))
                     }
                 }
                 Spacer(Modifier.height(8.dp))
@@ -1021,104 +909,176 @@ fun ProfilesManagement(
 
 @Composable
 fun AboutScreen() {
+    val uriHandler = LocalUriHandler.current
+
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(24.dp),
+            .verticalScroll(rememberScrollState())
+            .padding(horizontal = 24.dp, vertical = 32.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
     ) {
-        // App Icon / Logo
-        Surface(
-            modifier = Modifier.size(120.dp),
-            shape = CircleShape,
-            color = MaterialTheme.colorScheme.primaryContainer,
-            shadowElevation = 8.dp
+        // Architectural/Minimalist Header
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 32.dp),
+            contentAlignment = Alignment.TopStart
         ) {
-            Box(contentAlignment = Alignment.Center) {
-                Icon(
-                    Icons.Default.Favorite, 
-                    contentDescription = stringResource(R.string.app_logo),
-                    modifier = Modifier.size(60.dp), 
-                    tint = MaterialTheme.colorScheme.primary
+            Column {
+                Text(
+                    text = stringResource(R.string.app_name).uppercase(),
+                    style = MaterialTheme.typography.displaySmall,
+                    fontWeight = FontWeight.Light,
+                    letterSpacing = 4.sp,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+                Box(
+                    modifier = Modifier
+                        .padding(top = 8.dp)
+                        .height(2.dp)
+                        .width(60.dp)
+                        .background(MaterialTheme.colorScheme.primary)
+                )
+                Text(
+                    text = stringResource(R.string.version_label, "1.0.0"),
+                    style = MaterialTheme.typography.labelLarge,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(top = 16.dp)
                 )
             }
         }
-        
-        Spacer(Modifier.height(24.dp))
-        
-        Text(
-            text = stringResource(R.string.app_name),
-            style = MaterialTheme.typography.headlineLarge,
-            fontWeight = FontWeight.Black,
-            color = MaterialTheme.colorScheme.onSurface
-        )
-        Text(
-            text = stringResource(R.string.version_label, "1.0.0"),
-            style = MaterialTheme.typography.titleMedium,
-            color = MaterialTheme.colorScheme.primary,
-            fontWeight = FontWeight.SemiBold
-        )
-        
-        Spacer(Modifier.height(48.dp))
-        
-        // Developer Card
+
+        // Developer Profile Section (Mies van der Rohe inspired clean block)
         Card(
             modifier = Modifier.fillMaxWidth(),
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)),
-            elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-            shape = RoundedCornerShape(24.dp)
+            shape = RoundedCornerShape(0.dp), // Sharp geometric corners
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+            elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
         ) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(32.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
+                    .padding(vertical = 16.dp)
             ) {
-                Text(
-                    text = "👨‍💻 " + stringResource(R.string.developed_by),
-                    style = MaterialTheme.typography.labelLarge,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-                Spacer(Modifier.height(8.dp))
-                Text(
-                    text = "Gabriele Maffione",
-                    style = MaterialTheme.typography.headlineSmall,
-                    fontWeight = FontWeight.ExtraBold,
-                    color = MaterialTheme.colorScheme.onSurface
-                )
-                
-                Spacer(Modifier.height(24.dp))
-                HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant, thickness = 1.dp)
-                Spacer(Modifier.height(24.dp))
-                
-                // Vibe Coding Badge
-                Surface(
-                    color = MaterialTheme.colorScheme.tertiaryContainer,
-                    shape = RoundedCornerShape(16.dp),
-                    modifier = Modifier.fillMaxWidth()
+                // Profile Image with architectural transparent integration
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 8.dp),
+                    contentAlignment = Alignment.Center
                 ) {
-                    Row(
-                        modifier = Modifier.padding(16.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.Center
+                    // We removed the harsh border and background block to allow the transparent
+                    // PNG bust to blend seamlessly with the clean architectural background.
+                    Image(
+                        painter = painterResource(id = R.drawable.profile_gabriele),
+                        contentDescription = stringResource(R.string.about_developer_name),
+                        modifier = Modifier
+                            .size(160.dp)
+                            .padding(8.dp),
+                        contentScale = ContentScale.Fit
+                    )
+                }
+
+                Spacer(Modifier.height(24.dp))
+
+                // Name and Role
+                Text(
+                    text = "GABRIELE MAFFIONE",
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Medium,
+                    letterSpacing = 2.sp,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier.align(Alignment.CenterHorizontally)
+                )
+
+                Text(
+                    text = stringResource(R.string.about_role).uppercase(),
+                    style = MaterialTheme.typography.labelSmall,
+                    fontWeight = FontWeight.Light,
+                    letterSpacing = 1.5.sp,
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.align(Alignment.CenterHorizontally).padding(top = 8.dp)
+                )
+
+                Spacer(Modifier.height(16.dp))
+
+                // Description
+                Text(
+                    text = stringResource(R.string.about_description),
+                    style = MaterialTheme.typography.bodyMedium,
+                    textAlign = TextAlign.Center,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier
+                        .align(Alignment.CenterHorizontally)
+                        .padding(horizontal = 24.dp)
+                )
+
+                Spacer(Modifier.height(32.dp))
+
+                // Links
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceEvenly
+                ) {
+                    TextButton(
+                        onClick = { uriHandler.openUri("https://maffionegabriele.wordpress.com/") },
+                        shape = RoundedCornerShape(0.dp)
                     ) {
-                        Icon(
-                            Icons.Default.Code, 
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.onTertiaryContainer,
-                            modifier = Modifier.size(24.dp)
-                        )
-                        Spacer(Modifier.width(12.dp))
                         Text(
-                            text = "Vibe code 100%",
-                            style = MaterialTheme.typography.bodyMedium,
+                            text = stringResource(R.string.about_portfolio).uppercase(),
+                            style = MaterialTheme.typography.labelLarge,
                             fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.onTertiaryContainer,
-                            textAlign = TextAlign.Center
+                            letterSpacing = 1.sp
+                        )
+                    }
+                    TextButton(
+                        onClick = { uriHandler.openUri("https://www.linkedin.com/in/gabriele-maffione") },
+                        shape = RoundedCornerShape(0.dp)
+                    ) {
+                        Text(
+                            text = stringResource(R.string.about_linkedin).uppercase(),
+                            style = MaterialTheme.typography.labelLarge,
+                            fontWeight = FontWeight.Bold,
+                            letterSpacing = 1.sp
                         )
                     }
                 }
+            }
+        }
+
+        Spacer(Modifier.height(32.dp))
+
+        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant, thickness = 1.dp)
+
+        Spacer(Modifier.height(32.dp))
+
+        // Replaced Vibe Coding Badge with Jules and Antigravity
+        Surface(
+            color = MaterialTheme.colorScheme.secondaryContainer,
+            shape = RoundedCornerShape(0.dp), // Architectural sharp corner
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Row(
+                modifier = Modifier.padding(16.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
+            ) {
+                Icon(
+                    Icons.Default.Build,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onSecondaryContainer,
+                    modifier = Modifier.size(20.dp)
+                )
+                Spacer(Modifier.width(12.dp))
+                Text(
+                    text = stringResource(R.string.about_developed_with).uppercase(),
+                    style = MaterialTheme.typography.labelMedium,
+                    fontWeight = FontWeight.Medium,
+                    letterSpacing = 1.sp,
+                    color = MaterialTheme.colorScheme.onSecondaryContainer,
+                    textAlign = TextAlign.Center
+                )
             }
         }
     }

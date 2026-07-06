@@ -1,4 +1,4 @@
-# ProGuard rules for TracciaNei
+# ProGuard rules for Chrono Map Scanner
 
 # ---- kotlinx.serialization ----
 # Keep serialization classes and their generated serializers

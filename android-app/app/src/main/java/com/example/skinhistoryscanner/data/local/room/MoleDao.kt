@@ -21,12 +21,7 @@ interface MoleDao {
     suspend fun getMolesWithHistory(profile: String): List<MoleWithHistory>
 
     @Query("""
-        SELECT m.id, m.x, m.y, m.variantId, m.color, h.date as historyDate, 
-            (SELECT imagePath FROM history_entries img_h 
-             WHERE img_h.mole_id = m.id 
-               AND img_h.imagePath IS NOT NULL 
-               AND img_h.date <= :targetDate 
-             ORDER BY img_h.date DESC LIMIT 1) as imagePath
+        SELECT m.id, m.x, m.y, m.variantId, m.color, h.date as historyDate, h.imagePath
         FROM moles m 
         LEFT JOIN history_entries h ON m.id = h.mole_id 
             AND h.date = (SELECT MAX(date) FROM history_entries WHERE mole_id = m.id AND date <= :targetDate)

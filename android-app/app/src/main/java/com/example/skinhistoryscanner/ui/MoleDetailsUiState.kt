@@ -16,6 +16,5 @@ data class MoleDetailsUiState(
     val colorSettings: List<ColorSetting> = emptyList(),
     val userSettings: UserSettings = UserSettings(),
     val isLoading: Boolean = false,
-    val isGeneratingReport: Boolean = false,
     val errorMessage: String? = null
 )

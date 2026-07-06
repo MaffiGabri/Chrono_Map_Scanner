@@ -1,19 +1,13 @@
-package com.example.skinhistoryscanner.data.domain
+﻿package com.example.skinhistoryscanner.data.domain
 import kotlinx.serialization.Serializable
 
 enum class Gender { MALE, FEMALE }
 
 enum class BodyType { SLIM, OVERWEIGHT }
-
-enum class PdfQuality { LOW, MEDIUM, HIGH }
-
 @Serializable
 data class UserSettings(
     val gender: Gender = Gender.MALE,
-    val bodyType: BodyType = BodyType.SLIM,
-    val pdfQuality: PdfQuality = PdfQuality.MEDIUM,
-    val openPdfAutomatically: Boolean = false,
-    val showExportDialog: Boolean = true
+    val bodyType: BodyType = BodyType.SLIM
 )
 
 enum class ReminderUnit { DAYS, MONTHS }

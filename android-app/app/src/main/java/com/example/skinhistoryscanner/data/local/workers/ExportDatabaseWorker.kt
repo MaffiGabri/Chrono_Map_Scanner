@@ -64,8 +64,7 @@ class ExportDatabaseWorker @AssistedInject constructor(
                 profileImage = settingsRepository.getProfileImageForProfile(profileName).first(),
                 settings = UserSettings(
                     gender = settingsRepository.getGenderForProfile(profileName).first(),
-                    bodyType = settingsRepository.getBodyTypeForProfile(profileName).first(),
-                    pdfQuality = settingsRepository.pdfQuality.first()
+                    bodyType = settingsRepository.getBodyTypeForProfile(profileName).first()
                 ),
                 reminders = ReminderSettings(
                     enabled = settingsRepository.remindersEnabled.first(),

@@ -1,5 +1,8 @@
 package com.example.skinhistoryscanner.ui.components
 
+import androidx.compose.ui.res.stringResource
+import com.example.skinhistoryscanner.R
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -69,7 +72,7 @@ fun MoleMarker(
                         .crossfade(true)
                         .size(150)
                         .build(),
-                    contentDescription = null,
+                    contentDescription = stringResource(R.string.desc_mole_thumbnail),
                     modifier = Modifier.fillMaxSize().clip(CircleShape),
                     contentScale = ContentScale.Crop
                 )

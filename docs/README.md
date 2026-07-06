@@ -1,9 +1,9 @@
-# Skin History Scanner - Mole Tracker App
+# Chrono Map Scanner - Mole Tracker App
 
-Skin History Scanner è un'applicazione Android progettata per mappare, tracciare e monitorare l'evoluzione nel tempo di nei e imperfezioni della pelle. Questo documento fornisce una panoramica generale del progetto.
+Chrono Map Scanner è un'applicazione Android progettata per mappare, tracciare e monitorare l'evoluzione nel tempo di nei e imperfezioni della pelle. Questo documento fornisce una panoramica generale del progetto.
 
 ## 🎯 Obiettivo del Progetto
-L'obiettivo di Skin History Scanner è fornire un'interfaccia intuitiva e robusta per la mappatura visiva sul corpo umano di un elevato numero di nei e imperfezioni (se ne prevedono 1000+). Gli utenti possono salvare foto scattate nel tempo per ogni singola imperfezione, permettendo un confronto storico e visivo utile per la prevenzione dermatologica.
+L'obiettivo di Chrono Map Scanner è fornire un'interfaccia intuitiva e robusta per la mappatura visiva sul corpo umano di un elevato numero di nei e imperfezioni (se ne prevedono 1000+). Gli utenti possono salvare foto scattate nel tempo per ogni singola imperfezione, permettendo un confronto storico e visivo utile per la prevenzione dermatologica.
 
 ## 👥 A chi è rivolta questa documentazione?
 1. **Utente/Proprietario:** Questa applicazione è pensata per essere facile e intuitiva senza bisogno di manuali complessi.
