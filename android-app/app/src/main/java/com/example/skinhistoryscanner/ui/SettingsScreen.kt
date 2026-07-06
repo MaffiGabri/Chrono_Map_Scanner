@@ -745,7 +745,7 @@ fun DatabaseSettings(
                 ) {
                     Text("Scanner Integrità Dati", fontWeight = FontWeight.Bold)
                     IconButton(onClick = { showScannerInfoDialog = true }, modifier = Modifier.size(24.dp)) {
-                        Icon(Icons.Default.Info, contentDescription = "Info Scanner", modifier = Modifier.size(20.dp))
+                        Icon(Icons.Default.Info, contentDescription = stringResource(R.string.app_info_title), modifier = Modifier.size(20.dp))
                     }
                 }
                 Spacer(Modifier.height(8.dp))
@@ -972,7 +972,7 @@ fun AboutScreen() {
                     // PNG bust to blend seamlessly with the clean architectural background.
                     Image(
                         painter = painterResource(id = R.drawable.profile_gabriele),
-                        contentDescription = "Gabriele Maffione",
+                        contentDescription = stringResource(R.string.about_developer_name),
                         modifier = Modifier
                             .size(160.dp)
                             .padding(8.dp),
