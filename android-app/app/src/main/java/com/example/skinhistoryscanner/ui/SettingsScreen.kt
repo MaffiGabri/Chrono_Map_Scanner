@@ -25,6 +25,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.filled.Build
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -960,26 +961,23 @@ fun AboutScreen() {
                     .fillMaxWidth()
                     .padding(vertical = 16.dp)
             ) {
-                // Profile Image with sharp architectural frame
+                // Profile Image with architectural transparent integration
                 Box(
                     modifier = Modifier
-                        .fillMaxWidth(),
+                        .fillMaxWidth()
+                        .padding(bottom = 8.dp),
                     contentAlignment = Alignment.Center
                 ) {
-                    Box(
+                    // We removed the harsh border and background block to allow the transparent
+                    // PNG bust to blend seamlessly with the clean architectural background.
+                    Image(
+                        painter = painterResource(id = R.drawable.profile_gabriele),
+                        contentDescription = "Gabriele Maffione",
                         modifier = Modifier
-                            .size(140.dp)
-                            .background(MaterialTheme.colorScheme.outlineVariant)
-                            .padding(2.dp)
-                            .background(MaterialTheme.colorScheme.surface)
-                    ) {
-                        Image(
-                            painter = painterResource(id = R.drawable.profile_gabriele),
-                            contentDescription = "Gabriele Maffione",
-                            modifier = Modifier.fillMaxSize(),
-                            contentScale = ContentScale.Crop
-                        )
-                    }
+                            .size(160.dp)
+                            .padding(8.dp),
+                        contentScale = ContentScale.Fit
+                    )
                 }
 
                 Spacer(Modifier.height(24.dp))

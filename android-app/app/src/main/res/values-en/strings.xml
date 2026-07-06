@@ -1,5 +1,6 @@
-<?xml version='1.0' encoding='utf-8'?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- App Name and common -->
     <string name="app_name">MoleTracker</string>
     <string name="app_logo">App logo</string>
     <string name="body_map_image">Body map image</string>
@@ -11,6 +12,8 @@
     <string name="action_back">Back</string>
     <string name="processing_data">Processing data...</string>
     <string name="error_camera">Camera error: %s</string>
+
+    <!-- BodyMapScreen -->
     <string name="reposition_hint">Tap the map to reposition the mole</string>
     <string name="add_hint">Tap the map to add a mole</string>
     <string name="categories">Categories</string>
@@ -24,6 +27,8 @@
     <string name="legend_title">Legend</string>
     <string name="flip_view">Flip body</string>
     <string name="marker_size">Marker size</string>
+
+    <!-- MoleDetailsScreen -->
     <string name="mole_details">Mole Details</string>
     <string name="side">Side</string>
     <string name="photo_menu_add">Take Photo</string>
@@ -46,6 +51,8 @@
     <string name="note_placeholder">Add a description or note...</string>
     <string name="date_label">Date: %s</string>
     <string name="delete_forever">Delete permanently</string>
+
+    <!-- SplitViewScreen -->
     <string name="date_of_addition">Date of addition</string>
     <string name="split_view_title">Photo Comparison</string>
     <string name="split_view_empty">At least 2 photos are required for comparison.</string>
@@ -55,6 +62,8 @@
     <string name="weeks_ago">%d weeks ago</string>
     <string name="months_ago">%d months ago</string>
     <string name="years_ago">%d years ago</string>
+
+    <!-- SettingsScreen -->
     <string name="settings_title">Settings</string>
     <string name="settings_title_main">Settings</string>
     <string name="settings_title_body">Body Profile</string>
@@ -122,6 +131,8 @@
     <string name="calendar_event_title">Chrono Map Scanner: Mole Check-up</string>
     <string name="calendar_event_desc">It\'s time to update your moles\' photos to monitor their evolution.</string>
     <string name="test_notification">Test Push Notification</string>
+
+    <!-- Camera and Image Editor -->
     <string name="camera_permission_required">Camera permission is required to take photos of moles.</string>
     <string name="camera_stability">Stability</string>
     <string name="camera_focus">Focus</string>
@@ -135,6 +146,8 @@
     <string name="editor_exit_desc">Unsaved changes will be lost.</string>
     <string name="editor_exit_confirm">Exit</string>
     <string name="editor_exit_cancel">Continue editing</string>
+
+    <!-- Import/Export Dialogs -->
     <string name="import_database_title">Import Database</string>
     <string name="import_database_desc">Choose how to import data from the selected file.</string>
     <string name="import_update_current">Update Current Profile</string>
@@ -142,6 +155,8 @@
     <string name="import_new_profile_name">New Profile Name</string>
     <string name="import_confirm_name">Import</string>
     <string name="action_cancel">Cancel</string>
+
+    <!-- Color Labels Keys -->
     <string name="color_alarm">Alarm / Urgent check</string>
     <string name="color_suspicious">Suspicious / Evolving</string>
     <string name="color_monitor">To monitor</string>
@@ -155,18 +170,26 @@
     <string name="photo">Photo</string>
     <string name="note">Note</string>
     <string name="mole_photo">Mole Photo</string>
+    <!-- Accessibility -->
     <string name="previous_photo">Previous photo</string>
     <string name="next_photo">Next photo</string>
+
     <string name="body_profile_note">Note: registered points will remain in their original positions even when changing body settings.</string>
+    <!-- Accessibility -->
     <string name="desc_mole_thumbnail">Mole thumbnail</string>
     <string name="desc_crop_image">Crop image</string>
     <string name="desc_delete_image">Delete image</string>
     <string name="desc_background_image">Background image</string>
     <string name="desc_add_mole">Add mole</string>
     <string name="desc_cancel_add">Cancel add mole</string>
+
+
+
+    <!-- About Section -->
     <string name="about_developed_with">Built with Jules and Antigravity</string>
     <string name="about_portfolio">Portfolio</string>
     <string name="about_linkedin">LinkedIn</string>
     <string name="about_role">Building Engineering-Architecture</string>
     <string name="about_description">Designing the spaces of tomorrow, starting from people.</string>
+
 </resources>
