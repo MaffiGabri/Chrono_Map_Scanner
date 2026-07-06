@@ -76,6 +76,8 @@ fun SettingsScreen(
     onUpdateWarnOnEmptyMoleDeletion: (Boolean) -> Unit,
     onDebugSeed: () -> Unit,
     onTestNotification: () -> Unit,
+    onUnlock3D: () -> Unit = {},
+    onToggleDebug3D: () -> Unit = {},
     backgroundSettingsContent: @Composable () -> Unit
 ) {
     var currentView by remember { mutableStateOf(SettingsView.MAIN) }
@@ -159,7 +161,9 @@ fun SettingsScreen(
                         state = state,
                         onEditName = { showNameEditDialog = true },
                         onPickImage = { galleryLauncher.launch("image/*") },
-                        onNavigate = { currentView = it }
+                        onNavigate = { currentView = it },
+                        onUnlock3D = onUnlock3D,
+                        onToggleDebug3D = onToggleDebug3D
                     )
                     SettingsView.BACKGROUND -> backgroundSettingsContent()
                     SettingsView.DATABASE -> DatabaseSettings(
@@ -222,7 +226,9 @@ fun MainSettings(
     state: SettingsUiState,
     onEditName: () -> Unit,
     onPickImage: () -> Unit,
-    onNavigate: (SettingsView) -> Unit
+    onNavigate: (SettingsView) -> Unit,
+    onUnlock3D: () -> Unit,
+    onToggleDebug3D: () -> Unit
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
         // Profile Header
