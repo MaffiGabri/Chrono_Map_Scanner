@@ -423,7 +423,9 @@ fun AddVariantButton(onAddSingle: (String, Uri) -> Unit, onAddMultiple: (List<Ur
 
     val cameraPermissionLauncher = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
         if (isGranted) {
-            val tmpFile = java.io.File(context.cacheDir, "camera_tmp_${System.currentTimeMillis()}.jpg")
+            val cameraDir = java.io.File(context.cacheDir, "camera_images")
+            cameraDir.mkdirs()
+            val tmpFile = java.io.File(cameraDir, "camera_tmp_${System.currentTimeMillis()}.jpg")
             val uri = androidx.core.content.FileProvider.getUriForFile(context, fileProviderAuthority, tmpFile)
             pendingSingleUri = uri
             takePhotoLauncher.launch(uri)
@@ -457,7 +459,9 @@ fun AddVariantButton(onAddSingle: (String, Uri) -> Unit, onAddMultiple: (List<Ur
                     modifier = Modifier.clickable { 
                         showPhotoMenu = false
                         if (androidx.core.content.ContextCompat.checkSelfPermission(context, android.Manifest.permission.CAMERA) == android.content.pm.PackageManager.PERMISSION_GRANTED) {
-                            val tmpFile = java.io.File(context.cacheDir, "camera_tmp_${System.currentTimeMillis()}.jpg")
+                            val cameraDir = java.io.File(context.cacheDir, "camera_images")
+                            cameraDir.mkdirs()
+                            val tmpFile = java.io.File(cameraDir, "camera_tmp_${System.currentTimeMillis()}.jpg")
                             val uri = androidx.core.content.FileProvider.getUriForFile(context, fileProviderAuthority, tmpFile)
                             pendingSingleUri = uri
                             takePhotoLauncher.launch(uri)
