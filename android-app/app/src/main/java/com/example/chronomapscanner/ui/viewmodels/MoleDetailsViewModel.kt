@@ -39,6 +39,8 @@ class MoleDetailsViewModel @AssistedInject constructor(
         fun create(moleId: String): MoleDetailsViewModel
     }
 
+    private val _isGeneratingReport = kotlinx.coroutines.flow.MutableStateFlow(false)
+
     @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
     val moleDetailsUiState: StateFlow<MoleDetailsUiState> = combine(
         moleRepository.getMoleByIdWithHistory(moleId).flatMapLatest { mole ->
@@ -52,13 +54,15 @@ class MoleDetailsViewModel @AssistedInject constructor(
         },
         settingsRepository.colorSettings,
         settingsRepository.gender,
-        settingsRepository.bodyType
-    ) { moleAndVariant, colors, gender, bodyType ->
+        settingsRepository.bodyType,
+        _isGeneratingReport
+    ) { moleAndVariant, colors, gender, bodyType, isGenerating ->
         MoleDetailsUiState(
             mole = moleAndVariant.first,
             variant = moleAndVariant.second,
             colorSettings = colors,
-            userSettings = UserSettings(gender, bodyType)
+            userSettings = UserSettings(gender, bodyType),
+            isGeneratingReport = isGenerating
         )
     }.flowOn(kotlinx.coroutines.Dispatchers.Default).stateIn(
         scope = viewModelScope,
@@ -159,6 +163,35 @@ class MoleDetailsViewModel @AssistedInject constructor(
         if (isEmpty) {
             viewModelScope.launch {
                 moleRepository.deleteMole(currentMole.id)
+            }
+        }
+    }
+
+    fun generateMoleReport(context: android.content.Context, onComplete: (java.io.File) -> Unit) {
+        if (_isGeneratingReport.value) return
+        _isGeneratingReport.value = true
+        val currentMole = moleDetailsUiState.value.mole
+        if (currentMole == null) {
+            _isGeneratingReport.value = false
+            return
+        }
+        val userSettings = moleDetailsUiState.value.userSettings
+
+        viewModelScope.launch {
+            try {
+                val colors = settingsRepository.colorSettings.first()
+                val colorLabel = colors.find { it.hex.equals(currentMole.color.removePrefix("#"), ignoreCase = true) }?.label ?: context.getString(com.example.chronomapscanner.R.string.color_other)
+                val file = com.example.chronomapscanner.utils.GlobalReportGenerator.generateMolePdf(
+                    context = context,
+                    mole = currentMole,
+                    userSettings = userSettings,
+                    colorLabel = colorLabel
+                )
+                onComplete(file)
+            } catch (e: Exception) {
+                // Ignore per ora
+            } finally {
+                _isGeneratingReport.value = false
             }
         }
     }

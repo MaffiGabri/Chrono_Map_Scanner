@@ -98,7 +98,67 @@ fun ChronoMapNavGraph(
                 val variantsForSelectedCategory by backgroundSettingsViewModel.variantsForSelectedCategory.collectAsStateWithLifecycle()
                 val userSettings by backgroundSettingsViewModel.userSettings.collectAsStateWithLifecycle()
 
+
+                val context = androidx.compose.ui.platform.LocalContext.current
+                val savePdfLauncher = androidx.activity.compose.rememberLauncherForActivityResult(
+                    androidx.activity.result.contract.ActivityResultContracts.CreateDocument("application/pdf")
+                ) { uri ->
+                    if (uri != null) {
+                        settingsViewModel.generateGlobalReport { file ->
+                            kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.IO).launch {
+                                try {
+                                    context.contentResolver.openOutputStream(uri)?.use { out ->
+                                        file.inputStream().use { input ->
+                                            input.copyTo(out)
+                                        }
+                                    }
+                                    kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.Main) {
+                                        android.widget.Toast.makeText(context, "PDF salvato con successo", android.widget.Toast.LENGTH_SHORT).show()
+                                        if (settingsState.userSettings.openPdfAutomatically) {
+                                            val viewIntent = android.content.Intent(android.content.Intent.ACTION_VIEW).apply {
+                                                setDataAndType(uri, "application/pdf")
+                                                addFlags(android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                                                addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
+                                            }
+                                            try {
+                                                context.startActivity(viewIntent)
+                                            } catch (e: android.content.ActivityNotFoundException) {
+                                                android.widget.Toast.makeText(context, "Nessuna app trovata per aprire il PDF", android.widget.Toast.LENGTH_SHORT).show()
+                                            }
+                                        }
+                                    }
+                                } catch (e: Exception) {
+                                    e.printStackTrace()
+                                }
+                            }
+                        }
+                    }
+                }
+
+                var pendingExportFilename by androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf<String?>(null) }
+                val exportFile = pendingExportFilename
+                if (exportFile != null) {
+                    if (settingsState.userSettings.showExportDialog) {
+                        com.example.chronomapscanner.ui.components.ExportDialog(
+                            initialQuality = settingsState.userSettings.pdfQuality,
+                            initialOpenPdf = settingsState.userSettings.openPdfAutomatically,
+                            onDismiss = { pendingExportFilename = null },
+                            onConfirm = { quality, openPdf, showDialog ->
+                                settingsViewModel.updatePdfQuality(quality)
+                                settingsViewModel.updateOpenPdfAutomatically(openPdf)
+                                settingsViewModel.updateShowExportDialog(showDialog)
+                                savePdfLauncher.launch(exportFile)
+                                pendingExportFilename = null
+                            }
+                        )
+                    } else {
+                        savePdfLauncher.launch(exportFile)
+                        pendingExportFilename = null
+                    }
+                }
+
                 SettingsScreen(
+
                     state = settingsState,
                     onBack = { navController.popBackStack() },
                     onUpdateProfileInfo = settingsViewModel::updateProfileInfo,
@@ -118,6 +178,29 @@ fun ChronoMapNavGraph(
                     onUpdateShowZoomButton = settingsViewModel::updateShowZoomButton,
                     onUpdateScannerSettings = settingsViewModel::updateScannerSettings,
                     onUpdateWarnOnEmptyMoleDeletion = settingsViewModel::updateWarnOnEmptyMoleDeletion,
+                    onUpdatePdfQuality = settingsViewModel::updatePdfQuality,
+                    onUpdateOpenPdfAutomatically = settingsViewModel::updateOpenPdfAutomatically,
+                    onUpdateShowExportDialog = settingsViewModel::updateShowExportDialog,
+                    onExportPdf = {
+                        settingsViewModel.generateGlobalReport { file ->
+                            val uri = androidx.core.content.FileProvider.getUriForFile(
+                                context,
+                                ".fileprovider",
+                                file
+                            )
+                            val intent = android.content.Intent(android.content.Intent.ACTION_SEND).apply {
+                                type = "application/pdf"
+                                putExtra(android.content.Intent.EXTRA_STREAM, uri)
+                                addFlags(android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                            }
+                            context.startActivity(android.content.Intent.createChooser(intent, context.getString(com.example.chronomapscanner.R.string.share_as_pdf)))
+                        }
+                    },
+                    onSavePdf = {
+                        val dateStr = java.time.LocalDate.now().format(java.time.format.DateTimeFormatter.ofPattern("dd-MM-yyyy"))
+                        val fileName = "Report_${settingsViewModel.currentProfile.value}_Globale_${dateStr}.pdf"
+                        pendingExportFilename = fileName
+                    },
                     onDebugSeed = settingsViewModel::debugResetAndSeed,
                     onTestNotification = settingsViewModel::testNotification,
                     backgroundSettingsContent = {
@@ -177,6 +260,65 @@ fun ChronoMapNavGraph(
                 val pendingPhotoPath by backStackEntry.savedStateHandle.getStateFlow<String?>("pendingPhotoPath", null).collectAsStateWithLifecycle()
                 val editingEntryId by backStackEntry.savedStateHandle.getStateFlow<String?>("editingEntryId", null).collectAsStateWithLifecycle()
 
+
+                val context = androidx.compose.ui.platform.LocalContext.current
+                val savePdfLauncher = androidx.activity.compose.rememberLauncherForActivityResult(
+                    androidx.activity.result.contract.ActivityResultContracts.CreateDocument("application/pdf")
+                ) { uri ->
+                    if (uri != null) {
+                        moleDetailsViewModel.generateMoleReport(context) { file ->
+                            kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.IO).launch {
+                                try {
+                                    context.contentResolver.openOutputStream(uri)?.use { out ->
+                                        file.inputStream().use { input ->
+                                            input.copyTo(out)
+                                        }
+                                    }
+                                    kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.Main) {
+                                        android.widget.Toast.makeText(context, "PDF salvato con successo", android.widget.Toast.LENGTH_SHORT).show()
+                                        if (moleDetailsState.userSettings.openPdfAutomatically) {
+                                            val viewIntent = android.content.Intent(android.content.Intent.ACTION_VIEW).apply {
+                                                setDataAndType(uri, "application/pdf")
+                                                addFlags(android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                                                addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
+                                            }
+                                            try {
+                                                context.startActivity(viewIntent)
+                                            } catch (e: android.content.ActivityNotFoundException) {
+                                                android.widget.Toast.makeText(context, "Nessuna app trovata per aprire il PDF", android.widget.Toast.LENGTH_SHORT).show()
+                                            }
+                                        }
+                                    }
+                                } catch (e: Exception) {
+                                    e.printStackTrace()
+                                }
+                            }
+                        }
+                    }
+                }
+
+                var pendingExportFilename by androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf<String?>(null) }
+                val exportFile = pendingExportFilename
+                if (exportFile != null) {
+                    if (moleDetailsState.userSettings.showExportDialog) {
+                        com.example.chronomapscanner.ui.components.ExportDialog(
+                            initialQuality = moleDetailsState.userSettings.pdfQuality,
+                            initialOpenPdf = moleDetailsState.userSettings.openPdfAutomatically,
+                            onDismiss = { pendingExportFilename = null },
+                            onConfirm = { quality, openPdf, showDialog ->
+                                settingsViewModel.updatePdfQuality(quality)
+                                settingsViewModel.updateOpenPdfAutomatically(openPdf)
+                                settingsViewModel.updateShowExportDialog(showDialog)
+                                savePdfLauncher.launch(exportFile)
+                                pendingExportFilename = null
+                            }
+                        )
+                    } else {
+                        savePdfLauncher.launch(exportFile)
+                        pendingExportFilename = null
+                    }
+                }
+
                 MoleDetailsScreen(
                     state = moleDetailsState,
                     warnOnEmptyMoleDeletion = warnOnEmptyMoleDeletion,
@@ -226,6 +368,33 @@ fun ChronoMapNavGraph(
                     },
                     onDeleteHistoryEntry = { entryId ->
                         moleDetailsViewModel.deleteHistoryEntry(entryId)
+                    },
+                    onSharePdf = {
+                        moleDetailsViewModel.generateMoleReport(context) { file ->
+                            val uri = androidx.core.content.FileProvider.getUriForFile(
+                                context,
+                                ".fileprovider",
+                                file
+                            )
+                            val intent = android.content.Intent(android.content.Intent.ACTION_SEND).apply {
+                                type = "application/pdf"
+                                putExtra(android.content.Intent.EXTRA_STREAM, uri)
+                                addFlags(android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                            }
+                            context.startActivity(android.content.Intent.createChooser(intent, context.getString(com.example.chronomapscanner.R.string.share_as_pdf)))
+                        }
+                    },
+                    onSavePdf = {
+                        val mole = moleDetailsState.mole
+                        if (mole != null) {
+                            val sideLower = mole.side.lowercase()
+                            val viewName = if (sideLower.contains("front")) context.getString(com.example.chronomapscanner.R.string.front) else if (sideLower.contains("back")) context.getString(com.example.chronomapscanner.R.string.back) else mole.side
+                            val dateStr = java.time.LocalDate.now().format(java.time.format.DateTimeFormatter.ofPattern("dd-MM-yyyy"))
+                            val fileName = "Report_${viewName}_${mole.profileName}_${dateStr}.pdf"
+                            pendingExportFilename = fileName
+                        } else {
+                            pendingExportFilename = "mole_report.pdf"
+                        }
                     }
                 )
             }

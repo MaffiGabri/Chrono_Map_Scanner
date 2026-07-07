@@ -66,8 +66,13 @@ class SettingsViewModel @Inject constructor(
 
     private val _userSettingsFlow = combine(
         settingsRepository.gender,
-        settingsRepository.bodyType
-    ) { gender, bodyType -> UserSettings(gender, bodyType) }
+        settingsRepository.bodyType,
+        settingsRepository.pdfQuality,
+        settingsRepository.openPdfAutomatically,
+        settingsRepository.showExportDialog
+    ) { gender, bodyType, pdfQuality, openPdfAutomatically, showExportDialog -> 
+        UserSettings(gender, bodyType, pdfQuality, openPdfAutomatically, showExportDialog) 
+    }
 
     private val _reminderSettingsFlow = combine(
         settingsRepository.remindersEnabled,
@@ -225,6 +230,24 @@ class SettingsViewModel @Inject constructor(
         }
     }
 
+    fun updatePdfQuality(quality: com.example.chronomapscanner.data.domain.PdfQuality) {
+        viewModelScope.launch {
+            settingsRepository.setPdfQuality(quality)
+        }
+    }
+
+    fun updateOpenPdfAutomatically(open: Boolean) {
+        viewModelScope.launch {
+            settingsRepository.setOpenPdfAutomatically(open)
+        }
+    }
+
+    fun updateShowExportDialog(show: Boolean) {
+        viewModelScope.launch {
+            settingsRepository.setShowExportDialog(show)
+        }
+    }
+
     fun updateReminderSettings(enabled: Boolean, value: Int, unit: ReminderUnit) {
         viewModelScope.launch {
             val currentState = settingsUiState.value.reminderSettings
@@ -337,20 +360,23 @@ class SettingsViewModel @Inject constructor(
     }
 
 
-    fun generateGlobalReport(getColorLabel: (String) -> String, onComplete: (File) -> Unit) {
+    fun generateGlobalReport(onComplete: (File) -> Unit) {
         viewModelScope.launch {
             _isGeneratingGlobalReport.value = true
             try {
                 val profile = currentProfile.value
                 val userSettings = _userSettingsFlow.first()
                 val moles = moleRepository.getMolesWithHistory(profile)
+                val colors = settingsRepository.colorSettings.first()
 
                 val file = com.example.chronomapscanner.utils.GlobalReportGenerator.generateGlobalPdf(
                     context = context,
                     moles = moles,
                     userSettings = userSettings,
                     profileName = profile,
-                    getColorLabel = getColorLabel
+                    getColorLabel = { colorHex -> 
+                        colors.find { it.hex.equals(colorHex.removePrefix("#"), ignoreCase = true) }?.label ?: context.getString(com.example.chronomapscanner.R.string.color_other) 
+                    }
                 )
                 onComplete(file)
             } catch (e: Exception) {
