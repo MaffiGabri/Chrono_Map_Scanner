@@ -1,4 +1,4 @@
-package com.example.neimap
+package com.example.chronomapscanner
 
 import android.graphics.Rect
 import android.util.Log
@@ -7,7 +7,7 @@ import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.objects.ObjectDetection
 import com.google.mlkit.vision.objects.custom.CustomObjectDetectorOptions
 
-class MoleTrackerLogic {
+class ChronoMapScannerLogic {
 
     // 1. Configurazione del Detector con il modello custom (.tflite)
     // Il modello deve trovarsi nella cartella `assets` del progetto Android
@@ -50,7 +50,7 @@ class MoleTrackerLogic {
                         val label = detectedObject.labels.firstOrNull { it.text == "mole" }
                         
                         if (label != null && label.confidence > 0.80f) {
-                            Log.d("MoleTracker", "Neo rilevato! Confidence: ${label.confidence}")
+                            Log.d("ChronoMapScanner", "Neo rilevato! Confidence: ${label.confidence}")
                             
                             // 2. Controllo se il neo è ben inquadrato (centrato)
                             // Calcoliamo una "safe zone" centrale del 50% dello schermo
@@ -73,7 +73,7 @@ class MoleTrackerLogic {
                     }
                 }
                 .addOnFailureListener { e ->
-                    Log.e("MoleTracker", "Errore nel rilevamento", e)
+                    Log.e("ChronoMapScanner", "Errore nel rilevamento", e)
                 }
                 .addOnCompleteListener {
                     imageProxy.close() // Chiudi l'immagine per permettere a CameraX di ricevere il frame successivo
@@ -84,7 +84,7 @@ class MoleTrackerLogic {
     }
 
     private fun scattaFoto() {
-        Log.i("MoleTracker", "CLICK! Il neo è ben inquadrato. Foto scattata automaticamente.")
+        Log.i("ChronoMapScanner", "CLICK! Il neo è ben inquadrato. Foto scattata automaticamente.")
         // Qui inserisci la logica per salvare l'immagine su disco
     }
     
