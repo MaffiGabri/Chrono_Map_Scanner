@@ -68,6 +68,12 @@
     <string name="weeks_ago">%d settimane fa</string>
     <string name="months_ago">%d mesi fa</string>
     <string name="years_ago">%d anni fa</string>
+    <string name="manage_variants">Gestisci Varianti</string>
+    <string name="drag_to_reorder">Trascina per riordinare</string>
+    <string name="edit_date">Modifica Data</string>
+    <string name="edit_notes">Modifica Note</string>
+    <string name="variant_notes">Note Variante</string>
+    <string name="add_note_action">Aggiungi nota</string>
 
     <!-- SettingsScreen -->
     <string name="desc_reorder">Riordina</string>
