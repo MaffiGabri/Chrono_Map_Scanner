@@ -49,7 +49,7 @@ fun VariantManagementBottomSheet(
     ) {
         Column(modifier = Modifier.padding(16.dp).fillMaxWidth()) {
             Text(
-                text = "Gestisci Varianti",
+                text = stringResource(R.string.manage_variants),
                 style = MaterialTheme.typography.titleLarge,
                 modifier = Modifier.padding(bottom = 16.dp)
             )
@@ -114,12 +114,12 @@ fun VariantManagementBottomSheet(
 
         AlertDialog(
             onDismissRequest = { showNotesEditorFor = null },
-            title = { Text("Note Variante") },
+            title = { Text(stringResource(R.string.variant_notes)) },
             text = {
                 OutlinedTextField(
                     value = notesText,
                     onValueChange = { notesText = it },
-                    label = { Text("Aggiungi nota") },
+                    label = { Text(stringResource(R.string.add_note_action)) },
                     modifier = Modifier.fillMaxWidth(),
                     minLines = 3
                 )
@@ -160,7 +160,7 @@ private fun VariantItemRow(
         ) {
             Icon(
                 imageVector = Icons.Default.DragHandle,
-                contentDescription = "Trascina per riordinare",
+                contentDescription = stringResource(R.string.drag_to_reorder),
                 modifier = onDragModifier.padding(end = 12.dp)
             )
             
@@ -187,10 +187,10 @@ private fun VariantItemRow(
             
             Row {
                 IconButton(onClick = onEditDate) {
-                    Icon(Icons.Default.CalendarToday, contentDescription = "Modifica Data")
+                    Icon(Icons.Default.CalendarToday, contentDescription = stringResource(R.string.edit_date))
                 }
                 IconButton(onClick = onEditNotes) {
-                    Icon(Icons.Default.Notes, contentDescription = "Modifica Note")
+                    Icon(Icons.Default.Notes, contentDescription = stringResource(R.string.edit_notes))
                 }
             }
         }
