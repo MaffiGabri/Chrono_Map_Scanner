@@ -9,15 +9,15 @@ plugins {
 }
 
 android {
-    namespace = "com.example.skinhistoryscanner"
+    namespace = "com.example.chronomapscanner"
     compileSdk = 36
     defaultConfig {
-        applicationId = "com.example.skinhistoryscanner"
+        applicationId = "com.example.chronomapscanner"
         minSdk = 26
         targetSdk = 36
         versionCode = 1
         versionName = "1.0"
-        testInstrumentationRunner = "com.example.skinhistoryscanner.CustomTestRunner"
+        testInstrumentationRunner = "com.example.chronomapscanner.CustomTestRunner"
     }
 
     buildTypes {
