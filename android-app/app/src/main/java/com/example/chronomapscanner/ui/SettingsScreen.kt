@@ -421,7 +421,7 @@ fun BodyProfileSettings(settings: UserSettings, onSave: (Gender, BodyType) -> Un
             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer)
         ) {
             Row(modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
-                Icon(Icons.Default.Info, contentDescription = null, tint = MaterialTheme.colorScheme.onSecondaryContainer)
+                Icon(Icons.Default.Info, contentDescription = stringResource(R.string.app_info_title), tint = MaterialTheme.colorScheme.onSecondaryContainer)
                 Spacer(Modifier.width(12.dp))
                 Text(
                     text = stringResource(R.string.body_profile_note),
@@ -1066,7 +1066,7 @@ fun AboutScreen() {
             ) {
                 Icon(
                     Icons.Default.Build,
-                    contentDescription = null,
+                    contentDescription = stringResource(R.string.about_subtitle),
                     tint = MaterialTheme.colorScheme.onSecondaryContainer,
                     modifier = Modifier.size(20.dp)
                 )
