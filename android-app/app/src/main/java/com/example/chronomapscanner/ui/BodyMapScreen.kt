@@ -154,7 +154,7 @@ fun BodyMapScreen(
                             )
                             Icon(
                                 if (isSliderVisible) Icons.Default.CalendarToday else Icons.Default.History,
-                                contentDescription = null,
+                                contentDescription = stringResource(R.string.time_machine),
                                 modifier = Modifier.size(24.dp).padding(start = 8.dp),
                                 tint = MaterialTheme.colorScheme.primary
                             )
