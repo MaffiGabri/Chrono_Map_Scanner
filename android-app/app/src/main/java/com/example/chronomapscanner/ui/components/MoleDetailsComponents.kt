@@ -114,11 +114,15 @@ fun MoleSummaryHeader(
                         .fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
+                    val changeColorDesc = androidx.compose.ui.res.stringResource(com.example.chronomapscanner.R.string.desc_change_color)
                     Box(
                         modifier = Modifier
                             .size(56.dp)
                             .background(Color(android.graphics.Color.parseColor(mole.color)), CircleShape)
-                            .clickable { onColorClick() }
+                            .clickable(
+                                onClickLabel = changeColorDesc,
+                                role = androidx.compose.ui.semantics.Role.Button
+                            ) { onColorClick() }
                             .padding(4.dp)
                     ) {
                         Box(modifier = Modifier.fillMaxSize().background(Color.White.copy(alpha = 0.2f), CircleShape))
