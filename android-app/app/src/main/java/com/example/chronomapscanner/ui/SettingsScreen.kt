@@ -321,8 +321,9 @@ fun MainSettings(
         }
         var showLanguageMenu by remember { mutableStateOf(false) }
 
+        val appLanguageStr = stringResource(R.string.app_language)
         ListItem(
-            headlineContent = { Text(stringResource(R.string.app_language), fontWeight = FontWeight.SemiBold) },
+            headlineContent = { Text(appLanguageStr, fontWeight = FontWeight.SemiBold) },
             supportingContent = { 
                 Text(
                     when (currentLanguage) {
@@ -333,7 +334,10 @@ fun MainSettings(
                 ) 
             },
             leadingContent = { Icon(Icons.Default.Language, null, tint = MaterialTheme.colorScheme.primary) },
-            modifier = Modifier.clickable { showLanguageMenu = true }
+            modifier = Modifier.clickable(
+                onClickLabel = appLanguageStr,
+                role = androidx.compose.ui.semantics.Role.Button
+            ) { showLanguageMenu = true }
         )
 
         if (showLanguageMenu) {
@@ -407,7 +411,10 @@ fun SettingsMenuItem(title: String, subtitle: String, icon: androidx.compose.ui.
         supportingContent = { Text(subtitle) },
         leadingContent = { Icon(icon, null, tint = MaterialTheme.colorScheme.primary) },
         trailingContent = { Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, null) },
-        modifier = Modifier.clickable { onClick() }
+        modifier = Modifier.clickable(
+            onClickLabel = title,
+            role = androidx.compose.ui.semantics.Role.Button
+        ) { onClick() }
     )
 }
 

@@ -312,18 +312,26 @@ fun MoleDetailsScreen(
                 Column(modifier = Modifier.padding(bottom = 32.dp, start = 20.dp, end = 20.dp)) {
                     Text(stringResource(R.string.new_photo), style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
                     Spacer(Modifier.height(16.dp))
+                    val takePhotoStr = stringResource(R.string.take_photo)
                     ListItem(
-                        headlineContent = { Text(stringResource(R.string.take_photo)) },
-                        leadingContent = { Icon(Icons.Default.CameraAlt, contentDescription = stringResource(R.string.take_photo)) },
-                        modifier = Modifier.clickable { 
+                        headlineContent = { Text(takePhotoStr) },
+                        leadingContent = { Icon(Icons.Default.CameraAlt, contentDescription = takePhotoStr) },
+                        modifier = Modifier.clickable(
+                            onClickLabel = takePhotoStr,
+                            role = androidx.compose.ui.semantics.Role.Button
+                        ) {
                             showPhotoMenu = false
                             onAddPhoto(editingEntry?.id) 
                         }
                     )
+                    val chooseGalleryStr = stringResource(R.string.choose_gallery)
                     ListItem(
-                        headlineContent = { Text(stringResource(R.string.choose_gallery)) },
-                        leadingContent = { Icon(Icons.Default.PhotoLibrary, contentDescription = stringResource(R.string.choose_gallery)) },
-                        modifier = Modifier.clickable { 
+                        headlineContent = { Text(chooseGalleryStr) },
+                        leadingContent = { Icon(Icons.Default.PhotoLibrary, contentDescription = chooseGalleryStr) },
+                        modifier = Modifier.clickable(
+                            onClickLabel = chooseGalleryStr,
+                            role = androidx.compose.ui.semantics.Role.Button
+                        ) {
                             showPhotoMenu = false
                             galleryLauncher.launch("image/*")
                         }
