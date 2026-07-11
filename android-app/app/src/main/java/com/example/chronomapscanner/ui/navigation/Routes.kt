@@ -1,4 +1,4 @@
-﻿package com.example.chronomapscanner.ui.navigation
+package com.example.chronomapscanner.ui.navigation
 
 import kotlinx.serialization.Serializable
 

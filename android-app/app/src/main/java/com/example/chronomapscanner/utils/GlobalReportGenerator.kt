@@ -42,14 +42,10 @@ object GlobalReportGenerator {
         moles: List<Mole>,
         userSettings: UserSettings,
         profileName: String,
+        variants: List<com.example.chronomapscanner.data.local.room.BackgroundVariantEntity>,
         getColorLabel: (String) -> String
     ): File = withContext(Dispatchers.IO) {
         val document = PdfDocument()
-
-        // 1. Title Page with Body Maps (Front & Back)
-        var pageInfo = PdfDocument.PageInfo.Builder(PAGE_WIDTH, PAGE_HEIGHT, 1).create()
-        var page = document.startPage(pageInfo)
-        var canvas = page.canvas
 
         val paint = Paint().apply {
             isAntiAlias = true
@@ -57,23 +53,60 @@ object GlobalReportGenerator {
             textSize = 28f
             typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
         }
-
-        val title = "${context.getString(R.string.report_title_global)} - ${context.getString(R.string.profile)}: $profileName"
-        canvas.drawText(title, 20f, 50f, paint)
-
+        
         val sepLinePaint = Paint().apply {
             color = Color.DKGRAY
             strokeWidth = 2f
         }
-        canvas.drawLine(20f, 70f, PAGE_WIDTH - 20f, 70f, sepLinePaint)
 
-        // Draw Front Map
-        drawGlobalMap(context, canvas, moles, userSettings, "front", RectF(50f, 120f, 250f, 620f))
-        
-        // Draw Back Map
-        drawGlobalMap(context, canvas, moles, userSettings, "back", RectF(PAGE_WIDTH - 250f, 120f, PAGE_WIDTH - 50f, 620f))
+        var currentGlobalPage = 1
+        var pageInfo = PdfDocument.PageInfo.Builder(PAGE_WIDTH, PAGE_HEIGHT, currentGlobalPage).create()
+        var page = document.startPage(pageInfo)
+        var canvas = page.canvas
 
-        document.finishPage(page)
+        var variantsProcessed = 0
+        if (variants.isEmpty()) {
+            val title = "${context.getString(R.string.report_title_global).uppercase()} - ${context.getString(R.string.profile).uppercase()}: ${profileName.uppercase()}"
+            canvas.drawText(title, 20f, 50f, paint)
+            canvas.drawLine(20f, 70f, PAGE_WIDTH - 20f, 70f, sepLinePaint)
+            document.finishPage(page)
+        } else {
+            for (variant in variants) {
+                if (variantsProcessed > 0 && variantsProcessed % 2 == 0) {
+                    document.finishPage(page)
+                    currentGlobalPage++
+                    pageInfo = PdfDocument.PageInfo.Builder(PAGE_WIDTH, PAGE_HEIGHT, currentGlobalPage).create()
+                    page = document.startPage(pageInfo)
+                    canvas = page.canvas
+                }
+                
+                if (variantsProcessed % 2 == 0) {
+                    val title = "${context.getString(R.string.report_title_global).uppercase()} - ${context.getString(R.string.profile).uppercase()}: ${profileName.uppercase()}"
+                    canvas.drawText(title, 20f, 50f, paint)
+                    canvas.drawLine(20f, 70f, PAGE_WIDTH - 20f, 70f, sepLinePaint)
+                }
+                
+                val isLeft = variantsProcessed % 2 == 0
+                val rect = if (isLeft) RectF(20f, 120f, (PAGE_WIDTH / 2f) - 10f, 800f) else RectF((PAGE_WIDTH / 2f) + 10f, 120f, PAGE_WIDTH - 20f, 800f)
+                
+                // Draw view title above the map
+                val viewTitlePaint = Paint().apply {
+                    isAntiAlias = true
+                    color = Color.DKGRAY
+                    textSize = 20f
+                    typeface = Typeface.create(Typeface.DEFAULT, Typeface.NORMAL)
+                    textAlign = Paint.Align.CENTER
+                }
+                canvas.drawText(variant.name, rect.centerX(), rect.top - 10f, viewTitlePaint)
+                
+                drawGlobalMap(context, canvas, moles, userSettings, variant, rect)
+                
+                variantsProcessed++
+            }
+            if (variantsProcessed > 0) {
+                document.finishPage(page)
+            }
+        }
 
         // 2. Sort Moles
         val sortedMoles = moles.sortedWith(compareBy<Mole> { getSeverityIndex(it.color) }.thenByDescending { mole ->
@@ -81,14 +114,16 @@ object GlobalReportGenerator {
         })
 
         // 3. Pages for individual moles
-        var pageNum = 2
+        var pageNum = currentGlobalPage + 1
         for (mole in sortedMoles) {
             val colorLabel = getColorLabel(mole.color)
-            pageNum = ReportGeneratorWrapper.drawMolePages(document, context, mole, userSettings, colorLabel, mole.history.sortedByDescending { it.date }, pageNum)
+            val variantName = variants.find { it.id == mole.side }?.name ?: mole.side
+            pageNum = ReportGeneratorWrapper.drawMolePages(document, context, mole, userSettings, colorLabel, variantName, mole.history.sortedByDescending { it.date }, pageNum)
         }
 
         val dateStr = java.time.LocalDate.now().format(java.time.format.DateTimeFormatter.ofPattern("dd-MM-yyyy"))
-        val outputFile = File(context.cacheDir, "Report_${profileName}_Globale_${dateStr}.pdf")
+        val safeProfileName = profileName.replace(" ", "_").replaceFirstChar { if (it.isLowerCase()) it.titlecase(java.util.Locale.getDefault()) else it.toString() }
+        val outputFile = File(context.cacheDir, "Report_Globale_${safeProfileName}_${dateStr}.pdf")
         FileOutputStream(outputFile).use { outStream ->
             document.writeTo(outStream)
         }
@@ -101,16 +136,19 @@ object GlobalReportGenerator {
         context: Context,
         mole: Mole,
         userSettings: UserSettings,
-        colorLabel: String
+        colorLabel: String,
+        variantName: String? = null
     ): File = withContext(Dispatchers.IO) {
         val document = PdfDocument()
 
-        ReportGeneratorWrapper.drawMolePages(document, context, mole, userSettings, colorLabel, mole.history.sortedByDescending { it.date }, 1)
-
         val sideLower = mole.side.lowercase()
-        val viewName = if (sideLower.contains("front")) context.getString(R.string.front) else if (sideLower.contains("back")) context.getString(R.string.back) else mole.side
+        val viewName = variantName ?: if (sideLower.contains("front")) context.getString(R.string.front) else if (sideLower.contains("back")) context.getString(R.string.back) else mole.side
+
+        ReportGeneratorWrapper.drawMolePages(document, context, mole, userSettings, colorLabel, viewName, mole.history.sortedByDescending { it.date }, 1)
+
         val dateStr = java.time.LocalDate.now().format(java.time.format.DateTimeFormatter.ofPattern("dd-MM-yyyy"))
-        val outputFile = File(context.cacheDir, "Report_${viewName}_${mole.profileName}_${dateStr}.pdf")
+        val safeProfileName = mole.profileName.replace(" ", "_").replaceFirstChar { if (it.isLowerCase()) it.titlecase(java.util.Locale.getDefault()) else it.toString() }
+        val outputFile = File(context.cacheDir, "Report_${viewName}_${safeProfileName}_${dateStr}.pdf")
         
         FileOutputStream(outputFile).use { outStream ->
             document.writeTo(outStream)
@@ -125,14 +163,17 @@ object GlobalReportGenerator {
         canvas: Canvas,
         moles: List<Mole>,
         userSettings: UserSettings,
-        side: String,
+        variant: com.example.chronomapscanner.data.local.room.BackgroundVariantEntity,
         rect: RectF
     ) {
-        val bodyRes = getBodyImageRes(userSettings, side)
-        val options = BitmapFactory.Options().apply {
-            inSampleSize = 4 // Riduce la risoluzione (es. 2000x4000 -> 500x1000) per alleggerire il PDF
+        val bodyBitmap = if (variant.imagePath != null && File(variant.imagePath).exists()) {
+            val options = BitmapFactory.Options().apply { inSampleSize = 4 }
+            BitmapFactory.decodeFile(variant.imagePath, options)
+        } else {
+            val bodyRes = getBodyImageRes(userSettings, variant.id, variant.name)
+            val options = BitmapFactory.Options().apply { inSampleSize = 4 }
+            BitmapFactory.decodeResource(context.resources, bodyRes, options)
         }
-        val bodyBitmap = BitmapFactory.decodeResource(context.resources, bodyRes, options)
         if (bodyBitmap != null) {
             val imgRatio = bodyBitmap.width.toFloat() / bodyBitmap.height.toFloat()
             val rectRatio = rect.width() / rect.height()
@@ -158,7 +199,7 @@ object GlobalReportGenerator {
             }
             canvas.drawRect(finalRect, mapBorderPaint)
 
-            val sideMoles = moles.filter { it.side.contains(side, ignoreCase = true) }
+            val sideMoles = moles.filter { it.side == variant.id }
             for (mole in sideMoles) {
                 val paintMarker = Paint().apply {
                     color = parseColorHex(mole.color)

@@ -26,6 +26,7 @@ object ReportGeneratorWrapper {
         mole: Mole,
         userSettings: UserSettings,
         colorLabel: String,
+        variantName: String,
         history: List<HistoryEntry>,
         startPageNum: Int
     ): Int {
@@ -41,15 +42,7 @@ object ReportGeneratorWrapper {
         }
 
         // Title
-        val sideLower = mole.side.lowercase()
-        val viewTypeStr = if (sideLower.contains("front")) {
-            context.getString(R.string.front)
-        } else if (sideLower.contains("back")) {
-            context.getString(R.string.back)
-        } else {
-            mole.side
-        }
-        val title = "Report ${mole.profileName} - Vista: $viewTypeStr"
+        val title = context.getString(R.string.report_mole_title, mole.profileName, variantName)
         canvas.drawText(title, 20f, 50f, paint)
 
         // Body Map Thumbnail
@@ -145,7 +138,7 @@ object ReportGeneratorWrapper {
 
         canvas.drawText("${context.getString(R.string.report_category)} $colorLabel", 20f, currentY, paint)
         currentY += 30f
-        val latestDate = history.firstOrNull()?.date?.format(DateTimeFormatter.ISO_LOCAL_DATE) ?: "N/A"
+        val latestDate = history.firstOrNull()?.date?.format(DateTimeFormatter.ISO_LOCAL_DATE) ?: context.getString(R.string.not_available)
         canvas.drawText("${context.getString(R.string.report_date)} $latestDate", 20f, currentY, paint)
 
         currentY = 220f
@@ -217,7 +210,8 @@ object ReportGeneratorWrapper {
                     textSize = 18f
                     typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
                 }
-                canvas.drawText("Report ${mole.profileName} - (Continua)", 20f, currentY, contPaint)
+                val contTitle = context.getString(R.string.report_mole_title_continued, mole.profileName)
+                canvas.drawText(contTitle, 20f, currentY, contPaint)
                 currentY += 40f
             }
 

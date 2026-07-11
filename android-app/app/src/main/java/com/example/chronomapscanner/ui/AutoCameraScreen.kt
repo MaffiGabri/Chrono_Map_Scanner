@@ -59,6 +59,7 @@ data class MoleAnalysisResult(
 @OptIn(ExperimentalGetImage::class)
 @Composable
 fun AutoCameraScreen(
+    smartCameraEnabled: Boolean,
     onPhotoTaken: (String) -> Unit,
     onError: (Exception) -> Unit
 ) {
@@ -162,8 +163,8 @@ fun AutoCameraScreen(
         }
     }
 
-    LaunchedEffect(isStable, isFocused, isMoleDetected, isCapturing) {
-        if (isStable && isFocused && isMoleDetected && !isCapturing) {
+    LaunchedEffect(isStable, isFocused, isMoleDetected, isCapturing, smartCameraEnabled) {
+        if (smartCameraEnabled && isStable && isFocused && isMoleDetected && !isCapturing) {
             val duration = 1500
             val steps = 30
             val delayMs = duration / steps
@@ -223,6 +224,14 @@ fun AutoCameraScreen(
                             it.setAnalyzer(cameraExecutor) { imageProxy ->
                                 val count = frameCounter.incrementAndGet()
                                 if (count % 2 != 0) {
+                                    imageProxy.close()
+                                    return@setAnalyzer
+                                }
+
+                                if (!smartCameraEnabled) {
+                                    isFocused = true
+                                    isMoleDetected = true
+                                    isStable = true
                                     imageProxy.close()
                                     return@setAnalyzer
                                 }
@@ -327,7 +336,9 @@ fun AutoCameraScreen(
             }
         }
 
-        val uiMessage = when {
+        val uiMessage = if (!smartCameraEnabled) {
+            "Premi o tieni premuto il pulsante"
+        } else when {
             isCapturing -> "Scatto in corso..."
             !isMoleDetected -> "Centrare nel cerchio l'imperfezione"
             !isFocused -> "Metti a fuoco il neo"
@@ -335,10 +346,15 @@ fun AutoCameraScreen(
             else -> "Acquisizione automatica..."
         }
 
-        Column(
-            modifier = Modifier.align(Alignment.TopCenter).padding(top = 48.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+        Box(
+            modifier = Modifier
+                .align(Alignment.TopCenter)
+                .windowInsetsPadding(WindowInsets.safeDrawing)
         ) {
+            Column(
+                modifier = Modifier.padding(top = 16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
             Surface(
                 color = Color.Black.copy(alpha = 0.6f),
                 shape = CircleShape,
@@ -352,19 +368,27 @@ fun AutoCameraScreen(
                 )
             }
             
-            Spacer(Modifier.height(8.dp))
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                Badge(containerColor = if (isStable) Color.Green else Color.Red) { Text("Stabilità") }
-                Badge(containerColor = if (isFocused) Color.Green else Color.Red) { Text("Fuoco") }
-                Badge(containerColor = if (isMoleDetected) Color.Green else Color.Red) { Text("Neo") }
+            
+            if (smartCameraEnabled) {
+                Spacer(Modifier.height(8.dp))
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Badge(containerColor = if (isStable) Color.Green else Color.Red) { Text("Stabilità") }
+                    Badge(containerColor = if (isFocused) Color.Green else Color.Red) { Text("Fuoco") }
+                    Badge(containerColor = if (isMoleDetected) Color.Green else Color.Red) { Text("Neo") }
+                }
+            }
             }
         }
 
-        IconButton(
-            onClick = triggerCapture,
+        Box(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
-                .padding(32.dp)
+                .windowInsetsPadding(WindowInsets.safeDrawing)
+        ) {
+            IconButton(
+                onClick = triggerCapture,
+                modifier = Modifier
+                    .padding(32.dp)
                 .size(64.dp)
                 .background(Color.White.copy(alpha = 0.5f), CircleShape)
                 .border(2.dp, MaterialTheme.colorScheme.primary, CircleShape)
@@ -375,6 +399,7 @@ fun AutoCameraScreen(
                 modifier = Modifier.size(32.dp),
                 tint = MaterialTheme.colorScheme.primary
             )
+            }
         }
     }
 }

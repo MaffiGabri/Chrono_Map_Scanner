@@ -48,6 +48,7 @@ class SettingsRepository @Inject constructor(
         val RAPID_UPDATE = booleanPreferencesKey("rapid_update")
         val SHOW_ZOOM_BUTTON = booleanPreferencesKey("show_zoom_button")
         val SNAP_TO_RECENT_ON_ADD_MOLE = booleanPreferencesKey("snap_to_recent_on_add_mole")
+        val SMART_CAMERA_ENABLED = booleanPreferencesKey("smart_camera_enabled")
 
         val SCANNER_DELAY_MS = longPreferencesKey("scanner_delay_ms")
         val SCANNER_INTERVAL_MIN = longPreferencesKey("scanner_interval_min")
@@ -281,5 +282,10 @@ class SettingsRepository @Inject constructor(
     val snapToRecentOnAddMole: Flow<Boolean> = dataStore.data.map { it[PreferencesKeys.SNAP_TO_RECENT_ON_ADD_MOLE] ?: true }
     suspend fun setSnapToRecentOnAddMole(snap: Boolean) {
         dataStore.edit { it[PreferencesKeys.SNAP_TO_RECENT_ON_ADD_MOLE] = snap }
+    }
+
+    val smartCameraEnabled: Flow<Boolean> = dataStore.data.map { it[PreferencesKeys.SMART_CAMERA_ENABLED] ?: true }
+    suspend fun setSmartCameraEnabled(enabled: Boolean) {
+        dataStore.edit { it[PreferencesKeys.SMART_CAMERA_ENABLED] = enabled }
     }
 }

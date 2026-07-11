@@ -8,6 +8,11 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.*
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.only
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -29,6 +34,8 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.platform.LocalConfiguration
+import android.content.res.Configuration
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -76,6 +83,9 @@ fun BodyMapScreen(
 ) {
     val haptic = LocalHapticFeedback.current
     val density = LocalDensity.current
+    val configuration = LocalConfiguration.current
+    val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+    
     val scaleState = remember { mutableFloatStateOf(1f) }
     val offsetState = remember { mutableStateOf(Offset.Zero) }
     val coroutineScope = rememberCoroutineScope()
@@ -125,38 +135,75 @@ fun BodyMapScreen(
 
     // Thumbnails are now directly in MoleUiModel
 
+    val currentVariant = state.currentVariant
+    var asyncImageRatio by remember(currentVariant?.id) { mutableFloatStateOf(0f) }
+    
+    val currentAspectRatio = if (currentVariant?.isBuiltIn == true) {
+        val bodyImageRes = getBodyImageRes(state.userSettings, currentVariant.id, currentVariant.name)
+        val bodyPainter = painterResource(id = bodyImageRes)
+        if (bodyPainter.intrinsicSize.width > 0f) bodyPainter.intrinsicSize.width / bodyPainter.intrinsicSize.height else 1f
+    } else {
+        if (asyncImageRatio > 0f) asyncImageRatio else 1f
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(
+                windowInsets = WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top),
                 title = {
-                    Column(
-                        horizontalAlignment = Alignment.Start,
-                        modifier = Modifier.padding(start = 4.dp)
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.fillMaxWidth()
                     ) {
-                        Text(
-                            text = state.profileName.uppercase(),
-                            style = MaterialTheme.typography.labelLarge,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.secondary,
-                            letterSpacing = 1.sp
-                        )
-                        TextButton(
-                            onClick = {
-                                if (!isSliderVisible) isSliderVisible = true else showDatePicker = true
-                            },
-                            contentPadding = PaddingValues(0.dp)
+                        Column(
+                            horizontalAlignment = Alignment.Start,
+                            modifier = Modifier.padding(start = 4.dp)
                         ) {
                             Text(
-                                text = state.selectedDate.format(DateTimeFormatter.ofLocalizedDate(java.time.format.FormatStyle.MEDIUM).withLocale(java.util.Locale.getDefault())),
-                                style = MaterialTheme.typography.headlineSmall,
-                                color = MaterialTheme.colorScheme.onSurface,
-                                fontWeight = FontWeight.ExtraBold
+                                text = state.profileName.uppercase(),
+                                style = MaterialTheme.typography.labelLarge,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.secondary,
+                                letterSpacing = 1.sp
                             )
+<<<<<<< HEAD
                             Icon(
                                 if (isSliderVisible) Icons.Default.CalendarToday else Icons.Default.History,
                                 contentDescription = stringResource(R.string.time_machine),
                                 modifier = Modifier.size(24.dp).padding(start = 8.dp),
                                 tint = MaterialTheme.colorScheme.primary
+=======
+                            TextButton(
+                                onClick = {
+                                    if (!isSliderVisible) isSliderVisible = true else showDatePicker = true
+                                },
+                                contentPadding = PaddingValues(0.dp)
+                            ) {
+                                Text(
+                                    text = state.selectedDate.format(DateTimeFormatter.ofLocalizedDate(java.time.format.FormatStyle.MEDIUM).withLocale(java.util.Locale.getDefault())),
+                                    style = MaterialTheme.typography.headlineSmall,
+                                    color = MaterialTheme.colorScheme.onSurface,
+                                    fontWeight = FontWeight.ExtraBold
+                                )
+                                Icon(
+                                    if (isSliderVisible) Icons.Default.CalendarToday else Icons.Default.History,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(24.dp).padding(start = 8.dp),
+                                    tint = MaterialTheme.colorScheme.primary
+                                )
+                            }
+                        }
+                        if (isLandscape) {
+                            Spacer(Modifier.width(16.dp))
+                            TimelineSlider(
+                                isVisible = isSliderVisible,
+                                selectedDate = state.selectedDate,
+                                availableDates = state.availableDates,
+                                onDateChange = onDateChange,
+                                onClose = { isSliderVisible = false },
+                                modifier = Modifier.weight(1f).padding(end = 16.dp),
+                                isCompact = true
+>>>>>>> edd0a09 (Restore and fix PDF export, implement multi-page support, and refactor Android source and tests)
                             )
                         }
                     }
@@ -175,7 +222,10 @@ fun BodyMapScreen(
             )
         },
         floatingActionButton = {
-            Column(horizontalAlignment = Alignment.End) {
+            Column(
+                horizontalAlignment = Alignment.End,
+                modifier = Modifier.windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal))
+            ) {
                 ExtendedFloatingActionButton(
                     onClick = { isAddingMole = !isAddingMole },
                     expanded = isAddingMole,
@@ -261,6 +311,24 @@ fun BodyMapScreen(
                                     val touchRadiusDp = kotlin.math.max(markerRadiusDp + 4f, 24f)
                                     val threshold = touchRadiusDp * density.density
                                     
+                                    val containerWidth = size.width.toFloat()
+                                    val containerHeight = size.height.toFloat()
+                                    val containerRatio = if (containerHeight > 0f) containerWidth / containerHeight else 1f
+                                    val fittedWidth: Float
+                                    val fittedHeight: Float
+                                    if (currentAspectRatio > 0f) {
+                                        if (containerRatio > currentAspectRatio) {
+                                            fittedHeight = containerHeight
+                                            fittedWidth = fittedHeight * currentAspectRatio
+                                        } else {
+                                            fittedWidth = containerWidth
+                                            fittedHeight = fittedWidth / currentAspectRatio
+                                        }
+                                    } else {
+                                        fittedWidth = containerWidth
+                                        fittedHeight = containerHeight
+                                    }
+                                    
                                     if (isAddingMole || movingMoleId != null) {
                                         coroutineScope.launch {
                                             haptic.performHapticFeedback(HapticFeedbackType.LongPress)
@@ -268,12 +336,14 @@ fun BodyMapScreen(
                                                 tapOffset = tapOffset,
                                                 currentOffset = offsetState.value,
                                                 currentScale = scaleState.floatValue,
-                                                width = size.width,
-                                                height = size.height
+                                                canvasWidth = containerWidth,
+                                                canvasHeight = containerHeight,
+                                                fittedWidth = fittedWidth,
+                                                fittedHeight = fittedHeight
                                             )
                                             
                                             val visualRadiusPx = markerRadiusDp * density.density
-                                            val (snappedX, snappedY) = onSnapMoleAt(rawX, rawY, size.width.toFloat(), size.height.toFloat(), visualRadiusPx)
+                                            val (snappedX, snappedY) = onSnapMoleAt(rawX, rawY, fittedWidth, fittedHeight, visualRadiusPx)
                                             
                                             if (isAddingMole) {
                                                 pendingMoleCoords = Pair(snappedX, snappedY)
@@ -284,11 +354,13 @@ fun BodyMapScreen(
                                             }
                                         }
                                     } else {
-                                        val internalX = (tapOffset.x - size.width / 2f - offsetState.value.x) / scaleState.floatValue + size.width / 2f
-                                        val internalY = (tapOffset.y - size.height / 2f - offsetState.value.y) / scaleState.floatValue + size.height / 2f
+                                        val centeredX = (tapOffset.x - containerWidth / 2f - offsetState.value.x) / scaleState.floatValue
+                                        val centeredY = (tapOffset.y - containerHeight / 2f - offsetState.value.y) / scaleState.floatValue
+                                        val mappedInternalX = centeredX + fittedWidth / 2f
+                                        val mappedInternalY = centeredY + fittedHeight / 2f
 
                                         coroutineScope.launch {
-                                            val clickedMoleId = onFindMoleAt(internalX, internalY, size.width.toFloat(), size.height.toFloat(), threshold * threshold)
+                                            val clickedMoleId = onFindMoleAt(mappedInternalX, mappedInternalY, fittedWidth, fittedHeight, threshold * threshold)
                                         
                                         if (clickedMoleId != null) {
                                             onMoleClick(clickedMoleId)
@@ -332,9 +404,10 @@ fun BodyMapScreen(
                     label = "body_flip"
                 ) { targetVariant ->
                     if (targetVariant != null) {
+                        android.util.Log.d("BodyMapScreen", "Rendering variant: ${targetVariant.name}, path: ${targetVariant.imagePath}, isBuiltIn: ${targetVariant.isBuiltIn}")
                         if (targetVariant.isBuiltIn) {
-                            val bodyImageRes = remember(state.userSettings, targetVariant.id) {
-                                getBodyImageRes(state.userSettings, targetVariant.id)
+                            val bodyImageRes = remember(state.userSettings, targetVariant.id, targetVariant.name) {
+                                getBodyImageRes(state.userSettings, targetVariant.id, targetVariant.name)
                             }
                             val bodyPainter = painterResource(id = bodyImageRes)
                             
@@ -349,7 +422,11 @@ fun BodyMapScreen(
                                 model = targetVariant.imagePath,
                                 contentDescription = stringResource(R.string.body_map_image),
                                 modifier = Modifier.fillMaxSize(),
-                                contentScale = ContentScale.Fit
+                                contentScale = ContentScale.Fit,
+                                onSuccess = { successState ->
+                                    val s = successState.painter.intrinsicSize
+                                    if (s.width > 0f) asyncImageRatio = s.width / s.height
+                                }
                             )
                         }
                     }
@@ -358,6 +435,22 @@ fun BodyMapScreen(
                 BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
                     val canvasWidth = with(density) { maxWidth.toPx() }
                     val canvasHeight = with(density) { maxHeight.toPx() }
+                    
+                    val containerRatio = if (canvasHeight > 0f) canvasWidth / canvasHeight else 1f
+                    val fittedWidth: Float
+                    val fittedHeight: Float
+                    if (currentAspectRatio > 0f) {
+                        if (containerRatio > currentAspectRatio) {
+                            fittedHeight = canvasHeight
+                            fittedWidth = fittedHeight * currentAspectRatio
+                        } else {
+                            fittedWidth = canvasWidth
+                            fittedHeight = fittedWidth / currentAspectRatio
+                        }
+                    } else {
+                        fittedWidth = canvasWidth
+                        fittedHeight = canvasHeight
+                    }
 
                     Canvas(modifier = Modifier.fillMaxSize()) {
                         val baseRadius = when (previewSize) {
@@ -370,8 +463,8 @@ fun BodyMapScreen(
                             if (mole.id != movingMoleId) {
                                 val relX = mole.x / 100f
                                 val relY = mole.y / 100f
-                                val posX = (relX - 0.5f) * canvasWidth + (canvasWidth / 2f)
-                                val posY = (relY - 0.5f) * canvasHeight + (canvasHeight / 2f)
+                                val posX = (relX - 0.5f) * fittedWidth + (canvasWidth / 2f)
+                                val posY = (relY - 0.5f) * fittedHeight + (canvasHeight / 2f)
                                 
                                 val hexColor = mole.color
                                 
@@ -429,8 +522,8 @@ fun BodyMapScreen(
                         if (movingMole != null) {
                             val relX = movingMole.x / 100f
                             val relY = movingMole.y / 100f
-                            val posX = (relX - 0.5f) * canvasWidth + (canvasWidth / 2f)
-                            val posY = (relY - 0.5f) * canvasHeight + (canvasHeight / 2f)
+                            val posX = (relX - 0.5f) * fittedWidth + (canvasWidth / 2f)
+                            val posY = (relY - 0.5f) * fittedHeight + (canvasHeight / 2f)
                             val movingRadius = baseRadius * 1.5f
                             drawCircle(
                                 color = movingMole.color,
@@ -448,20 +541,24 @@ fun BodyMapScreen(
                 }
             }
 
-            TimelineSlider(
-                isVisible = isSliderVisible,
-                selectedDate = state.selectedDate,
-                availableDates = state.availableDates,
-                onDateChange = onDateChange,
-                onClose = { isSliderVisible = false },
-                modifier = Modifier
-                    .align(Alignment.TopStart)
-                    .fillMaxWidth(0.78f) // Slightly longer to get closer to buttons without overlapping
-            )
+            if (!isLandscape) {
+                TimelineSlider(
+                    isVisible = isSliderVisible,
+                    selectedDate = state.selectedDate,
+                    availableDates = state.availableDates,
+                    onDateChange = onDateChange,
+                    onClose = { isSliderVisible = false },
+                    modifier = Modifier
+                        .align(Alignment.TopStart)
+                        .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal))
+                        .fillMaxWidth(0.78f) // Slightly longer to get closer to buttons without overlapping
+                )
+            }
 
             Column(
                 modifier = Modifier
                     .align(Alignment.TopEnd)
+                    .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal))
                     .padding(16.dp)
             ) {
                 if (state.variants.size > 1) {
@@ -511,13 +608,20 @@ fun BodyMapScreen(
                 }
             }
 
+            val isLandscape = androidx.compose.ui.platform.LocalConfiguration.current.orientation == android.content.res.Configuration.ORIENTATION_LANDSCAPE
             MoleLegend(
                 isVisible = showLegend,
                 colorSettings = state.colorSettings,
                 moleCounts = state.moleCountsByColor,
                 onToggleVisibility = onToggleVisibility,
                 onClose = { showLegend = false },
-                modifier = Modifier.align(Alignment.CenterEnd).padding(end = 16.dp)
+                modifier = Modifier
+                    .align(if (isLandscape) Alignment.BottomEnd else Alignment.CenterEnd)
+                    .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal))
+                    .padding(
+                        end = if (isLandscape) 120.dp else 16.dp,
+                        bottom = if (isLandscape) 16.dp else 0.dp
+                    )
             )
 
             if (state.isLoading) {
@@ -569,7 +673,7 @@ fun ColorPickerOverlay(
         onDismissRequest = onDismiss,
         title = { Text(stringResource(R.string.categories)) },
         text = {
-            Column {
+            Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
                 colorSettings.forEach { setting ->
                     Row(
                         verticalAlignment = Alignment.CenterVertically,

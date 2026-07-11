@@ -59,7 +59,7 @@ class FileRepository @Inject constructor(
                 // Do not fail the whole save if thumbnail generation fails
             }
 
-            destFile.absolutePath
+            fileName
         } catch (e: Exception) {
             e.printStackTrace()
             null
@@ -82,7 +82,7 @@ class FileRepository @Inject constructor(
             val source = File(sourcePath)
             if (source.exists()) {
                 source.copyTo(destFile, overwrite = true)
-                destFile.absolutePath
+                destFile.name
             } else null
         } catch (e: Exception) {
             e.printStackTrace()
@@ -100,5 +100,15 @@ class FileRepository @Inject constructor(
             .setInputData(data)
             .build()
         workManager.enqueue(request)
+    }
+
+    /**
+     * Resolves a potentially relative filename to its absolute path.
+     * Legacy absolute paths are returned unchanged.
+     */
+    fun getAbsolutePath(fileName: String?): String? {
+        if (fileName.isNullOrBlank()) return null
+        if (fileName.startsWith("/")) return fileName
+        return File(context.filesDir, fileName).absolutePath
     }
 }

@@ -4,6 +4,7 @@ import android.content.Context
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.SavedStateHandle
 import com.example.chronomapscanner.data.domain.Mole as DomainMole
 import com.example.chronomapscanner.data.domain.BodySide
 import com.example.chronomapscanner.data.repository.MoleRepository
@@ -33,7 +34,8 @@ import com.example.chronomapscanner.ui.BackgroundVariantUiModel
 class BodyMapViewModel @Inject constructor(
     private val moleRepository: MoleRepository,
     private val settingsRepository: SettingsRepository,
-    private val backgroundRepository: BackgroundRepository
+    private val backgroundRepository: BackgroundRepository,
+    private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
     val currentProfile = settingsRepository.currentProfile.stateIn(
@@ -42,9 +44,10 @@ class BodyMapViewModel @Inject constructor(
         initialValue = "Default"
     )
 
-    private val _selectedDate = MutableStateFlow(LocalDate.now())
-    private val _currentVariantIndex = MutableStateFlow(0)
-    
+    private val _selectedDateEpoch = savedStateHandle.getStateFlow("selected_date_epoch", LocalDate.now().toEpochDay())
+    private val _selectedDate = _selectedDateEpoch.map { LocalDate.ofEpochDay(it) }
+    private val _currentVariantIndex = savedStateHandle.getStateFlow("current_variant_index", 0)
+
     private val thumbnailCache = android.util.LruCache<String, androidx.compose.ui.graphics.ImageBitmap>(150)
     private val loadingThumbnails = java.util.concurrent.ConcurrentHashMap.newKeySet<String>()
     private val _cacheUpdateTrigger = MutableStateFlow(0)
@@ -146,14 +149,25 @@ class BodyMapViewModel @Inject constructor(
             colorsToQuery.contains(mole.color) 
         }.map { baseDto ->
             val hexColorString = baseDto.color
-            val composeColor = try { androidx.compose.ui.graphics.Color(android.graphics.Color.parseColor(hexColorString)) } catch(e:Exception){ androidx.compose.ui.graphics.Color.Gray }
+            val composeColor = try { 
+                val safeColorStr = if (!hexColorString.startsWith("#") && (hexColorString.length == 6 || hexColorString.length == 8)) "#$hexColorString" else hexColorString
+                androidx.compose.ui.graphics.Color(android.graphics.Color.parseColor(safeColorStr)) 
+            } catch(e:Exception) { 
+                android.util.Log.e("BodyMapViewModel", "Error parsing color string: '$hexColorString' for mole ${baseDto.id}", e)
+                androidx.compose.ui.graphics.Color.Gray 
+            }
             
             val thumbPath = baseDto.historyDate?.let { _ ->
                 baseDto.imagePath?.let { originalPath ->
                     val file = java.io.File(originalPath)
                     val thumbName = "thumb_${file.name}"
                     val parent = file.parent
-                    if (parent != null) "$parent/$thumbName" else thumbName
+                    val computedThumbPath = if (parent != null) "$parent/$thumbName" else thumbName
+                    if (java.io.File(computedThumbPath).exists()) {
+                        computedThumbPath
+                    } else {
+                        originalPath
+                    }
                 }
             }
             
@@ -248,16 +262,16 @@ class BodyMapViewModel @Inject constructor(
     fun cycleVariant() {
         val variants = bodyMapUiState.value.variants
         if (variants.isNotEmpty()) {
-            _currentVariantIndex.value = (_currentVariantIndex.value + 1) % variants.size
+            savedStateHandle["current_variant_index"] = (_currentVariantIndex.value + 1) % variants.size
         }
     }
 
     fun setVariantIndex(index: Int) {
-        _currentVariantIndex.value = index
+        savedStateHandle["current_variant_index"] = index
     }
 
     fun setSelectedDate(date: LocalDate) {
-        _selectedDate.value = date
+        savedStateHandle["selected_date_epoch"] = date.toEpochDay()
     }
 
 

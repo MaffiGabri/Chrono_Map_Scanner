@@ -12,14 +12,15 @@ import com.example.chronomapscanner.data.domain.UserSettings
  * based on user settings and the current view side.
  * Previously this logic was duplicated in BodyMapScreen and MoleDetailsScreen.
  */
-fun getBodyImageRes(settings: UserSettings, variantId: String): Int {
+fun getBodyImageRes(settings: UserSettings, variantId: String, variantName: String? = null): Int {
     val gender = if (settings.gender == Gender.MALE) "male" else "female"
     val type = if (settings.bodyType == BodyType.SLIM) "slim" else "over"
     
     val lowerId = variantId.lowercase()
+    val lowerName = variantName?.lowercase() ?: ""
     val sideStr = when {
-        lowerId.contains("front") -> "front"
-        lowerId.contains("back") -> "back"
+        lowerId.contains("front") || lowerName.contains("front") || lowerName.contains("fronte") -> "front"
+        lowerId.contains("back") || lowerName.contains("back") || lowerName.contains("retro") -> "back"
         else -> "front"
     }
 
@@ -49,11 +50,13 @@ fun calculateMolePosition(
     tapOffset: Offset,
     currentOffset: Offset,
     currentScale: Float,
-    width: Int,
-    height: Int
+    canvasWidth: Float,
+    canvasHeight: Float,
+    fittedWidth: Float,
+    fittedHeight: Float
 ): Pair<Float, Float> {
-    val relX = (tapOffset.x - currentOffset.x - width / 2f) / (width * currentScale) + 0.5f
-    val relY = (tapOffset.y - currentOffset.y - height / 2f) / (height * currentScale) + 0.5f
+    val relX = (tapOffset.x - canvasWidth / 2f - currentOffset.x) / (fittedWidth * currentScale) + 0.5f
+    val relY = (tapOffset.y - canvasHeight / 2f - currentOffset.y) / (fittedHeight * currentScale) + 0.5f
     val x = (relX * 100f).coerceIn(0f, 100f)
     val y = (relY * 100f).coerceIn(0f, 100f)
     return Pair(x, y)

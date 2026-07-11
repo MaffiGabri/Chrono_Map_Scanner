@@ -52,16 +52,40 @@ class ExportDatabaseWorker @AssistedInject constructor(
                     id = it.id,
                     categoryId = it.categoryId,
                     name = it.name,
-                    imagePath = it.imagePath,
+                    imagePath = if (it.imagePath != null) java.io.File(it.imagePath).name else null,
                     orderIndex = it.orderIndex,
                     dateAdded = it.dateAdded.toString(),
                     notes = it.notes
                 )
             }
 
+            val rawProfileImage = settingsRepository.getProfileImageForProfile(profileName).first()
+            val cleanProfileImage = if (rawProfileImage != null) java.io.File(rawProfileImage).name else null
+
+            // domainMoles contain absolute paths due to repository rehydration. We need to collect them for zipping,
+            // but store only filenames in the JSON.
+            val absoluteImagePaths = domainMoles.flatMap { it.history }.flatMap { entry ->
+                val paths = mutableListOf<String>()
+                entry.imagePath?.let { originalPath ->
+                    paths.add(originalPath)
+                    val file = java.io.File(originalPath)
+                    val parent = file.parent
+                    val thumbPath = if (parent != null) "$parent/thumb_${file.name}" else "thumb_${file.name}"
+                    paths.add(thumbPath)
+                }
+                paths
+            } + listOfNotNull(if (rawProfileImage?.startsWith("/") == true) rawProfileImage else context.filesDir.absolutePath + "/" + rawProfileImage) +
+                backgroundDao.getVariantsForProfileSync(profileName).mapNotNull { it.imagePath?.let { path -> if (path.startsWith("/")) path else context.filesDir.absolutePath + "/" + path } }
+            
+            val cleanDomainMoles = domainMoles.map { mole ->
+                mole.copy(history = mole.history.map { entry ->
+                    entry.copy(imagePath = if (entry.imagePath != null) java.io.File(entry.imagePath).name else null)
+                })
+            }
+
             val currentSettings = AppDatabaseDto(
                 profileName = profileName,
-                profileImage = settingsRepository.getProfileImageForProfile(profileName).first(),
+                profileImage = cleanProfileImage,
                 settings = UserSettings(
                     gender = settingsRepository.getGenderForProfile(profileName).first(),
                     bodyType = settingsRepository.getBodyTypeForProfile(profileName).first()
@@ -72,15 +96,11 @@ class ExportDatabaseWorker @AssistedInject constructor(
                     intervalUnit = settingsRepository.remindersUnit.first(),
                     lastReminderDate = settingsRepository.lastReminderDate.first()
                 ),
-                moles = domainMoles,
+                moles = cleanDomainMoles,
                 colorSettings = settingsRepository.colorSettings.first(),
                 categories = categories,
                 variants = variants
             )
-            
-            val imagePaths = currentSettings.moles.flatMap { it.history }.mapNotNull { it.imagePath } +
-                listOfNotNull(currentSettings.profileImage) +
-                currentSettings.variants.mapNotNull { it.imagePath }
             
             val notificationId = 1001
             val channelId = "export_channel"
@@ -109,7 +129,7 @@ class ExportDatabaseWorker @AssistedInject constructor(
             }
             
             var lastUpdatePercent = -1
-            backupRepository.createAndWriteExportZip(currentSettings, imagePaths, destinationUri) { current, total ->
+            backupRepository.createAndWriteExportZip(currentSettings, absoluteImagePaths, destinationUri) { current, total ->
                 val percent = if (total > 0) (current * 100) / total else 0
                 if (percent > lastUpdatePercent) {
                     lastUpdatePercent = percent

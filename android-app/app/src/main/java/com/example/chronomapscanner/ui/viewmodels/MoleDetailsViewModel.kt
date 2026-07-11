@@ -181,11 +181,13 @@ class MoleDetailsViewModel @AssistedInject constructor(
             try {
                 val colors = settingsRepository.colorSettings.first()
                 val colorLabel = colors.find { it.hex.equals(currentMole.color.removePrefix("#"), ignoreCase = true) }?.label ?: context.getString(com.example.chronomapscanner.R.string.color_other)
+                val variantName = moleDetailsUiState.value.variant?.name
                 val file = com.example.chronomapscanner.utils.GlobalReportGenerator.generateMolePdf(
                     context = context,
                     mole = currentMole,
                     userSettings = userSettings,
-                    colorLabel = colorLabel
+                    colorLabel = colorLabel,
+                    variantName = variantName
                 )
                 onComplete(file)
             } catch (e: Exception) {

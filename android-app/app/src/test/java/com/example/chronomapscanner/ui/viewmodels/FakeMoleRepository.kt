@@ -11,6 +11,14 @@ class FakeMoleRepository : MoleRepository {
     val moles = MutableStateFlow<List<Mole>>(emptyList())
     val history = MutableStateFlow<List<HistoryEntry>>(emptyList())
 
+    fun emitMoles(newMoles: List<Mole>) {
+        moles.value = newMoles
+    }
+
+    fun emitHistory(newHistory: List<HistoryEntry>) {
+        history.value = newHistory
+    }
+
     override suspend fun getMolesWithHistory(profileName: String): List<Mole> {
         return moles.value.filter { it.profileName == profileName }.map { mole ->
             val moleHistory = history.value.filter { it.moleId == mole.id }
@@ -27,7 +35,22 @@ class FakeMoleRepository : MoleRepository {
     }
 
     override fun getMolesAtDate(profileName: String, targetDate: java.time.LocalDate): Flow<List<com.example.chronomapscanner.data.domain.MoleMapItem>> {
-        return MutableStateFlow(emptyList())
+        return kotlinx.coroutines.flow.combine(moles, history) { allMoles, allHistory ->
+            allMoles.filter { it.profileName == profileName }.mapNotNull { mole ->
+                val moleHistories = allHistory.filter { it.moleId == mole.id && !it.date.isAfter(targetDate) }
+                if (moleHistories.isEmpty()) return@mapNotNull null
+                val latestHistory = moleHistories.maxByOrNull { it.date }!!
+                com.example.chronomapscanner.data.domain.MoleMapItem(
+                    id = mole.id,
+                    x = mole.x,
+                    y = mole.y,
+                    side = mole.side,
+                    color = mole.color,
+                    imagePath = latestHistory.imagePath,
+                    historyDate = latestHistory.date
+                )
+            }
+        }
     }
 
     override fun getAvailableDates(profileName: String): Flow<List<java.time.LocalDate>> {
@@ -35,7 +58,10 @@ class FakeMoleRepository : MoleRepository {
     }
 
     override fun getAvailableDatesForVariant(profileName: String, variantId: String): Flow<List<java.time.LocalDate>> {
-        return MutableStateFlow(emptyList())
+        return kotlinx.coroutines.flow.combine(moles, history) { allMoles, allHistory ->
+            val moleIds = allMoles.filter { it.profileName == profileName && it.side == variantId }.map { it.id }
+            allHistory.filter { it.moleId in moleIds }.map { it.date }.distinct()
+        }
     }
 
     override fun getMoleByIdWithHistory(moleId: String): Flow<Mole?> {

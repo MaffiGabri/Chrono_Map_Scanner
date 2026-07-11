@@ -146,6 +146,14 @@ object DatabaseModule {
         }
     }
 
+    private val MIGRATION_5_6 = object : Migration(5, 6) {
+        override fun migrate(db: SupportSQLiteDatabase) {
+            // Sanitize image paths: convert absolute paths to relative filenames
+            db.execSQL("UPDATE `history_entries` SET `imagePath` = substr(`imagePath`, instr(`imagePath`, 'img_')) WHERE `imagePath` LIKE '/%' AND instr(`imagePath`, 'img_') > 0")
+            db.execSQL("UPDATE `background_variants` SET `imagePath` = substr(`imagePath`, instr(`imagePath`, 'bg_')) WHERE `imagePath` LIKE '/%' AND instr(`imagePath`, 'bg_') > 0")
+        }
+    }
+
     @Provides
     @Singleton
     fun provideAppDatabase(@ApplicationContext context: Context): AppDatabaseRoom {
@@ -154,7 +162,7 @@ object DatabaseModule {
             AppDatabaseRoom::class.java,
             "Skin History Scanner_db"
         )
-        .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5)
+        .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6)
         .build()
     }
 

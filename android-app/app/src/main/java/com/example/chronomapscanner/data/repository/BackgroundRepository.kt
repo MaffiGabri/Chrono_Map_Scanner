@@ -7,6 +7,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import javax.inject.Singleton
 import java.time.LocalDate
@@ -73,15 +74,21 @@ class BackgroundRepository @Inject constructor(
         backgroundDao.getCategoriesForProfile(profileName).flowOn(Dispatchers.Default)
 
     fun getVariantsForCategory(categoryId: String): Flow<List<BackgroundVariantEntity>> {
-        return backgroundDao.getVariantsForCategory(categoryId).flowOn(Dispatchers.Default)
+        return backgroundDao.getVariantsForCategory(categoryId).map { list ->
+            list.map { it.copy(imagePath = fileRepository.getAbsolutePath(it.imagePath)) }
+        }.flowOn(Dispatchers.Default)
     }
 
     suspend fun getVariantsForCategorySync(categoryId: String): List<BackgroundVariantEntity> {
-        return backgroundDao.getVariantsForCategorySync(categoryId)
+        return backgroundDao.getVariantsForCategorySync(categoryId).map {
+            it.copy(imagePath = fileRepository.getAbsolutePath(it.imagePath))
+        }
     }
 
     fun getVariantByIdFlow(variantId: String): Flow<BackgroundVariantEntity?> {
-        return backgroundDao.getVariantByIdFlow(variantId).flowOn(Dispatchers.Default)
+        return backgroundDao.getVariantByIdFlow(variantId).map { entity ->
+            entity?.copy(imagePath = fileRepository.getAbsolutePath(entity.imagePath))
+        }.flowOn(Dispatchers.Default)
     }
 
     suspend fun insertCategory(category: BackgroundCategoryEntity) {
@@ -102,7 +109,7 @@ class BackgroundRepository @Inject constructor(
 
     suspend fun deleteCategory(categoryId: String) {
         val variants = backgroundDao.getVariantsForCategorySync(categoryId)
-        val imagePaths = variants.mapNotNull { it.imagePath }
+        val imagePaths = variants.mapNotNull { fileRepository.getAbsolutePath(it.imagePath) }
         if (imagePaths.isNotEmpty()) {
             fileRepository.scheduleFileDeletion(imagePaths)
         }
@@ -114,8 +121,9 @@ class BackgroundRepository @Inject constructor(
 
     suspend fun deleteVariant(variantId: String) {
         val variant = backgroundDao.getVariantById(variantId)
-        if (variant?.imagePath != null) {
-            fileRepository.scheduleFileDeletion(listOf(variant.imagePath))
+        val imagePath = fileRepository.getAbsolutePath(variant?.imagePath)
+        if (imagePath != null) {
+            fileRepository.scheduleFileDeletion(listOf(imagePath))
         }
         moleRepository.deleteMolesByVariant(variantId)
         backgroundDao.deleteVariant(variantId)

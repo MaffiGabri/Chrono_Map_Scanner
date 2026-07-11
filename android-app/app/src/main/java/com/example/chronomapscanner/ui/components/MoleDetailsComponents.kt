@@ -170,7 +170,7 @@ fun MoleSummaryHeader(
                     val imagePath = variant?.imagePath
                     if (imagePath == null && variant != null) {
                         androidx.compose.foundation.Image(
-                            painter = androidx.compose.ui.res.painterResource(id = getBodyImageRes(userSettings, variant.id)),
+                            painter = androidx.compose.ui.res.painterResource(id = getBodyImageRes(userSettings, variant.id, variant.name)),
                             contentDescription = androidx.compose.ui.res.stringResource(com.example.chronomapscanner.R.string.body_map_image),
                             modifier = Modifier
                                 .fillMaxSize()

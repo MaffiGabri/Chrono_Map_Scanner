@@ -93,12 +93,14 @@ class SettingsViewModel @Inject constructor(
         settingsRepository.keepLegendVisible,
         settingsRepository.rapidInsertionMode,
         settingsRepository.rapidUpdateMode,
-        settingsRepository.snapToRecentOnAddMole
-    ) { keep, insert, update, snapToRecent -> object {
+        settingsRepository.snapToRecentOnAddMole,
+        settingsRepository.smartCameraEnabled
+    ) { keep, insert, update, snapToRecent, smartCamera -> object {
         val keep = keep
         val insert = insert
         val update = update
         val snapToRecent = snapToRecent
+        val smartCamera = smartCamera
     } }
 
     private val _interfaceSettingsFlow = combine(
@@ -113,6 +115,7 @@ class SettingsViewModel @Inject constructor(
             val rapidInsert = rapidModes.insert
             val rapidUpdate = rapidModes.update
             val snapToRecent = rapidModes.snapToRecent
+            val smartCamera = rapidModes.smartCamera
             val showZoomButton = showZoom
             val scannerDelayMs = delayMs
             val scannerIntervalMin = intervalMin
@@ -139,7 +142,7 @@ class SettingsViewModel @Inject constructor(
     ) { part1, userSettings, reminderSettings, interfaceSettings, isGeneratingGlobalReport ->
         SettingsUiState(
             profileName = part1.profileName,
-            profileImage = part1.profileImage,
+            profileImage = fileRepository.getAbsolutePath(part1.profileImage),
             profiles = part1.profiles,
             userSettings = userSettings,
             reminderSettings = reminderSettings,
@@ -152,6 +155,7 @@ class SettingsViewModel @Inject constructor(
             scannerIntervalMin = interfaceSettings.scannerIntervalMin,
             warnOnEmptyMoleDeletion = interfaceSettings.warnOnEmptyMoleDeletion,
             snapToRecentOnAddMole = interfaceSettings.snapToRecent,
+            smartCameraEnabled = interfaceSettings.smartCamera,
             isGeneratingGlobalReport = isGeneratingGlobalReport
         )
     }.flowOn(kotlinx.coroutines.Dispatchers.Default).stateIn(
@@ -187,7 +191,8 @@ class SettingsViewModel @Inject constructor(
     fun deleteProfile(name: String) {
         if (allProfiles.value.size <= 1) return
         viewModelScope.launch {
-            if (name == currentProfile.value) {
+            val activeProfile = settingsRepository.currentProfile.first()
+            if (name == activeProfile) {
                 settingsRepository.setProfileImage(null) // Clear profile image
                 switchProfile(allProfiles.value.filter { it != name }.firstOrNull() ?: "Default")
             }
@@ -203,7 +208,8 @@ class SettingsViewModel @Inject constructor(
         viewModelScope.launch {
             moleRepository.renameProfile(oldName, newName)
             settingsRepository.renameProfileSettings(oldName, newName)
-            if (oldName == currentProfile.value) {
+            val activeProfile = settingsRepository.currentProfile.first()
+            if (oldName == activeProfile) {
                 settingsRepository.setCurrentProfile(newName)
             }
         }
@@ -293,12 +299,14 @@ class SettingsViewModel @Inject constructor(
         }
     }
 
-    fun exportDatabase(profileName: String = currentProfile.value, destinationUri: Uri, onComplete: () -> Unit) {
+    fun exportDatabase(profileName: String? = null, destinationUri: Uri, onComplete: () -> Unit) {
         _isProcessing.value = true
-        val inputData = Data.Builder()
-            .putString("profile_name", profileName)
-            .putString("destination_uri", destinationUri.toString())
-            .build()
+        viewModelScope.launch {
+            val actualProfile = profileName ?: settingsRepository.currentProfile.first()
+            val inputData = Data.Builder()
+                .putString("profile_name", actualProfile)
+                .putString("destination_uri", destinationUri.toString())
+                .build()
             
         val workRequest = OneTimeWorkRequestBuilder<ExportDatabaseWorker>()
             .setInputData(inputData)
@@ -306,10 +314,9 @@ class SettingsViewModel @Inject constructor(
             
         WorkManager.getInstance(context).enqueue(workRequest)
         // Simulate completion
-        viewModelScope.launch {
-            kotlinx.coroutines.delay(1000)
-            _isProcessing.value = false
-            onComplete()
+        kotlinx.coroutines.delay(1000)
+        _isProcessing.value = false
+        onComplete()
         }
     }
 
@@ -317,6 +324,12 @@ class SettingsViewModel @Inject constructor(
         viewModelScope.launch {
             settingsRepository.updateRapidModes(keepLegend, rapidInsert, rapidUpdate)
             settingsRepository.setSnapToRecentOnAddMole(snapToRecent)
+        }
+    }
+
+    fun updateSmartCameraEnabled(enabled: Boolean) {
+        viewModelScope.launch {
+            settingsRepository.setSmartCameraEnabled(enabled)
         }
     }
 
@@ -364,16 +377,25 @@ class SettingsViewModel @Inject constructor(
         viewModelScope.launch {
             _isGeneratingGlobalReport.value = true
             try {
-                val profile = currentProfile.value
+                val profile = settingsRepository.currentProfile.first()
                 val userSettings = _userSettingsFlow.first()
                 val moles = moleRepository.getMolesWithHistory(profile)
                 val colors = settingsRepository.colorSettings.first()
+                val activeCategoryId = settingsRepository.activeCategoryId.first()
+                val variants = if (activeCategoryId != null) {
+                    backgroundRepository.getVariantsForCategorySync(activeCategoryId)
+                } else {
+                    backgroundRepository.getCategoriesForProfile(profile).firstOrNull()?.firstOrNull()?.id?.let {
+                        backgroundRepository.getVariantsForCategorySync(it)
+                    } ?: emptyList()
+                }
 
                 val file = com.example.chronomapscanner.utils.GlobalReportGenerator.generateGlobalPdf(
                     context = context,
                     moles = moles,
                     userSettings = userSettings,
                     profileName = profile,
+                    variants = variants,
                     getColorLabel = { colorHex -> 
                         colors.find { it.hex.equals(colorHex.removePrefix("#"), ignoreCase = true) }?.label ?: context.getString(com.example.chronomapscanner.R.string.color_other) 
                     }

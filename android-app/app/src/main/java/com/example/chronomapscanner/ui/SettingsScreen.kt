@@ -13,8 +13,12 @@ import com.canhub.cropper.CropImageContractOptions
 import com.canhub.cropper.CropImageOptions
 import androidx.compose.animation.*
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.only
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
@@ -72,6 +76,7 @@ fun SettingsScreen(
     onUpdateReminders: (Boolean, Int, ReminderUnit) -> Unit,
     onUpdateRapidModes: (Boolean, Boolean, Boolean, Boolean) -> Unit,
     onUpdateShowZoomButton: (Boolean) -> Unit,
+    onUpdateSmartCameraEnabled: (Boolean) -> Unit,
     onUpdateScannerSettings: (Long, Long) -> Unit,
     onUpdateWarnOnEmptyMoleDeletion: (Boolean) -> Unit,
     onDebugSeed: () -> Unit,
@@ -101,7 +106,10 @@ fun SettingsScreen(
                     cropImageOptions = CropImageOptions(
                         aspectRatioX = 1,
                         aspectRatioY = 1,
-                        fixAspectRatio = true
+                        fixAspectRatio = true,
+                        cropShape = com.canhub.cropper.CropImageView.CropShape.OVAL,
+                        cropMenuCropButtonTitle = "",
+                        cropMenuCropButtonIcon = com.example.chronomapscanner.R.drawable.ic_check
                     )
                 )
             )
@@ -123,6 +131,7 @@ fun SettingsScreen(
     Scaffold(
         topBar = {
             TopAppBar(
+                windowInsets = WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top),
                 title = { 
                     Text(
                         text = when(currentView) {
@@ -145,9 +154,13 @@ fun SettingsScreen(
                     }
                 }
             )
-        }
+        },
+        contentWindowInsets = WindowInsets.safeDrawing
     ) { padding ->
-        Box(modifier = Modifier.padding(padding).fillMaxSize()) {
+        Box(modifier = Modifier
+            .fillMaxSize()
+            .padding(padding)
+        ) {
             AnimatedContent(
                 targetState = currentView,
                 transitionSpec = {
@@ -211,8 +224,10 @@ fun SettingsScreen(
                         rapidUpdateMode = state.rapidUpdateMode,
                         snapToRecentOnAddMole = state.snapToRecentOnAddMole,
                         showZoomButton = state.showZoomButton,
+                        smartCameraEnabled = state.smartCameraEnabled,
                         onUpdate = onUpdateRapidModes,
-                        onUpdateZoom = onUpdateShowZoomButton
+                        onUpdateZoom = onUpdateShowZoomButton,
+                        onUpdateSmartCamera = onUpdateSmartCameraEnabled
                     )
                 }
             }
@@ -238,7 +253,7 @@ fun MainSettings(
     onPickImage: () -> Unit,
     onNavigate: (SettingsView) -> Unit
 ) {
-    Column(modifier = Modifier.fillMaxSize()) {
+    Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
         // Profile Header
         Surface(
             modifier = Modifier.fillMaxWidth(),
@@ -440,7 +455,7 @@ fun BodyProfileSettings(settings: UserSettings, onSave: (Gender, BodyType) -> Un
     var gender by remember { mutableStateOf(settings.gender) }
     var bodyType by remember { mutableStateOf(settings.bodyType) }
 
-    Column(modifier = Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(24.dp)) {
+    Column(modifier = Modifier.verticalScroll(rememberScrollState()).padding(20.dp), verticalArrangement = Arrangement.spacedBy(24.dp)) {
         Card(
             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer)
         ) {
@@ -521,7 +536,7 @@ fun RemindersSettings(settings: ReminderSettings, onUpdate: (Boolean, Int, Remin
         }
     )
 
-    Column(modifier = Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(24.dp)) {
+    Column(modifier = Modifier.verticalScroll(rememberScrollState()).padding(20.dp), verticalArrangement = Arrangement.spacedBy(24.dp)) {
         Text(stringResource(R.string.reminders_desc), style = MaterialTheme.typography.bodyMedium)
 
         ListItem(
@@ -634,10 +649,12 @@ fun RapidModesSettings(
     rapidUpdateMode: Boolean,
     snapToRecentOnAddMole: Boolean,
     showZoomButton: Boolean,
+    smartCameraEnabled: Boolean,
     onUpdate: (Boolean, Boolean, Boolean, Boolean) -> Unit,
-    onUpdateZoom: (Boolean) -> Unit
+    onUpdateZoom: (Boolean) -> Unit,
+    onUpdateSmartCamera: (Boolean) -> Unit
 ) {
-    Column(modifier = Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(24.dp)) {
+    Column(modifier = Modifier.verticalScroll(rememberScrollState()).padding(20.dp), verticalArrangement = Arrangement.spacedBy(24.dp)) {
         Text(stringResource(R.string.rapid_modes_desc), style = MaterialTheme.typography.bodyMedium)
 
         ListItem(
@@ -691,6 +708,17 @@ fun RapidModesSettings(
                 Switch(
                     checked = showZoomButton, 
                     onCheckedChange = onUpdateZoom
+                )
+            }
+        )
+
+        ListItem(
+            headlineContent = { Text("Fotocamera Intelligente", fontWeight = FontWeight.SemiBold) },
+            supportingContent = { Text("Usa l'intelligenza artificiale per rilevare il neo, controllare la stabilità e la messa a fuoco, e scattare in automatico.") },
+            trailingContent = {
+                Switch(
+                    checked = smartCameraEnabled, 
+                    onCheckedChange = onUpdateSmartCamera
                 )
             }
         )
@@ -1033,93 +1061,211 @@ fun ProfilesManagement(
 }
 
 @Composable
+fun RomanesqueColumn(modifier: Modifier = Modifier) {
+    val sandBase = Color(0xFFE6D2B5) // Chiaro
+    val sandShadow = Color(0xFFC4AB87) // Scuro
+    val sandDarkest = Color(0xFFA68B63) // Dettagli
+    
+    Column(
+        modifier = modifier,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        // Capitello Romanico
+        // Abaco (top block)
+        Box(modifier = Modifier.fillMaxWidth().height(12.dp).background(sandDarkest))
+        // Echino (cushion shape)
+        Box(
+            modifier = Modifier
+                .fillMaxWidth(0.9f)
+                .height(24.dp)
+                .background(
+                    sandShadow,
+                    shape = RoundedCornerShape(bottomStart = 16.dp, bottomEnd = 16.dp)
+                )
+        )
+        // Collarino
+        Box(modifier = Modifier.fillMaxWidth(0.7f).height(6.dp).background(sandDarkest))
+        
+        // Fusto (Shaft) - 3 incisioni = scuro/chiaro/scuro/chiaro/scuro/chiaro/scuro
+        Box(modifier = Modifier.fillMaxWidth(0.8f).weight(1f).background(sandShadow)) {
+            Row(modifier = Modifier.fillMaxSize(), horizontalArrangement = Arrangement.SpaceEvenly) {
+                Box(modifier = Modifier.width(8.dp).fillMaxHeight().background(sandBase))
+                Box(modifier = Modifier.width(8.dp).fillMaxHeight().background(sandBase))
+                Box(modifier = Modifier.width(8.dp).fillMaxHeight().background(sandBase))
+            }
+        }
+        
+        // Base
+        Box(modifier = Modifier.fillMaxWidth(0.7f).height(8.dp).background(sandDarkest))
+        Box(
+            modifier = Modifier
+                .fillMaxWidth(0.9f)
+                .height(14.dp)
+                .background(
+                    sandShadow, 
+                    shape = RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp)
+                )
+        )
+        Box(modifier = Modifier.fillMaxWidth().height(20.dp).background(sandDarkest))
+    }
+}
+
+@Composable
 fun AboutScreen() {
     val uriHandler = LocalUriHandler.current
+    val columnWidth = 72.dp
+    val beamHeight = 64.dp
+    
+    val sandShadow = Color(0xFFC4AB87) 
+    val sandDarkest = Color(0xFFA68B63)
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .padding(horizontal = 24.dp, vertical = 32.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
+            .verticalScroll(rememberScrollState()),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Architectural/Minimalist Header
-        Box(
+        Spacer(Modifier.height(32.dp))
+
+        // --- LAPIDE / STATUA (Sopra la trave) ---
+        // Profile Image (Circle)
+        Image(
+            painter = painterResource(id = R.drawable.profile_gabriele),
+            contentDescription = stringResource(R.string.about_developer_name),
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 32.dp),
-            contentAlignment = Alignment.TopStart
+                .size(140.dp)
+                .clip(CircleShape)
+                .border(4.dp, sandShadow, CircleShape),
+            contentScale = ContentScale.Crop
+        )
+
+        Spacer(Modifier.height(24.dp))
+
+        // Name
+        Text(
+            text = "GABRIELE MAFFIONE",
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Bold,
+            letterSpacing = 6.sp,
+            color = MaterialTheme.colorScheme.onSurface,
+            textAlign = TextAlign.Center
+        )
+
+        Spacer(Modifier.height(24.dp))
+
+        // Links
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp),
+            horizontalArrangement = Arrangement.Center
         ) {
-            Column {
+            TextButton(onClick = { uriHandler.openUri("https://maffionegabriele.wordpress.com/") }) {
                 Text(
-                    text = stringResource(R.string.app_name).uppercase(),
-                    style = MaterialTheme.typography.displaySmall,
-                    fontWeight = FontWeight.Light,
-                    letterSpacing = 4.sp,
-                    color = MaterialTheme.colorScheme.onSurface
+                    text = stringResource(R.string.about_portfolio).uppercase(),
+                    style = MaterialTheme.typography.labelMedium,
+                    fontWeight = FontWeight.Bold,
+                    letterSpacing = 2.sp,
+                    color = MaterialTheme.colorScheme.primary
                 )
-                Box(
-                    modifier = Modifier
-                        .padding(top = 8.dp)
-                        .height(2.dp)
-                        .width(60.dp)
-                        .background(MaterialTheme.colorScheme.primary)
-                )
+            }
+            Spacer(Modifier.width(16.dp))
+            TextButton(onClick = { uriHandler.openUri("https://www.linkedin.com/in/gabriele-maffione") }) {
                 Text(
-                    text = stringResource(R.string.version_label, "1.0.0"),
-                    style = MaterialTheme.typography.labelLarge,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.padding(top = 16.dp)
+                    text = stringResource(R.string.about_linkedin).uppercase(),
+                    style = MaterialTheme.typography.labelMedium,
+                    fontWeight = FontWeight.Bold,
+                    letterSpacing = 2.sp,
+                    color = MaterialTheme.colorScheme.primary
                 )
             }
         }
 
-        // Developer Profile Section (Mies van der Rohe inspired clean block)
-        Card(
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(0.dp), // Sharp geometric corners
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-            elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
+        Spacer(Modifier.height(48.dp))
+
+        // --- IL TEMPIO (Trave + Colonne) ---
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(500.dp) // Ensures columns go down to the bottom
         ) {
+            // Left Column
+            RomanesqueColumn(
+                modifier = Modifier
+                    .align(Alignment.BottomStart)
+                    .padding(start = 16.dp)
+                    .padding(top = beamHeight) // Starts right below the beam
+                    .fillMaxHeight()
+                    .width(columnWidth)
+            )
+
+            // Right Column
+            RomanesqueColumn(
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .padding(end = 16.dp)
+                    .padding(top = beamHeight)
+                    .fillMaxHeight()
+                    .width(columnWidth)
+            )
+
+            // The Beam (Architrave)
+            Box(
+                modifier = Modifier
+                    .align(Alignment.TopCenter)
+                    .fillMaxWidth()
+                    .height(beamHeight)
+                    .background(sandShadow)
+                    .border(2.dp, sandDarkest),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = stringResource(R.string.app_name).uppercase(),
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold,
+                    letterSpacing = 6.sp,
+                    color = Color.Black // Dark text on sand for legibility
+                )
+            }
+
+            // Version underneath the beam
+            Text(
+                text = stringResource(R.string.version_label, "1.0.0").uppercase(),
+                style = MaterialTheme.typography.labelSmall,
+                fontWeight = FontWeight.Bold,
+                letterSpacing = 4.sp,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.align(Alignment.TopCenter).padding(top = beamHeight + 32.dp)
+            )
+
+            // Footer (Developed with...)
             Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 16.dp)
+                    .align(Alignment.BottomCenter)
+                    .padding(bottom = 16.dp, start = 96.dp, end = 96.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                // Profile Image with architectural transparent integration
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 8.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    // We removed the harsh border and background block to allow the transparent
-                    // PNG bust to blend seamlessly with the clean architectural background.
-                    Image(
-                        painter = painterResource(id = R.drawable.profile_gabriele),
-                        contentDescription = stringResource(R.string.about_developer_name),
-                        modifier = Modifier
-                            .size(160.dp)
-                            .padding(8.dp),
-                        contentScale = ContentScale.Fit
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(
+                        Icons.Default.Build,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.size(12.dp)
+                    )
+                    Spacer(Modifier.width(8.dp))
+                    Text(
+                        text = stringResource(R.string.about_developed_with).uppercase(),
+                        style = MaterialTheme.typography.labelSmall,
+                        fontWeight = FontWeight.Medium,
+                        letterSpacing = 2.sp,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        textAlign = TextAlign.Center
                     )
                 }
-
-                Spacer(Modifier.height(24.dp))
-
-                // Name and Role
+                Spacer(Modifier.height(8.dp))
+                val currentYear = java.time.Year.now().value.coerceAtLeast(2026)
                 Text(
-                    text = "GABRIELE MAFFIONE",
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Medium,
-                    letterSpacing = 2.sp,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    modifier = Modifier.align(Alignment.CenterHorizontally)
-                )
-
-                Text(
-                    text = stringResource(R.string.about_role).uppercase(),
+                    text = "© $currentYear Gabriele Maffione. All Rights Reserved.",
                     style = MaterialTheme.typography.labelSmall,
+<<<<<<< HEAD
                     fontWeight = FontWeight.Light,
                     letterSpacing = 1.5.sp,
                     color = MaterialTheme.colorScheme.primary,
@@ -1199,9 +1345,11 @@ fun AboutScreen() {
                 Text(
                     text = stringResource(R.string.about_developed_with).uppercase(),
                     style = MaterialTheme.typography.labelMedium,
+=======
+>>>>>>> edd0a09 (Restore and fix PDF export, implement multi-page support, and refactor Android source and tests)
                     fontWeight = FontWeight.Medium,
                     letterSpacing = 1.sp,
-                    color = MaterialTheme.colorScheme.onSecondaryContainer,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     textAlign = TextAlign.Center
                 )
             }

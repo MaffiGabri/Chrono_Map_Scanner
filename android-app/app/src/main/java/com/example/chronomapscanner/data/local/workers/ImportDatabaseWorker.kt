@@ -58,7 +58,9 @@ class ImportDatabaseWorker @AssistedInject constructor(
                     val oldToNewVariantIds = mutableMapOf<String, String>()
                     
                     importedDb.categories.forEach { category ->
-                        val finalCategoryId = if (isNewProfile) java.util.UUID.randomUUID().toString() else category.id
+                        val finalCategoryId = if (isNewProfile && category.isBuiltIn) "cat_persona_$finalProfileName" 
+                                              else if (isNewProfile) java.util.UUID.randomUUID().toString() 
+                                              else category.id
                         oldToNewCategoryIds[category.id] = finalCategoryId
                         
                         backgroundDao.insertCategory(
@@ -72,7 +74,21 @@ class ImportDatabaseWorker @AssistedInject constructor(
                     }
 
                     importedDb.variants.forEach { variant ->
-                        val finalVariantId = if (isNewProfile) java.util.UUID.randomUUID().toString() else variant.id
+                        val isBuiltInFallback = variant.id.startsWith("FRONT_") || variant.id.startsWith("BACK_") || 
+                                              (variant.imagePath == null && (variant.name.equals("Front", ignoreCase = true) || variant.name.equals("Fronte", ignoreCase = true) || variant.name.equals("Back", ignoreCase = true) || variant.name.equals("Retro", ignoreCase = true)))
+                        
+                        val isFront = variant.id.startsWith("FRONT_") || (variant.imagePath == null && (variant.name.equals("Front", ignoreCase = true) || variant.name.equals("Fronte", ignoreCase = true)))
+                        val isBack = variant.id.startsWith("BACK_") || (variant.imagePath == null && (variant.name.equals("Back", ignoreCase = true) || variant.name.equals("Retro", ignoreCase = true)))
+                        
+                        val finalVariantId = if (isNewProfile) {
+                            if (isFront) "FRONT_$finalProfileName"
+                            else if (isBack) "BACK_$finalProfileName"
+                            else java.util.UUID.randomUUID().toString()
+                        } else {
+                            if (isFront && !variant.id.startsWith("FRONT_")) "FRONT_$finalProfileName"
+                            else if (isBack && !variant.id.startsWith("BACK_")) "BACK_$finalProfileName"
+                            else variant.id
+                        }
                         oldToNewVariantIds[variant.id] = finalVariantId
                         
                         val finalCategoryId = oldToNewCategoryIds[variant.categoryId] ?: variant.categoryId
@@ -109,6 +125,13 @@ class ImportDatabaseWorker @AssistedInject constructor(
                             val finalEntryId = if (isNewProfile) java.util.UUID.randomUUID().toString() else entry.id
                             val newImageName = if (isNewProfile && entry.imagePath != null) "img_$finalEntryId.jpg" else null
                             val finalImagePath = backupRepository.importImageToInternalStorage(tempDir, entry.imagePath, newImageName)
+                            
+                            if (entry.imagePath != null) {
+                                val originalThumbName = "thumb_${java.io.File(entry.imagePath).name}"
+                                val newThumbName = if (newImageName != null) "thumb_$newImageName" else null
+                                backupRepository.importImageToInternalStorage(tempDir, originalThumbName, newThumbName)
+                            }
+                            
                             moleRepository.upsertHistoryEntry(
                                 DomainHistoryEntry(
                                     id = finalEntryId,

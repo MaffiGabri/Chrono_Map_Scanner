@@ -26,12 +26,22 @@ class OfflineMoleRepository @Inject constructor(
 
     override suspend fun getMolesWithHistory(profileName: String): List<Mole> =
         withContext(Dispatchers.Default) {
-            moleDao.getMolesWithHistory(profileName).map { it.toDomain() }
+            moleDao.getMolesWithHistory(profileName).map { moleWithHistory ->
+                val domainMole = moleWithHistory.toDomain()
+                domainMole.copy(
+                    history = domainMole.history.map { entry ->
+                        entry.copy(imagePath = fileRepository.getAbsolutePath(entry.imagePath))
+                    }
+                )
+            }
         }
 
     override fun getMolesAtDate(profileName: String, targetDate: java.time.LocalDate): Flow<List<com.example.chronomapscanner.data.domain.MoleMapItem>> =
         moleDao.getMolesAtDate(profileName, targetDate).map { entities ->
-            entities.map { it.toDomain() }
+            entities.map { entity ->
+                val domainItem = entity.toDomain()
+                domainItem.copy(imagePath = fileRepository.getAbsolutePath(domainItem.imagePath))
+            }
         }.flowOn(Dispatchers.Default)
 
     override fun getAvailableDates(profileName: String): Flow<List<java.time.LocalDate>> =
@@ -42,7 +52,12 @@ class OfflineMoleRepository @Inject constructor(
 
     override fun getMoleByIdWithHistory(moleId: String): Flow<Mole?> =
         moleDao.getMoleByIdWithHistory(moleId).map { entity ->
-            entity?.toDomain()
+            val domainMole = entity?.toDomain()
+            domainMole?.copy(
+                history = domainMole.history.map { entry ->
+                    entry.copy(imagePath = fileRepository.getAbsolutePath(entry.imagePath))
+                }
+            )
         }.flowOn(Dispatchers.Default)
 
     override fun getAllProfileNames(): Flow<List<String>> =
@@ -70,7 +85,7 @@ class OfflineMoleRepository @Inject constructor(
 
     override suspend fun deleteMole(moleId: String) {
         val mole = moleDao.getMoleByIdWithHistory(moleId).firstOrNull()
-        val imagePaths = mole?.history?.mapNotNull { it.imagePath } ?: emptyList()
+        val imagePaths = mole?.history?.mapNotNull { fileRepository.getAbsolutePath(it.imagePath) } ?: emptyList()
         if (imagePaths.isNotEmpty()) {
             fileRepository.scheduleFileDeletion(imagePaths)
         }
@@ -78,8 +93,8 @@ class OfflineMoleRepository @Inject constructor(
     }
 
     override suspend fun deleteMolesByProfile(profileName: String) {
-        val historyImagePaths = moleDao.getHistoryImagePathsByProfile(profileName)
-        val variantImagePaths = backgroundDao.getVariantImagesByProfile(profileName)
+        val historyImagePaths = moleDao.getHistoryImagePathsByProfile(profileName).mapNotNull { fileRepository.getAbsolutePath(it) }
+        val variantImagePaths = backgroundDao.getVariantImagesByProfile(profileName).mapNotNull { fileRepository.getAbsolutePath(it) }
         val allPaths = historyImagePaths + variantImagePaths
         
         if (allPaths.isNotEmpty()) {
@@ -100,7 +115,7 @@ class OfflineMoleRepository @Inject constructor(
 
     override suspend fun deleteHistoryEntry(entryId: String) {
         val moleId = moleDao.getMoleIdForHistoryEntry(entryId)
-        val imagePath = moleDao.getHistoryEntryImagePath(entryId)
+        val imagePath = fileRepository.getAbsolutePath(moleDao.getHistoryEntryImagePath(entryId))
         if (imagePath != null) {
             fileRepository.scheduleFileDeletion(listOf(imagePath))
         }
@@ -115,7 +130,7 @@ class OfflineMoleRepository @Inject constructor(
     }
 
     override suspend fun deleteMolesByVariant(variantId: String) {
-        val imagePaths = moleDao.getHistoryImagePathsByVariant(variantId)
+        val imagePaths = moleDao.getHistoryImagePathsByVariant(variantId).mapNotNull { fileRepository.getAbsolutePath(it) }
         if (imagePaths.isNotEmpty()) {
             fileRepository.scheduleFileDeletion(imagePaths)
         }

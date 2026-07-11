@@ -99,7 +99,7 @@ class BackupRepository @Inject constructor(
             if (sourceImage.exists()) {
                 val destImage = File(context.filesDir, newFileName ?: sourceImage.name)
                 sourceImage.copyTo(destImage, overwrite = true)
-                destImage.absolutePath
+                destImage.name
             } else null
         } catch (e: Exception) {
             e.printStackTrace()

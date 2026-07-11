@@ -23,6 +23,7 @@ data class SettingsUiState(
     val scannerIntervalMin: Long = 5L,
     val warnOnEmptyMoleDeletion: Boolean = true,
     val snapToRecentOnAddMole: Boolean = true,
+    val smartCameraEnabled: Boolean = true,
     val isLoading: Boolean = false,
     val isGeneratingGlobalReport: Boolean = false
 )

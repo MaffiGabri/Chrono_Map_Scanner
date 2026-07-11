@@ -176,6 +176,7 @@ fun ChronoMapNavGraph(
                     onUpdateReminders = settingsViewModel::updateReminderSettings,
                     onUpdateRapidModes = settingsViewModel::updateRapidModes,
                     onUpdateShowZoomButton = settingsViewModel::updateShowZoomButton,
+                    onUpdateSmartCameraEnabled = settingsViewModel::updateSmartCameraEnabled,
                     onUpdateScannerSettings = settingsViewModel::updateScannerSettings,
                     onUpdateWarnOnEmptyMoleDeletion = settingsViewModel::updateWarnOnEmptyMoleDeletion,
                     onUpdatePdfQuality = settingsViewModel::updatePdfQuality,
@@ -198,7 +199,8 @@ fun ChronoMapNavGraph(
                     },
                     onSavePdf = {
                         val dateStr = java.time.LocalDate.now().format(java.time.format.DateTimeFormatter.ofPattern("dd-MM-yyyy"))
-                        val fileName = "Report_${settingsViewModel.currentProfile.value}_Globale_${dateStr}.pdf"
+                        val safeProfileName = settingsState.profileName.replace(" ", "_").replaceFirstChar { if (it.isLowerCase()) it.titlecase(java.util.Locale.getDefault()) else it.toString() }
+                        val fileName = "Report_Globale_${safeProfileName}_${dateStr}.pdf"
                         pendingExportFilename = fileName
                     },
                     onDebugSeed = settingsViewModel::debugResetAndSeed,
@@ -402,7 +404,9 @@ fun ChronoMapNavGraph(
             composable<CameraRoute> { backStackEntry ->
                 val route = backStackEntry.toRoute<CameraRoute>()
                 val moleId = route.moleId
+                val settingsState by settingsViewModel.settingsUiState.collectAsStateWithLifecycle()
                 AutoCameraScreen(
+                    smartCameraEnabled = settingsState.smartCameraEnabled,
                     onPhotoTaken = { path ->
                         navController.navigate(ImageEditorRoute(path)) {
                             popUpTo<CameraRoute> { inclusive = true }

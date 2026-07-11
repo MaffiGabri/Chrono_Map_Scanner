@@ -227,4 +227,7 @@
     <string name="report_title_global">Report Globale Difetti</string>
     <string name="report_category">Categoria:</string>
     <string name="report_date">Data ultima modifica:</string>
+    <string name="report_mole_title">Report %1$s - Vista: %2$s</string>
+    <string name="not_available">N/A</string>
+    <string name="report_mole_title_continued">Report %1$s - (Continua)</string>
 </resources>
