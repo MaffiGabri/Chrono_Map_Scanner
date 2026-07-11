@@ -355,7 +355,10 @@ fun MainSettings(
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .clickable {
+                                    .clickable(
+                                        onClickLabel = label,
+                                        role = androidx.compose.ui.semantics.Role.Button
+                                    ) {
                                         currentLanguage = tag
                                         val localeList = if (tag == "system") {
                                             androidx.core.os.LocaleListCompat.getEmptyLocaleList()
@@ -838,7 +841,11 @@ fun ProfilesManagement(
                     modifier = Modifier
                         .fillMaxWidth()
                         .clip(RoundedCornerShape(12.dp))
-                        .clickable(enabled = !isActive) { onSwitch(profile) },
+                        .clickable(
+                            enabled = !isActive,
+                            onClickLabel = stringResource(R.string.select_profile),
+                            role = androidx.compose.ui.semantics.Role.Button
+                        ) { onSwitch(profile) },
                     color = if (isActive) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
                     tonalElevation = if (isActive) 4.dp else 0.dp
                 ) {
