@@ -244,7 +244,7 @@ fun VariantListItem(
                         .background(MaterialTheme.colorScheme.surfaceVariant),
                     contentAlignment = Alignment.Center
                 ) {
-                    Icon(Icons.Default.Image, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f), modifier = Modifier.size(48.dp))
+                    Icon(Icons.Default.Image, contentDescription = stringResource(R.string.desc_background_image), tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f), modifier = Modifier.size(48.dp))
                 }
             }
             
@@ -432,12 +432,16 @@ fun AddVariantButton(onAddSingle: (String, Uri) -> Unit, onAddMultiple: (List<Ur
         }
     }
 
+    val addVariantStr = stringResource(R.string.add_variant)
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(8.dp))
             .background(MaterialTheme.colorScheme.primaryContainer)
-            .clickable { showPhotoMenu = true }
+            .clickable(
+                onClickLabel = addVariantStr,
+                role = androidx.compose.ui.semantics.Role.Button
+            ) { showPhotoMenu = true }
             .padding(16.dp),
         contentAlignment = Alignment.Center
     ) {
@@ -453,10 +457,14 @@ fun AddVariantButton(onAddSingle: (String, Uri) -> Unit, onAddMultiple: (List<Ur
             Column(modifier = Modifier.padding(bottom = 32.dp, start = 20.dp, end = 20.dp)) {
                 Text(stringResource(R.string.new_photo), style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
                 Spacer(Modifier.height(16.dp))
+                val takePhotoStr = stringResource(R.string.take_photo)
                 ListItem(
-                    headlineContent = { Text(stringResource(R.string.take_photo)) },
-                    leadingContent = { Icon(Icons.Default.CameraAlt, contentDescription = stringResource(R.string.take_photo)) },
-                    modifier = Modifier.clickable { 
+                    headlineContent = { Text(takePhotoStr) },
+                    leadingContent = { Icon(Icons.Default.CameraAlt, contentDescription = takePhotoStr) },
+                    modifier = Modifier.clickable(
+                        onClickLabel = takePhotoStr,
+                        role = androidx.compose.ui.semantics.Role.Button
+                    ) {
                         showPhotoMenu = false
                         if (androidx.core.content.ContextCompat.checkSelfPermission(context, android.Manifest.permission.CAMERA) == android.content.pm.PackageManager.PERMISSION_GRANTED) {
                             val cameraDir = java.io.File(context.cacheDir, "camera_images")
@@ -470,10 +478,14 @@ fun AddVariantButton(onAddSingle: (String, Uri) -> Unit, onAddMultiple: (List<Ur
                         }
                     }
                 )
+                val chooseGalleryStr = stringResource(R.string.choose_gallery)
                 ListItem(
-                    headlineContent = { Text(stringResource(R.string.choose_gallery)) },
+                    headlineContent = { Text(chooseGalleryStr) },
                     leadingContent = { Icon(Icons.Default.PhotoLibrary, null) },
-                    modifier = Modifier.clickable { 
+                    modifier = Modifier.clickable(
+                        onClickLabel = chooseGalleryStr,
+                        role = androidx.compose.ui.semantics.Role.Button
+                    ) {
                         showPhotoMenu = false
                         galleryLauncher.launch(androidx.activity.result.PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
                     }

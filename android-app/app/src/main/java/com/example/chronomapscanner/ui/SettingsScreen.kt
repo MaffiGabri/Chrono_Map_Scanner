@@ -335,8 +335,9 @@ fun MainSettings(
         }
         var showLanguageMenu by remember { mutableStateOf(false) }
 
+        val appLanguageStr = stringResource(R.string.app_language)
         ListItem(
-            headlineContent = { Text(stringResource(R.string.app_language), fontWeight = FontWeight.SemiBold) },
+            headlineContent = { Text(appLanguageStr, fontWeight = FontWeight.SemiBold) },
             supportingContent = { 
                 Text(
                     when (currentLanguage) {
@@ -347,7 +348,10 @@ fun MainSettings(
                 ) 
             },
             leadingContent = { Icon(Icons.Default.Language, null, tint = MaterialTheme.colorScheme.primary) },
-            modifier = Modifier.clickable { showLanguageMenu = true }
+            modifier = Modifier.clickable(
+                onClickLabel = appLanguageStr,
+                role = androidx.compose.ui.semantics.Role.Button
+            ) { showLanguageMenu = true }
         )
 
         if (showLanguageMenu) {
@@ -365,7 +369,10 @@ fun MainSettings(
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .clickable {
+                                    .clickable(
+                                        onClickLabel = label,
+                                        role = androidx.compose.ui.semantics.Role.Button
+                                    ) {
                                         currentLanguage = tag
                                         val localeList = if (tag == "system") {
                                             androidx.core.os.LocaleListCompat.getEmptyLocaleList()
@@ -421,7 +428,10 @@ fun SettingsMenuItem(title: String, subtitle: String, icon: androidx.compose.ui.
         supportingContent = { Text(subtitle) },
         leadingContent = { Icon(icon, null, tint = MaterialTheme.colorScheme.primary) },
         trailingContent = { Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, null) },
-        modifier = Modifier.clickable { onClick() }
+        modifier = Modifier.clickable(
+            onClickLabel = title,
+            role = androidx.compose.ui.semantics.Role.Button
+        ) { onClick() }
     )
 }
 
@@ -435,7 +445,7 @@ fun BodyProfileSettings(settings: UserSettings, onSave: (Gender, BodyType) -> Un
             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer)
         ) {
             Row(modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
-                Icon(Icons.Default.Info, contentDescription = null, tint = MaterialTheme.colorScheme.onSecondaryContainer)
+                Icon(Icons.Default.Info, contentDescription = stringResource(R.string.app_info_title), tint = MaterialTheme.colorScheme.onSecondaryContainer)
                 Spacer(Modifier.width(12.dp))
                 Text(
                     text = stringResource(R.string.body_profile_note),
@@ -942,7 +952,11 @@ fun ProfilesManagement(
                     modifier = Modifier
                         .fillMaxWidth()
                         .clip(RoundedCornerShape(12.dp))
-                        .clickable(enabled = !isActive) { onSwitch(profile) },
+                        .clickable(
+                            enabled = !isActive,
+                            onClickLabel = stringResource(R.string.select_profile),
+                            role = androidx.compose.ui.semantics.Role.Button
+                        ) { onSwitch(profile) },
                     color = if (isActive) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
                     tonalElevation = if (isActive) 4.dp else 0.dp
                 ) {
@@ -1177,7 +1191,7 @@ fun AboutScreen() {
             ) {
                 Icon(
                     Icons.Default.Build,
-                    contentDescription = null,
+                    contentDescription = stringResource(R.string.about_subtitle),
                     tint = MaterialTheme.colorScheme.onSecondaryContainer,
                     modifier = Modifier.size(20.dp)
                 )
