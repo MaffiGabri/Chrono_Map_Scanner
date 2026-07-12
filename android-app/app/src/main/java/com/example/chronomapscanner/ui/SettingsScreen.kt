@@ -239,7 +239,10 @@ fun MainSettings(
                     modifier = Modifier
                         .size(80.dp)
                         .clip(CircleShape)
-                        .clickable { onPickImage() }
+                        .clickable(
+                            onClickLabel = stringResource(R.string.change_profile_photo_desc),
+                            role = androidx.compose.ui.semantics.Role.Button
+                        ) { onPickImage() }
                 ) {
                     if (state.profileImage != null) {
                         AsyncImage(
