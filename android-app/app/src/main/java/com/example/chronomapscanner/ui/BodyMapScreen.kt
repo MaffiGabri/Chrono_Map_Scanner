@@ -358,6 +358,7 @@ fun BodyMapScreen(
                 BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
                     val canvasWidth = with(density) { maxWidth.toPx() }
                     val canvasHeight = with(density) { maxHeight.toPx() }
+                    val sharedPath = remember { androidx.compose.ui.graphics.Path() }
 
                     Canvas(modifier = Modifier.fillMaxSize()) {
                         val baseRadius = when (previewSize) {
@@ -380,16 +381,14 @@ fun BodyMapScreen(
                                     if (bitmap != null) {
                                         val dstSize = androidx.compose.ui.unit.IntSize((baseRadius * 2).toInt(), (baseRadius * 2).toInt())
                                         val dstOffset = androidx.compose.ui.unit.IntOffset((posX - baseRadius).toInt(), (posY - baseRadius).toInt())
-                                        clipPath(
-                                            androidx.compose.ui.graphics.Path().apply {
-                                                addOval(androidx.compose.ui.geometry.Rect(
-                                                    left = posX - baseRadius,
-                                                    top = posY - baseRadius,
-                                                    right = posX + baseRadius,
-                                                    bottom = posY + baseRadius
-                                                ))
-                                            }
-                                        ) {
+                                        sharedPath.reset()
+                                        sharedPath.addOval(androidx.compose.ui.geometry.Rect(
+                                            left = posX - baseRadius,
+                                            top = posY - baseRadius,
+                                            right = posX + baseRadius,
+                                            bottom = posY + baseRadius
+                                        ))
+                                        clipPath(sharedPath) {
                                             drawImage(
                                                 image = bitmap,
                                                 dstOffset = dstOffset,
