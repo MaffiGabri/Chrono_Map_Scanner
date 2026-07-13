@@ -73,7 +73,10 @@ fun MoleSummaryHeader(
                         contentDescription = androidx.compose.ui.res.stringResource(com.example.chronomapscanner.R.string.latest_photo),
                         modifier = Modifier
                             .fillMaxSize()
-                            .clickable { onPhotoClick(latestPhoto.imagePath) },
+                            .clickable(
+                                onClickLabel = androidx.compose.ui.res.stringResource(com.example.chronomapscanner.R.string.desc_enlarge_photo),
+                                role = androidx.compose.ui.semantics.Role.Button
+                            ) { onPhotoClick(latestPhoto.imagePath) },
                         contentScale = ContentScale.Crop
                     )
                     Box(modifier = Modifier
@@ -272,7 +275,10 @@ fun HistoryItem(
     ) {
         Column(modifier = Modifier.padding(12.dp)) {
             Row(
-                modifier = Modifier.fillMaxWidth().clickable { onClick() },
+                modifier = Modifier.fillMaxWidth().clickable(
+                    onClickLabel = androidx.compose.ui.res.stringResource(com.example.chronomapscanner.R.string.desc_edit_entry),
+                    role = androidx.compose.ui.semantics.Role.Button
+                ) { onClick() },
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -316,7 +322,10 @@ fun HistoryItem(
                         modifier = Modifier
                             .fillMaxSize()
                             .clip(RoundedCornerShape(12.dp))
-                            .clickable { onPhotoClick(imagePath) },
+                            .clickable(
+                                onClickLabel = androidx.compose.ui.res.stringResource(com.example.chronomapscanner.R.string.desc_enlarge_photo),
+                                role = androidx.compose.ui.semantics.Role.Button
+                            ) { onPhotoClick(imagePath) },
                         contentScale = ContentScale.Crop
                     )
                     IconButton(
@@ -340,7 +349,10 @@ fun HistoryItem(
                         style = MaterialTheme.typography.bodyMedium,
                         lineHeight = 20.sp,
                         color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f),
-                        modifier = Modifier.fillMaxWidth().clickable { onClick() }
+                        modifier = Modifier.fillMaxWidth().clickable(
+                    onClickLabel = androidx.compose.ui.res.stringResource(com.example.chronomapscanner.R.string.desc_edit_entry),
+                    role = androidx.compose.ui.semantics.Role.Button
+                ) { onClick() }
                     )
                 }
             }

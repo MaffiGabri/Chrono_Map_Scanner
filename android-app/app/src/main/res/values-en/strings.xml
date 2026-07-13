@@ -226,4 +226,9 @@
     <string name="rapid_update_mode_desc">Directly open the camera when tapping an existing mole</string>
     <string name="show_zoom_button">Show Zoom Button</string>
     <string name="show_zoom_button_desc">Display a button to manually toggle body map zoom</string>
+    <string name="desc_enlarge_photo">Enlarge photo</string>
+    <string name="desc_edit_entry">Edit entry</string>
+    <string name="desc_toggle_checkbox">Toggle checkbox</string>
+    <string name="desc_select_color">Select color</string>
+    <string name="desc_change_profile_photo">Change profile photo</string>
 </resources>
