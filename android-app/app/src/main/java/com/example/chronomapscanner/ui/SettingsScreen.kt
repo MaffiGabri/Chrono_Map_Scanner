@@ -122,7 +122,7 @@ fun SettingsScreen(
                     Text(
                         text = when(currentView) {
                             SettingsView.MAIN -> stringResource(R.string.settings_title_main)
-                            SettingsView.BACKGROUND -> "Sfondi"
+                            SettingsView.BACKGROUND -> stringResource(R.string.settings_title_background)
                             SettingsView.DATABASE -> stringResource(R.string.settings_title_database)
                             SettingsView.PROFILES_MGMT -> stringResource(R.string.settings_title_profiles)
                             SettingsView.ABOUT -> stringResource(R.string.settings_title_about)
@@ -293,8 +293,8 @@ fun MainSettings(
 
         // Menu Items
         SettingsMenuItem(
-            title = "Sfondi",
-            subtitle = "Gestisci gli sfondi per il tracciamento dei nei",
+            title = stringResource(R.string.settings_title_background),
+            subtitle = stringResource(R.string.settings_background_subtitle),
             icon = Icons.Default.Wallpaper,
             onClick = { onNavigate(SettingsView.BACKGROUND) }
         )
@@ -663,8 +663,8 @@ fun RapidModesSettings(
         )
 
         ListItem(
-            headlineContent = { Text("Torna ad oggi alla creazione", fontWeight = FontWeight.SemiBold) },
-            supportingContent = { Text("Quando aggiungi un neo, la barra temporale tornerà alla data odierna.") },
+            headlineContent = { Text(stringResource(R.string.snap_to_recent_on_add_title), fontWeight = FontWeight.SemiBold) },
+            supportingContent = { Text(stringResource(R.string.snap_to_recent_on_add_subtitle)) },
             trailingContent = {
                 Switch(
                     checked = snapToRecentOnAddMole, 
@@ -738,7 +738,7 @@ fun DatabaseSettings(
                 ) {
                     Icon(Icons.Default.DeleteForever, null)
                     Spacer(Modifier.width(8.dp))
-                    Text("Reset & Crea 500 Nei")
+                    Text(stringResource(R.string.settings_reset_create_500_moles))
                 }
             }
         }
@@ -756,13 +756,13 @@ fun DatabaseSettings(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text("Scanner Integrità Dati", fontWeight = FontWeight.Bold)
+                    Text(stringResource(R.string.data_integrity_scanner_title), fontWeight = FontWeight.Bold)
                     IconButton(onClick = { showScannerInfoDialog = true }, modifier = Modifier.size(24.dp)) {
                         Icon(Icons.Default.Info, contentDescription = stringResource(R.string.app_info_title), modifier = Modifier.size(20.dp))
                     }
                 }
                 Spacer(Modifier.height(8.dp))
-                Text("Pausa tra i difetti: ${scannerDelayMs}ms", style = MaterialTheme.typography.bodyMedium)
+                Text(stringResource(R.string.data_integrity_scanner_delay, scannerDelayMs), style = MaterialTheme.typography.bodyMedium)
                 Slider(
                     value = scannerDelayMs.toFloat(),
                     onValueChange = { onUpdateScannerSettings(it.toLong(), scannerIntervalMin) },
@@ -771,8 +771,8 @@ fun DatabaseSettings(
                 )
                 
                 Spacer(Modifier.height(16.dp))
-                val intervalText = if (scannerIntervalMin <= 0L) "Mai" else "${scannerIntervalMin} min"
-                Text("Intervallo di ricontrollo: $intervalText", style = MaterialTheme.typography.bodyMedium)
+                val intervalText = if (scannerIntervalMin <= 0L) stringResource(R.string.interval_never) else stringResource(R.string.interval_mins, scannerIntervalMin)
+                Text(stringResource(R.string.data_integrity_scanner_interval, intervalText), style = MaterialTheme.typography.bodyMedium)
                 Slider(
                     value = scannerIntervalMin.toFloat(),
                     onValueChange = { onUpdateScannerSettings(scannerDelayMs, it.toLong()) },
@@ -784,13 +784,13 @@ fun DatabaseSettings(
             if (showScannerInfoDialog) {
                 AlertDialog(
                     onDismissRequest = { showScannerInfoDialog = false },
-                    title = { Text("Info Scanner", fontWeight = FontWeight.Bold) },
+                    title = { Text(stringResource(R.string.data_integrity_scanner_info_title), fontWeight = FontWeight.Bold) },
                     text = { 
-                        Text("Lo scanner controlla i dati in background per rimuovere file orfani e difetti vuoti. Usa un intervallo più breve per una pulizia rapida, ma tieni presente che potrebbe causare l'eliminazione automatica dei difetti appena creati se non fai in tempo ad aggiungere note o foto, oltre a consumare più batteria.") 
+                        Text(stringResource(R.string.data_integrity_scanner_info_desc))
                     },
                     confirmButton = {
                         Button(onClick = { showScannerInfoDialog = false }) {
-                            Text("Ho capito")
+                            Text(stringResource(R.string.data_integrity_scanner_info_confirm))
                         }
                     }
                 )
@@ -803,8 +803,8 @@ fun DatabaseSettings(
             shape = RoundedCornerShape(16.dp)
         ) {
             ListItem(
-                headlineContent = { Text("Avviso Difetti Vuoti", fontWeight = FontWeight.SemiBold) },
-                supportingContent = { Text("Mostra un avviso prima di eliminare difetti senza note o foto.") },
+                headlineContent = { Text(stringResource(R.string.warn_empty_mole_deletion_title), fontWeight = FontWeight.SemiBold) },
+                supportingContent = { Text(stringResource(R.string.warn_empty_mole_deletion_subtitle)) },
                 trailingContent = {
                     Switch(
                         checked = warnOnEmptyMoleDeletion,

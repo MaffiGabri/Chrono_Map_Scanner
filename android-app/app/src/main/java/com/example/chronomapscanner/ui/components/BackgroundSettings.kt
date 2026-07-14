@@ -233,7 +233,7 @@ fun VariantListItem(
             if (variant.imagePath != null) {
                 AsyncImage(
                     model = variant.imagePath,
-                    contentDescription = variant.name,
+                    contentDescription = stringResource(R.string.desc_background_image_named, variant.name),
                     modifier = Modifier.fillMaxSize(),
                     contentScale = ContentScale.Crop
                 )
