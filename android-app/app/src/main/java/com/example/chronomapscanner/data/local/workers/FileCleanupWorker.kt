@@ -26,6 +26,17 @@ class FileCleanupWorker @AssistedInject constructor(
         filePaths.forEach { path ->
             try {
                 val file = File(path)
+
+                // Security Enhancement: Prevent path traversal by ensuring the file is within expected app directories
+                val canonicalPath = file.canonicalPath
+                val filesDirPath = applicationContext.filesDir.canonicalPath
+                val cacheDirPath = applicationContext.cacheDir.canonicalPath
+
+                if (!canonicalPath.startsWith(filesDirPath) && !canonicalPath.startsWith(cacheDirPath)) {
+                    android.util.Log.w("FileCleanupWorker", "Security Warning: Attempted to delete a file outside allowed directories: $path")
+                    return@forEach // Skip this file
+                }
+
                 if (file.exists()) {
                     val deleted = file.delete()
                     if (!deleted) {
