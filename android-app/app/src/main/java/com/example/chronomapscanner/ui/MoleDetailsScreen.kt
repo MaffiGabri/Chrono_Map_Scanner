@@ -404,7 +404,10 @@ fun MoleDetailsScreen(
                             verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .clickable { dontShowAgain = !dontShowAgain }
+                                .clickable(
+                                    onClickLabel = stringResource(R.string.desc_toggle_checkbox),
+                                    role = androidx.compose.ui.semantics.Role.Checkbox
+                                ) { dontShowAgain = !dontShowAgain }
                         ) {
                             Checkbox(
                                 checked = dontShowAgain,
@@ -454,7 +457,10 @@ fun ColorPickerOverlay(
                             .fillMaxWidth()
                             .clip(RoundedCornerShape(12.dp))
                             .background(if (isSelected) MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.4f) else Color.Transparent)
-                            .clickable { onColorSelected(setting.hex) }
+                            .clickable(
+                                onClickLabel = stringResource(R.string.desc_select_color),
+                                role = androidx.compose.ui.semantics.Role.Button
+                            ) { onColorSelected(setting.hex) }
                             .padding(12.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {

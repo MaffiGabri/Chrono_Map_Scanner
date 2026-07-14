@@ -227,4 +227,9 @@
     <string name="report_title_global">Report Globale Difetti</string>
     <string name="report_category">Categoria:</string>
     <string name="report_date">Data ultima modifica:</string>
+    <string name="desc_enlarge_photo">Ingrandisci foto</string>
+    <string name="desc_edit_entry">Modifica voce</string>
+    <string name="desc_toggle_checkbox">Seleziona casella</string>
+    <string name="desc_select_color">Seleziona colore</string>
+    <string name="desc_change_profile_photo">Cambia foto profilo</string>
 </resources>
