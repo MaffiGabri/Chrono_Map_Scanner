@@ -227,4 +227,26 @@
     <string name="show_zoom_button">Show Zoom Button</string>
     <string name="show_zoom_button_desc">Display a button to manually toggle body map zoom</string>
     <string name="change_profile_photo_desc">Change profile photo</string>
+
+    <string name="settings_title_background">Backgrounds</string>
+    <string name="settings_background_subtitle">Manage backgrounds for mole tracking</string>
+    <string name="snap_to_recent_on_add_title">Snap to today on creation</string>
+    <string name="snap_to_recent_on_add_subtitle">When adding a mole, the timeline will jump to today\'s date.</string>
+    <string name="settings_reset_create_500_moles">Reset &amp; Create 500 Moles</string>
+    <string name="data_integrity_scanner_title">Data Integrity Scanner</string>
+    <string name="data_integrity_scanner_delay">Delay between items: %1$dms</string>
+    <string name="data_integrity_scanner_interval">Recheck interval: %1$s</string>
+    <string name="data_integrity_scanner_info_title">Scanner Info</string>
+    <string name="data_integrity_scanner_info_desc">The scanner checks data in the background to remove orphaned files and empty defects. Use a shorter interval for quick cleanup, but keep in mind that it could cause the automatic deletion of newly created defects if you don\'t add notes or photos in time, as well as consume more battery.</string>
+    <string name="data_integrity_scanner_info_confirm">Understood</string>
+    <string name="warn_empty_mole_deletion_title">Empty Defects Warning</string>
+    <string name="warn_empty_mole_deletion_subtitle">Show a warning before deleting defects without notes or photos.</string>
+    <string name="interval_never">Never</string>
+    <string name="interval_mins">%1$d min</string>
+    <string name="desc_background_image_named">Background image: %1$s</string>
+
+    <string name="desc_toggle_checkbox">Toggle checkbox</string>
+    <string name="desc_select_color">Select color</string>
+    <string name="desc_enlarge_photo">Enlarge photo</string>
+    <string name="desc_edit_entry">Edit note</string>
 </resources>

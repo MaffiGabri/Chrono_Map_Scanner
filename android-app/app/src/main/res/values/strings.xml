@@ -228,4 +228,26 @@
     <string name="report_category">Categoria:</string>
     <string name="report_date">Data ultima modifica:</string>
     <string name="change_profile_photo_desc">Cambia foto profilo</string>
+
+    <string name="settings_title_background">Sfondi</string>
+    <string name="settings_background_subtitle">Gestisci gli sfondi per il tracciamento dei nei</string>
+    <string name="snap_to_recent_on_add_title">Torna ad oggi alla creazione</string>
+    <string name="snap_to_recent_on_add_subtitle">Quando aggiungi un neo, la barra temporale tornerà alla data odierna.</string>
+    <string name="settings_reset_create_500_moles">Reset &amp; Crea 500 Nei</string>
+    <string name="data_integrity_scanner_title">Scanner Integrità Dati</string>
+    <string name="data_integrity_scanner_delay">Pausa tra i difetti: %1$dms</string>
+    <string name="data_integrity_scanner_interval">Intervallo di ricontrollo: %1$s</string>
+    <string name="data_integrity_scanner_info_title">Info Scanner</string>
+    <string name="data_integrity_scanner_info_desc">Lo scanner controlla i dati in background per rimuovere file orfani e difetti vuoti. Usa un intervallo più breve per una pulizia rapida, ma tieni presente che potrebbe causare l\'eliminazione automatica dei difetti appena creati se non fai in tempo ad aggiungere note o foto, oltre a consumare più batteria.</string>
+    <string name="data_integrity_scanner_info_confirm">Ho capito</string>
+    <string name="warn_empty_mole_deletion_title">Avviso Difetti Vuoti</string>
+    <string name="warn_empty_mole_deletion_subtitle">Mostra un avviso prima di eliminare difetti senza note o foto.</string>
+    <string name="interval_never">Mai</string>
+    <string name="interval_mins">%1$d min</string>
+    <string name="desc_background_image_named">Immagine di sfondo: %1$s</string>
+
+    <string name="desc_toggle_checkbox">Seleziona casella</string>
+    <string name="desc_select_color">Seleziona colore</string>
+    <string name="desc_enlarge_photo">Ingrandisci foto</string>
+    <string name="desc_edit_entry">Modifica nota</string>
 </resources>
