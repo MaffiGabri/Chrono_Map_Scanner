@@ -69,6 +69,17 @@ class FileRepository @Inject constructor(
     suspend fun deleteFile(path: String) = withContext(Dispatchers.IO) {
         try {
             val file = File(path)
+
+            // Security Enhancement: Prevent path traversal by ensuring the file is within expected app directories
+            val canonicalPath = file.canonicalPath
+            val filesDirPath = context.filesDir.canonicalPath
+            val cacheDirPath = context.cacheDir.canonicalPath
+
+            if (!canonicalPath.startsWith(filesDirPath) && !canonicalPath.startsWith(cacheDirPath)) {
+                android.util.Log.w("FileRepository", "Security Warning: Attempted to delete a file outside allowed directories: $path")
+                return@withContext
+            }
+
             if (file.exists()) {
                 file.delete()
             }
