@@ -240,7 +240,7 @@ fun MainSettings(
                         .size(80.dp)
                         .clip(CircleShape)
                         .clickable(
-                            onClickLabel = stringResource(R.string.desc_change_profile_photo),
+                            onClickLabel = stringResource(R.string.change_profile_photo_desc),
                             role = androidx.compose.ui.semantics.Role.Button
                         ) { onPickImage() }
                 ) {
