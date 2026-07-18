@@ -11,3 +11,7 @@
 ## 2024-07-24 - Accessibility improvements for clickable modifiers
 **Learning:** Custom Compose elements built with `Box` and `Modifier.clickable` are completely invisible to screen readers without semantic tags, causing them to be announced poorly (or not at all) as interactive buttons.
 **Action:** When creating or reviewing custom clickable components, always provide an `onClickLabel` with a localized string and assign the semantic `role = Role.Button` within the `Modifier.clickable()` parameter list.
+
+## 2024-07-24 - Accessibility improvements for hardcoded Strings in Text
+**Learning:** Hardcoded text inside `Text` composables directly degrades accessibility by failing to translate for screen readers, meaning users who don't speak the default language are given unintelligible voice feedback.
+**Action:** Always search explicitly for hardcoded string patterns inside `Text("...")` and convert them to `stringResource` values placed within `strings.xml` (both default and localized variants).

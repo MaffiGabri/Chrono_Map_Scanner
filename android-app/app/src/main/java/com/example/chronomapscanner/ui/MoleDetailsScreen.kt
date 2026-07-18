@@ -263,9 +263,9 @@ fun MoleDetailsScreen(
         if (showLastEntryDeleteWarning) {
             AlertDialog(
                 onDismissRequest = { showLastEntryDeleteWarning = false },
-                title = { Text("Attenzione: Ultimo elemento", fontWeight = FontWeight.Bold) },
+                title = { Text(stringResource(R.string.warning_last_element_title), fontWeight = FontWeight.Bold) },
                 text = { 
-                    Text("Stai per eliminare l'ultima nota o foto di questo difetto. Senza elementi, il difetto verrà rimosso dalla mappa per non sporcare il database. Vuoi procedere?") 
+                    Text(stringResource(R.string.warning_last_element_desc))
                 },
                 confirmButton = {
                     Button(
@@ -276,7 +276,7 @@ fun MoleDetailsScreen(
                         },
                         colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
                     ) {
-                        Text("Elimina")
+                        Text(stringResource(R.string.delete))
                     }
                 },
                 dismissButton = {
@@ -395,10 +395,10 @@ fun MoleDetailsScreen(
             var dontShowAgain by remember { mutableStateOf(false) }
             AlertDialog(
                 onDismissRequest = { showEmptyWarningDialog = false },
-                title = { Text("Difetto vuoto", fontWeight = FontWeight.Bold) },
+                title = { Text(stringResource(R.string.empty_defect_title), fontWeight = FontWeight.Bold) },
                 text = {
                     Column {
-                        Text("Stai uscendo da questo difetto senza aver inserito note o foto. Poiché è vuoto, verrà eliminato definitivamente dalla mappa per non sporcare il database.")
+                        Text(stringResource(R.string.empty_defect_desc))
                         Spacer(modifier = Modifier.height(16.dp))
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
@@ -413,7 +413,7 @@ fun MoleDetailsScreen(
                                 checked = dontShowAgain,
                                 onCheckedChange = { dontShowAgain = it }
                             )
-                            Text("Non ricordarmelo più", style = MaterialTheme.typography.bodyMedium)
+                            Text(stringResource(R.string.dont_remind_me_again), style = MaterialTheme.typography.bodyMedium)
                         }
                     }
                 },
@@ -425,7 +425,7 @@ fun MoleDetailsScreen(
                         }
                         onBack()
                     }) {
-                        Text("Procedi")
+                        Text(stringResource(R.string.proceed))
                     }
                 },
                 dismissButton = {

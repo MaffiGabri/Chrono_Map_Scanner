@@ -249,4 +249,10 @@
     <string name="desc_select_color">Select color</string>
     <string name="desc_enlarge_photo">Enlarge photo</string>
     <string name="desc_edit_entry">Edit note</string>
+    <string name="warning_last_element_title">Warning: Last element</string>
+    <string name="warning_last_element_desc">You are about to delete the last note or photo of this defect. Without elements, the defect will be removed from the map to avoid cluttering the database. Do you want to proceed?</string>
+    <string name="empty_defect_title">Empty defect</string>
+    <string name="empty_defect_desc">You are leaving this defect without adding notes or photos. Since it is empty, it will be permanently deleted from the map to avoid cluttering the database.</string>
+    <string name="dont_remind_me_again">Don\'t remind me again</string>
+    <string name="proceed">Proceed</string>
 </resources>

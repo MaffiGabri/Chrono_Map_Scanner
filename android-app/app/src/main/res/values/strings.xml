@@ -250,4 +250,10 @@
     <string name="desc_select_color">Seleziona colore</string>
     <string name="desc_enlarge_photo">Ingrandisci foto</string>
     <string name="desc_edit_entry">Modifica nota</string>
+    <string name="warning_last_element_title">Attenzione: Ultimo elemento</string>
+    <string name="warning_last_element_desc">Stai per eliminare l\'ultima nota o foto di questo difetto. Senza elementi, il difetto verrà rimosso dalla mappa per non sporcare il database. Vuoi procedere?</string>
+    <string name="empty_defect_title">Difetto vuoto</string>
+    <string name="empty_defect_desc">Stai uscendo da questo difetto senza aver inserito note o foto. Poiché è vuoto, verrà eliminato definitivamente dalla mappa per non sporcare il database.</string>
+    <string name="dont_remind_me_again">Non ricordarmelo più</string>
+    <string name="proceed">Procedi</string>
 </resources>
