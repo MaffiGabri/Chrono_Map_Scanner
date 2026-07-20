@@ -98,6 +98,13 @@ class BackupRepository @Inject constructor(
             val sourceImage = File(tempDir, File(originalPath).name)
             if (sourceImage.exists()) {
                 val destImage = File(context.filesDir, newFileName ?: sourceImage.name)
+
+                // 🛡️ Sentinel: Ensure canonical path is within filesDir to prevent directory traversal
+                if (!destImage.canonicalPath.startsWith(context.filesDir.canonicalPath)) {
+                    android.util.Log.w("BackupRepository", "Security Warning: Path traversal detected during image import")
+                    return@withContext null
+                }
+
                 sourceImage.copyTo(destImage, overwrite = true)
                 destImage.absolutePath
             } else null

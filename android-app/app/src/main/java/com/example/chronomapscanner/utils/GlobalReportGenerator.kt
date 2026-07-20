@@ -87,7 +87,16 @@ object GlobalReportGenerator {
             pageNum++
         }
 
-        val outputFile = File(context.cacheDir, "global_${profileName}_report.pdf")
+        // 🛡️ Sentinel: Sanitize profileName to prevent path traversal vulnerabilities
+        val safeProfileName = profileName.replace(Regex("[^a-zA-Z0-9_\\-]"), "_")
+        val outputFile = File(context.cacheDir, "global_${safeProfileName}_report.pdf")
+
+        // 🛡️ Sentinel: Ensure canonical path is within cacheDir to prevent directory traversal
+        if (!outputFile.canonicalPath.startsWith(context.cacheDir.canonicalPath)) {
+            document.close()
+            throw SecurityException("Path traversal detected in report generation")
+        }
+
         document.writeTo(FileOutputStream(outputFile))
         document.close()
 
