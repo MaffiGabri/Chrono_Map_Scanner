@@ -255,4 +255,22 @@
     <string name="empty_defect_desc">You are leaving this defect without adding notes or photos. Since it is empty, it will be permanently deleted from the map to avoid cluttering the database.</string>
     <string name="dont_remind_me_again">Don\'t remind me again</string>
     <string name="proceed">Proceed</string>
+    <string name="bg_model_title">Background Model</string>
+    <string name="bg_model_desc">Choose the background model to use for tracking moles.</string>
+    <string name="bg_model_label">Model</string>
+    <string name="bg_pages_title">Background Pages</string>
+    <string name="bg_pages_desc">You can add, rename, and reorder the custom model pages.</string>
+    <string name="warning_title">Warning</string>
+    <string name="bg_change_warning_desc">You are changing the background. What do you want to happen to the defects?</string>
+    <string name="bg_keep_defects">Keep them</string>
+    <string name="bg_delete_defects">Delete them</string>
+    <string name="bg_change_irreversible">This action is irreversible.</string>
+    <string name="ok_red">Ok</string>
+    <string name="bg_delete_title">Delete Background</string>
+    <string name="bg_delete_desc">Deleting this background will also delete all defects recorded on it. This action is irreversible. Do you want to continue?</string>
+    <string name="bg_edit_variant_title">Edit Variant</string>
+    <string name="bg_variant_name">Variant Name</string>
+    <string name="bg_crop_image">Crop Image</string>
+    <string name="bg_delete_variant">Delete Variant</string>
+    <string name="mole">Mole</string>
 </resources>

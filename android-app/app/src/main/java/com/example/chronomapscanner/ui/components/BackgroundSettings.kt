@@ -14,16 +14,16 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.res.stringResource
+import com.example.chronomapscanner.R
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
-import com.example.chronomapscanner.R
 import com.example.chronomapscanner.data.local.room.BackgroundCategoryEntity
 import com.example.chronomapscanner.data.local.room.BackgroundVariantEntity
 import com.example.chronomapscanner.ui.NameEditDialog
@@ -52,9 +52,9 @@ fun BackgroundSettings(
     var showDeleteConfirmDialog by remember { mutableStateOf<String?>(null) } // categoryId to switch to
 
     Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
-        Text("Modello Sfondo", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
+        Text(stringResource(R.string.bg_model_title), style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
         Spacer(Modifier.height(8.dp))
-        Text("Scegli il modello di sfondo da usare per il tracciamento dei nei.", style = MaterialTheme.typography.bodyMedium)
+        Text(stringResource(R.string.bg_model_desc), style = MaterialTheme.typography.bodyMedium)
         Spacer(Modifier.height(16.dp))
 
         // Find active category
@@ -71,7 +71,7 @@ fun BackgroundSettings(
                 value = activeCategory?.name ?: "",
                 onValueChange = {},
                 readOnly = true,
-                label = { Text("Modello") },
+                label = { Text(stringResource(R.string.bg_model_label)) },
                 trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
                 modifier = Modifier.fillMaxWidth().menuAnchor()
             )
@@ -103,9 +103,9 @@ fun BackgroundSettings(
             )
         } else if (activeCategory?.name == "Personalizzato") {
             // Variants Editor for Personalizzato
-            Text("Pagine di Sfondo", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+            Text(stringResource(R.string.bg_pages_title), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
             Spacer(Modifier.height(8.dp))
-            Text("Puoi aggiungere, rinominare e riordinare le pagine del modello personalizzato.", style = MaterialTheme.typography.bodySmall)
+            Text(stringResource(R.string.bg_pages_desc), style = MaterialTheme.typography.bodySmall)
             Spacer(Modifier.height(16.dp))
 
             var localVariants by remember(variantsForSelectedCategory) { mutableStateOf(variantsForSelectedCategory) }
@@ -161,15 +161,15 @@ fun BackgroundSettings(
     if (showMigrationDialog != null) {
         AlertDialog(
             onDismissRequest = { showMigrationDialog = null },
-            title = { Text("Attenzione") },
-            text = { Text("Stai cambiando lo sfondo. Cosa vuoi che succeda ai difetti?") },
+            title = { Text(stringResource(R.string.warning_title)) },
+            text = { Text(stringResource(R.string.bg_change_warning_desc)) },
             confirmButton = {
                 TextButton(onClick = {
                     val targetId = showMigrationDialog!!
                     showMigrationDialog = null
                     onSetActiveCategory(targetId, true) // Mantienili -> Keep moles
                 }) {
-                    Text("Mantienili")
+                    Text(stringResource(R.string.bg_keep_defects))
                 }
             },
             dismissButton = {
@@ -178,7 +178,7 @@ fun BackgroundSettings(
                     showMigrationDialog = null
                     showDeleteConfirmDialog = targetId
                 }) {
-                    Text("Eliminali")
+                    Text(stringResource(R.string.bg_delete_defects))
                 }
             }
         )
@@ -187,20 +187,20 @@ fun BackgroundSettings(
     if (showDeleteConfirmDialog != null) {
         AlertDialog(
             onDismissRequest = { showDeleteConfirmDialog = null },
-            title = { Text("Attenzione") },
-            text = { Text("Questa azione è irreversibile.") },
+            title = { Text(stringResource(R.string.warning_title)) },
+            text = { Text(stringResource(R.string.bg_change_irreversible)) },
             confirmButton = {
                 TextButton(onClick = {
                     val targetId = showDeleteConfirmDialog!!
                     showDeleteConfirmDialog = null
                     onSetActiveCategory(targetId, false) // Eliminali -> Don't keep moles
                 }) {
-                    Text("Ok", color = MaterialTheme.colorScheme.error)
+                    Text(stringResource(R.string.ok_red), color = MaterialTheme.colorScheme.error)
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showDeleteConfirmDialog = null }) {
-                    Text("Annulla")
+                    Text(stringResource(R.string.action_cancel))
                 }
             }
         )
@@ -328,32 +328,32 @@ fun VariantEditDialog(
     if (showDeleteConfirm) {
         AlertDialog(
             onDismissRequest = { showDeleteConfirm = false },
-            title = { Text("Elimina Sfondo") },
-            text = { Text("Eliminando questo sfondo cancellerai anche tutti i difetti registrati su di esso. Questa azione è irreversibile. Vuoi continuare?") },
+            title = { Text(stringResource(R.string.bg_delete_title)) },
+            text = { Text(stringResource(R.string.bg_delete_desc)) },
             confirmButton = {
                 TextButton(onClick = {
                     showDeleteConfirm = false
                     onDelete()
                 }) {
-                    Text("Elimina", color = MaterialTheme.colorScheme.error)
+                    Text(stringResource(R.string.delete), color = MaterialTheme.colorScheme.error)
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showDeleteConfirm = false }) {
-                    Text("Annulla")
+                    Text(stringResource(R.string.action_cancel))
                 }
             }
         )
     } else {
         AlertDialog(
             onDismissRequest = onDismiss,
-            title = { Text("Modifica Variante") },
+            title = { Text(stringResource(R.string.bg_edit_variant_title)) },
             text = {
                 Column(modifier = Modifier.fillMaxWidth()) {
                     OutlinedTextField(
                         value = nameText,
                         onValueChange = { nameText = it },
-                        label = { Text("Nome Variante") },
+                        label = { Text(stringResource(R.string.bg_variant_name)) },
                         modifier = Modifier.fillMaxWidth(),
                         singleLine = true
                     )
@@ -366,7 +366,7 @@ fun VariantEditDialog(
                     ) {
                         Icon(Icons.Default.Crop, contentDescription = stringResource(R.string.desc_crop_image))
                         Spacer(Modifier.width(8.dp))
-                        Text("Ritaglia Immagine")
+                        Text(stringResource(R.string.bg_crop_image))
                     }
                     
                     Spacer(Modifier.height(8.dp))
@@ -378,15 +378,15 @@ fun VariantEditDialog(
                     ) {
                         Icon(Icons.Default.Delete, contentDescription = stringResource(R.string.desc_delete_image))
                         Spacer(Modifier.width(8.dp))
-                        Text("Elimina Variante")
+                        Text(stringResource(R.string.bg_delete_variant))
                     }
                 }
             },
             confirmButton = {
-                TextButton(onClick = { onUpdateName(nameText) }) { Text("Salva") }
+                TextButton(onClick = { onUpdateName(nameText) }) { Text(stringResource(R.string.save)) }
             },
             dismissButton = {
-                TextButton(onClick = onDismiss) { Text("Annulla") }
+                TextButton(onClick = onDismiss) { Text(stringResource(R.string.action_cancel)) }
             }
         )
     }
@@ -481,7 +481,7 @@ fun AddVariantButton(onAddSingle: (String, Uri) -> Unit, onAddMultiple: (List<Ur
                 val chooseGalleryStr = stringResource(R.string.choose_gallery)
                 ListItem(
                     headlineContent = { Text(chooseGalleryStr) },
-                    leadingContent = { Icon(Icons.Default.PhotoLibrary, null) },
+                    leadingContent = { Icon(Icons.Default.PhotoLibrary, contentDescription = chooseGalleryStr) },
                     modifier = Modifier.clickable(
                         onClickLabel = chooseGalleryStr,
                         role = androidx.compose.ui.semantics.Role.Button

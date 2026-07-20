@@ -256,4 +256,22 @@
     <string name="empty_defect_desc">Stai uscendo da questo difetto senza aver inserito note o foto. Poiché è vuoto, verrà eliminato definitivamente dalla mappa per non sporcare il database.</string>
     <string name="dont_remind_me_again">Non ricordarmelo più</string>
     <string name="proceed">Procedi</string>
+    <string name="bg_model_title">Modello Sfondo</string>
+    <string name="bg_model_desc">Scegli il modello di sfondo da usare per il tracciamento dei nei.</string>
+    <string name="bg_model_label">Modello</string>
+    <string name="bg_pages_title">Pagine di Sfondo</string>
+    <string name="bg_pages_desc">Puoi aggiungere, rinominare e riordinare le pagine del modello personalizzato.</string>
+    <string name="warning_title">Attenzione</string>
+    <string name="bg_change_warning_desc">Stai cambiando lo sfondo. Cosa vuoi che succeda ai difetti?</string>
+    <string name="bg_keep_defects">Mantienili</string>
+    <string name="bg_delete_defects">Eliminali</string>
+    <string name="bg_change_irreversible">Questa azione è irreversibile.</string>
+    <string name="ok_red">Ok</string>
+    <string name="bg_delete_title">Elimina Sfondo</string>
+    <string name="bg_delete_desc">Eliminando questo sfondo cancellerai anche tutti i difetti registrati su di esso. Questa azione è irreversibile. Vuoi continuare?</string>
+    <string name="bg_edit_variant_title">Modifica Variante</string>
+    <string name="bg_variant_name">Nome Variante</string>
+    <string name="bg_crop_image">Ritaglia Immagine</string>
+    <string name="bg_delete_variant">Elimina Variante</string>
+    <string name="mole">Neo</string>
 </resources>
