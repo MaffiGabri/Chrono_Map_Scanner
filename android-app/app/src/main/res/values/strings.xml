@@ -274,4 +274,5 @@
     <string name="bg_crop_image">Ritaglia Immagine</string>
     <string name="bg_delete_variant">Elimina Variante</string>
     <string name="mole">Neo</string>
+    <string name="unknown_variant">Sconosciuto</string>
 </resources>

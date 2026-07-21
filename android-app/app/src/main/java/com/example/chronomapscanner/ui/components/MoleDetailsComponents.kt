@@ -139,7 +139,7 @@ fun MoleSummaryHeader(
                             Icon(Icons.Outlined.Info, null, modifier = Modifier.size(14.dp), tint = MaterialTheme.colorScheme.onSurfaceVariant)
                             Spacer(Modifier.width(4.dp))
                             Text(
-                                variant?.name ?: "Sconosciuto",
+                                variant?.name ?: androidx.compose.ui.res.stringResource(com.example.chronomapscanner.R.string.unknown_variant),
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
