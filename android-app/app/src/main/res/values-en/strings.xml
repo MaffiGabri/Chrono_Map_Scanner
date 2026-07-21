@@ -273,4 +273,5 @@
     <string name="bg_crop_image">Crop Image</string>
     <string name="bg_delete_variant">Delete Variant</string>
     <string name="mole">Mole</string>
+    <string name="unknown_variant">Unknown</string>
 </resources>
