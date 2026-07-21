@@ -354,9 +354,9 @@ fun AutoCameraScreen(
             
             Spacer(Modifier.height(8.dp))
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                Badge(containerColor = if (isStable) Color.Green else Color.Red) { Text("Stabilità") }
-                Badge(containerColor = if (isFocused) Color.Green else Color.Red) { Text("Fuoco") }
-                Badge(containerColor = if (isMoleDetected) Color.Green else Color.Red) { Text("Neo") }
+                Badge(containerColor = if (isStable) Color.Green else Color.Red) { Text(stringResource(R.string.camera_stability)) }
+                Badge(containerColor = if (isFocused) Color.Green else Color.Red) { Text(stringResource(R.string.camera_focus)) }
+                Badge(containerColor = if (isMoleDetected) Color.Green else Color.Red) { Text(stringResource(R.string.mole)) }
             }
         }
 
