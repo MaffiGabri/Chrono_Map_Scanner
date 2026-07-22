@@ -15,3 +15,7 @@
 ## 2024-07-24 - Accessibility improvements for hardcoded Strings in Text
 **Learning:** Hardcoded text inside `Text` composables directly degrades accessibility by failing to translate for screen readers, meaning users who don't speak the default language are given unintelligible voice feedback.
 **Action:** Always search explicitly for hardcoded string patterns inside `Text("...")` and convert them to `stringResource` values placed within `strings.xml` (both default and localized variants).
+
+## 2026-07-22 - Redundant Icon Content Descriptions
+**Learning:** When `Icon` composables are used inside elements that already have text (like `ListItem` or `Button`), adding a `contentDescription` to the icon creates a redundant and overly verbose experience for screen readers. Only standalone icons require descriptions.
+**Action:** Set `contentDescription = null` for decorative icons or icons accompanied by text labels to improve accessibility.
