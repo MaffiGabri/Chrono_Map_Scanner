@@ -315,7 +315,7 @@ fun MoleDetailsScreen(
                     val takePhotoStr = stringResource(R.string.take_photo)
                     ListItem(
                         headlineContent = { Text(takePhotoStr) },
-                        leadingContent = { Icon(Icons.Default.CameraAlt, contentDescription = takePhotoStr) },
+                        leadingContent = { Icon(Icons.Default.CameraAlt, null) },
                         modifier = Modifier.clickable(
                             onClickLabel = takePhotoStr,
                             role = androidx.compose.ui.semantics.Role.Button
@@ -327,7 +327,7 @@ fun MoleDetailsScreen(
                     val chooseGalleryStr = stringResource(R.string.choose_gallery)
                     ListItem(
                         headlineContent = { Text(chooseGalleryStr) },
-                        leadingContent = { Icon(Icons.Default.PhotoLibrary, contentDescription = chooseGalleryStr) },
+                        leadingContent = { Icon(Icons.Default.PhotoLibrary, null) },
                         modifier = Modifier.clickable(
                             onClickLabel = chooseGalleryStr,
                             role = androidx.compose.ui.semantics.Role.Button
