@@ -446,7 +446,7 @@ fun AddVariantButton(onAddSingle: (String, Uri) -> Unit, onAddMultiple: (List<Ur
         contentAlignment = Alignment.Center
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Icon(Icons.Default.Add, contentDescription = stringResource(R.string.add_variant), tint = MaterialTheme.colorScheme.onPrimaryContainer)
+            Icon(Icons.Default.Add, contentDescription = null, tint = MaterialTheme.colorScheme.onPrimaryContainer)
             Spacer(Modifier.width(8.dp))
             Text(stringResource(R.string.add_variant), style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.onPrimaryContainer)
         }

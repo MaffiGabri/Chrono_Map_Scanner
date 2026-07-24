@@ -161,7 +161,7 @@ fun MoleDetailsScreen(
                     editingEntry = null
                     showPhotoMenu = true 
                 },
-                icon = { Icon(Icons.Default.AddAPhoto, contentDescription = stringResource(R.string.new_photo)) },
+                icon = { Icon(Icons.Default.AddAPhoto, contentDescription = null) },
                 text = { Text(stringResource(R.string.new_photo)) },
                 containerColor = MaterialTheme.colorScheme.primary,
                 contentColor = MaterialTheme.colorScheme.onPrimary
@@ -561,7 +561,7 @@ fun NoteDialog(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(12.dp)
                 ) {
-                    Icon(Icons.Default.CalendarToday, contentDescription = stringResource(R.string.history), modifier = Modifier.size(18.dp))
+                    Icon(Icons.Default.CalendarToday, contentDescription = null, modifier = Modifier.size(18.dp))
                     Spacer(Modifier.width(8.dp))
                     Text(stringResource(R.string.date_label, noteDate.format(DateTimeFormatter.ofLocalizedDate(java.time.format.FormatStyle.MEDIUM).withLocale(java.util.Locale.getDefault()))))
                 }
